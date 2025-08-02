@@ -1,13 +1,28 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Bot, ExternalLink, Github, Menu, X } from "lucide-react";
+import {
+  Bot,
+  ExternalLink,
+  Github,
+  LogIn,
+  LogOut,
+  Menu,
+  Settings,
+  User,
+  X,
+} from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import { NAV_LINKS, SITE_INFO } from "@/utils/constants";
+import { getAvatarUrl, getDisplayName } from "@/utils/discord";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { user, isAuthenticated, isLoading, login, logout } = useAuth();
 
   return (
     <motion.header
@@ -71,21 +86,103 @@ export default function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4 flex-shrink-0">
-            <button
-              type="button"
-              className="text-blue-200 hover:text-white transition-colors duration-200 font-medium cursor-pointer"
-            >
-              Login
-            </button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
-            >
-              <Bot className="w-4 h-4" />
-              Add to Discord
-              <ExternalLink className="w-4 h-4" />
-            </motion.button>
+            {isLoading ? (
+              <div className="h-10 w-20 bg-slate-700/50 rounded-lg animate-pulse" />
+            ) : isAuthenticated && user ? (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-800/50 transition-colors duration-200"
+                >
+                  <Image
+                    src={getAvatarUrl(user.id, user.avatar, 32)}
+                    alt={`${getDisplayName(user)}'s avatar`}
+                    width={32}
+                    height={32}
+                    className="rounded-full ring-2 ring-blue-400/30"
+                  />
+                  <span className="text-white font-medium">
+                    {getDisplayName(user)}
+                  </span>
+                </button>
+
+                {/* User Dropdown Menu */}
+                {isUserMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute right-0 top-full mt-2 w-64 bg-slate-800/95 backdrop-blur-lg border border-slate-700/50 rounded-lg shadow-xl"
+                  >
+                    <div className="p-4 border-b border-slate-700/50">
+                      <div className="flex items-center gap-3">
+                        <Image
+                          src={getAvatarUrl(user.id, user.avatar, 40)}
+                          alt={`${getDisplayName(user)}'s avatar`}
+                          width={40}
+                          height={40}
+                          className="rounded-full"
+                        />
+                        <div>
+                          <div className="text-white font-semibold">
+                            {getDisplayName(user)}
+                          </div>
+                          <div className="text-blue-200 text-sm">
+                            @{user.username}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-2">
+                      <Link
+                        href="/dashboard"
+                        className="w-full flex items-center gap-3 px-3 py-2 text-blue-200 hover:text-white hover:bg-slate-700/50 rounded-lg transition-colors duration-200"
+                      >
+                        <User className="w-4 h-4" />
+                        Dashboard
+                      </Link>
+                      <button
+                        type="button"
+                        className="w-full flex items-center gap-3 px-3 py-2 text-blue-200 hover:text-white hover:bg-slate-700/50 rounded-lg transition-colors duration-200"
+                      >
+                        <Settings className="w-4 h-4" />
+                        Settings
+                      </button>
+                      <hr className="my-2 border-slate-700/50" />
+                      <button
+                        type="button"
+                        onClick={() => logout()}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors duration-200"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign out
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            ) : (
+              <>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => login()}
+                  className="flex items-center gap-2 px-4 py-2 text-blue-200 hover:text-white border border-blue-400/30 hover:border-blue-400/50 rounded-lg font-medium transition-all duration-200"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Sign in
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2"
+                >
+                  <Bot className="w-4 h-4" />
+                  Add to Discord
+                  <ExternalLink className="w-4 h-4" />
+                </motion.button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -139,20 +236,70 @@ export default function Header() {
                 GitHub
               </a>
               <div className="flex flex-col gap-3 pt-4 border-t border-slate-700/50">
-                <button
-                  type="button"
-                  className="text-blue-200 hover:text-white transition-colors duration-200 font-medium text-left"
-                >
-                  Login
-                </button>
-                <button
-                  type="button"
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 justify-center"
-                >
-                  <Bot className="w-4 h-4" />
-                  Add to Discord
-                  <ExternalLink className="w-4 h-4" />
-                </button>
+                {isLoading ? (
+                  <div className="h-10 bg-slate-700/50 rounded-lg animate-pulse" />
+                ) : isAuthenticated && user ? (
+                  <>
+                    <div className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg">
+                      <Image
+                        src={getAvatarUrl(user.id, user.avatar, 32)}
+                        alt={`${getDisplayName(user)}'s avatar`}
+                        width={32}
+                        height={32}
+                        className="rounded-full"
+                      />
+                      <div>
+                        <div className="text-white font-medium">
+                          {getDisplayName(user)}
+                        </div>
+                        <div className="text-blue-200 text-sm">
+                          @{user.username}
+                        </div>
+                      </div>
+                    </div>
+                    <Link
+                      href="/dashboard"
+                      className="flex items-center gap-2 px-4 py-2 text-blue-200 hover:text-white hover:bg-slate-800/50 rounded-lg transition-colors duration-200"
+                    >
+                      <User className="w-4 h-4" />
+                      Dashboard
+                    </Link>
+                    <button
+                      type="button"
+                      className="flex items-center gap-2 px-4 py-2 text-blue-200 hover:text-white hover:bg-slate-800/50 rounded-lg transition-colors duration-200"
+                    >
+                      <Settings className="w-4 h-4" />
+                      Settings
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => logout()}
+                      className="flex items-center gap-2 px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors duration-200"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sign out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => login()}
+                      className="flex items-center gap-2 px-4 py-2 text-blue-200 hover:text-white border border-blue-400/30 hover:border-blue-400/50 rounded-lg font-medium transition-all duration-200 justify-center"
+                    >
+                      <LogIn className="w-4 h-4" />
+                      Sign in
+                    </button>
+                    <button
+                      type="button"
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 justify-center"
+                    >
+                      <Bot className="w-4 h-4" />
+                      Add to Discord
+                      <ExternalLink className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
               </div>
             </nav>
           </motion.div>

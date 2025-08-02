@@ -23,53 +23,6 @@ Pure combines the best features from premium Discord bots like MEE6, Ticket Tool
 ### The Solution
 Pure provides **all these features in one bot, completely free, forever.**
 
-## Features
-
-### 🛡️ **Advanced Moderation**
-- **Anti-raid protection** with intelligent pattern detection
-- **Auto-moderation** with customizable filters and actions
-- **Comprehensive logging** with detailed audit trails
-- **Flexible punishment system** (warns, mutes, kicks, bans)
-- **Mass moderation tools** for handling large-scale issues
-
-### 🎫 **Professional Ticket System**
-- **Multi-category support** with custom templates
-- **Automatic staff assignment** based on roles and availability
-- **Ticket transcripts** with full conversation history
-- **Priority levels** and escalation workflows
-- **Department routing** for complex organizations
-
-### 📊 **Engagement & Leveling**
-- **XP and leveling system** without artificial restrictions
-- **Custom rank cards** with personalization options
-- **Role rewards** for reaching specific levels
-- **Leaderboards** with various sorting options
-- **Activity tracking** and engagement analytics
-
-### 💰 **Virtual Economy**
-- **Currency system** with earning and spending mechanics
-- **Interactive games** and activities
-- **Daily/weekly rewards** and streak bonuses
-- **Shop system** with custom items and roles
-- **Economic balancing** tools for administrators
-
-### 🎮 **Server Engagement**
-- **Reaction roles** with unlimited configurations
-- **Custom commands** and autoresponders
-- **Welcome/goodbye messages** with rich embeds
-- **Announcement systems** with cross-posting
-- **Event management** and reminders
-
-### 📈 **Analytics & Insights**
-- **Server growth metrics** and member analytics
-- **Command usage statistics** and performance monitoring
-- **Activity heatmaps** and engagement tracking
-- **Custom dashboards** for administrators
-- **Export capabilities** for external analysis
-
-
-**And much more!** *Pure is designed to be modular and extensible, allowing for future growth and community-driven features.*
-
 ## Quick Start
 
 ### Prerequisites

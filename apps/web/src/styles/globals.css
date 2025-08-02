@@ -1,6 +1,1 @@
 @import "tailwindcss";
-
-/* Custom gradient utilities for Tailwind v4 */
-.bg-gradient-radial {
-  background: radial-gradient(ellipse at center, var(--tw-gradient-stops));
-}

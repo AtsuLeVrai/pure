@@ -1,8 +1,6 @@
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { TRPCReactProvider } from "@/trpc/react";
-import { HydrateClient } from "@/trpc/server";
 import { SITE_INFO } from "@/utils/constants";
 
 const inter = Inter({
@@ -50,9 +48,7 @@ export default function RootLayout({
       <body
         className={`${inter.className} antialiased bg-slate-900 text-white`}
       >
-        <TRPCReactProvider>
-          <HydrateClient>{children}</HydrateClient>
-        </TRPCReactProvider>
+        {children}
       </body>
     </html>
   );
