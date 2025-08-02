@@ -1,0 +1,2 @@
+pnpm run biome:check
+git update-index --again
