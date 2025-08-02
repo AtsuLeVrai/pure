@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Bot, ExternalLink, Github, Menu, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import { NAV_LINKS, SITE_INFO } from "@/utils/constants";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,10 +17,10 @@ export default function Header() {
       className="fixed top-0 left-0 right-0 z-50 bg-slate-900/90 backdrop-blur-lg border-b border-slate-700/50"
     >
       <div className="mx-auto max-w-7xl px-6">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-20 w-full">
           {/* Logo */}
           <motion.div
-            className="flex items-center gap-3"
+            className="flex items-center gap-3 cursor-pointer flex-shrink-0"
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.2 }}
           >
@@ -32,34 +33,36 @@ export default function Header() {
                 className="rounded-full ring-2 ring-blue-400/30"
               />
             </div>
-            <span className="text-2xl font-bold text-white">Pure</span>
+            <span className="text-2xl font-bold text-white">
+              {SITE_INFO.name}
+            </span>
           </motion.div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-8 flex-1 justify-center">
             <a
               href="#features"
-              className="text-blue-200 hover:text-white transition-colors duration-200 font-medium"
+              className="text-blue-200 hover:text-white transition-colors duration-200 font-medium cursor-pointer"
             >
               Features
             </a>
             <a
               href="#pricing"
-              className="text-blue-200 hover:text-white transition-colors duration-200 font-medium"
+              className="text-blue-200 hover:text-white transition-colors duration-200 font-medium cursor-pointer"
             >
               Pricing
             </a>
             <a
               href="#faq"
-              className="text-blue-200 hover:text-white transition-colors duration-200 font-medium"
+              className="text-blue-200 hover:text-white transition-colors duration-200 font-medium cursor-pointer"
             >
               FAQ
             </a>
             <a
-              href="https://github.com/AtsuLeVrai/pure"
+              href={NAV_LINKS.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-200 hover:text-white transition-colors duration-200 font-medium flex items-center gap-2"
+              className="text-blue-200 hover:text-white transition-colors duration-200 font-medium flex items-center gap-2 cursor-pointer"
             >
               <Github className="w-4 h-4" />
               GitHub
@@ -67,17 +70,17 @@ export default function Header() {
           </nav>
 
           {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4 flex-shrink-0">
             <button
               type="button"
-              className="text-blue-200 hover:text-white transition-colors duration-200 font-medium"
+              className="text-blue-200 hover:text-white transition-colors duration-200 font-medium cursor-pointer"
             >
               Login
             </button>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2"
+              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
             >
               <Bot className="w-4 h-4" />
               Add to Discord

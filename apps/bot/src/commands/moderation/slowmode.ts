@@ -233,7 +233,7 @@ export default defineSlashCommand({
     if (result.success && result.channel) {
       const isDisabling = duration === 0;
       const isEnabling = result.previousDelay === 0 && duration > 0;
-      const isChanging = result.previousDelay! > 0 && duration > 0;
+      const isChanging = (result.previousDelay as number) > 0 && duration > 0;
 
       let title = "⏱️ Slowmode Updated";
       let description = "";
@@ -271,7 +271,7 @@ export default defineSlashCommand({
           {
             name: isDisabling ? "Previous Duration" : "New Duration",
             value: formatDuration(
-              isDisabling ? result.previousDelay! : duration,
+              isDisabling ? (result.previousDelay as number) : duration,
             ),
             inline: true,
           },

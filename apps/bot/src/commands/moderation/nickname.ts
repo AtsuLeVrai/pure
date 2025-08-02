@@ -314,7 +314,7 @@ export default defineSlashCommand({
 
     // Execute nickname change (we know targetMember exists due to validation)
     const result = await executeNicknameChange(
-      targetMember!,
+      targetMember as GuildMember,
       executor,
       newNickname?.trim() || null,
       reason,

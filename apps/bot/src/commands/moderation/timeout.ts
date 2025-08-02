@@ -399,7 +399,7 @@ export default defineSlashCommand({
 
     // Execute timeout (we know targetMember exists due to validation)
     const result = await executeTimeout(
-      targetMember!,
+      targetMember as GuildMember,
       executor,
       reason,
       durationMinutes,

@@ -261,7 +261,11 @@ export default defineSlashCommand({
     }
 
     // Execute mute (we know targetMember exists due to validation)
-    const result = await executeMute(targetMember!, executor, reason);
+    const result = await executeMute(
+      targetMember as GuildMember,
+      executor,
+      reason,
+    );
 
     // Add moderation log if mute was successful
     if (result.success && result.user) {

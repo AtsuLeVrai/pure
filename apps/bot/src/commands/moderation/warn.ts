@@ -629,7 +629,11 @@ export default defineSlashCommand({
         await interaction.deferReply();
 
         // Execute warn (we know targetMember exists due to validation)
-        const result = await executeWarn(targetMember!, executor, reason);
+        const result = await executeWarn(
+          targetMember as GuildMember,
+          executor,
+          reason,
+        );
 
         if (!result.success) {
           const embed = new EmbedBuilder()
@@ -683,7 +687,7 @@ export default defineSlashCommand({
           .addFields(
             {
               name: "User",
-              value: `${result.user!} (${result.user?.tag})`,
+              value: `${result.user} (${result.user?.tag})`,
               inline: true,
             },
             {

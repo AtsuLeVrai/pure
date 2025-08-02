@@ -13,30 +13,30 @@ import {
   Zap,
 } from "lucide-react";
 import Image from "next/image";
+import AnimatedBackground from "@/components/AnimatedBackground";
 import Header from "@/components/Header";
+import {
+  ANIMATION_VARIANTS,
+  NAV_LINKS,
+  SITE_INFO,
+  STATS,
+} from "@/utils/constants";
 
 export default function Home() {
-  const fadeInUp = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6 },
-  };
-
-  const stagger = {
-    animate: {
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
+  const { fadeInUp, stagger } = ANIMATION_VARIANTS;
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-slate-900 relative">
+      {/* Animated Background */}
+      <AnimatedBackground />
+
       {/* Header */}
-      <Header />
+      <div className="relative z-50">
+        <Header />
+      </div>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden px-6 pt-32 pb-20 min-h-screen flex items-center bg-slate-900">
+      <section className="relative z-10 overflow-hidden px-6 pt-32 pb-20 min-h-screen flex items-center">
         <div className="mx-auto max-w-7xl">
           <motion.div
             className="text-center"
@@ -62,10 +62,10 @@ export default function Home() {
               variants={fadeInUp}
               className="text-5xl sm:text-7xl font-bold text-white mb-6"
             >
-              Discord bots shouldn't be
+              {SITE_INFO.tagline.split(" ").slice(0, 3).join(" ")}
               <span className="bg-gradient-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent">
                 {" "}
-                locked behind paywalls
+                {SITE_INFO.tagline.split(" ").slice(3).join(" ")}
               </span>
             </motion.h1>
 
@@ -84,7 +84,7 @@ export default function Home() {
             >
               <button
                 type="button"
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 cursor-pointer"
               >
                 <Bot className="w-5 h-5" />
                 Add to Discord
@@ -93,7 +93,7 @@ export default function Home() {
 
               <button
                 type="button"
-                className="border border-blue-400 text-blue-300 hover:bg-blue-400/10 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200"
+                className="border border-blue-400 text-blue-300 hover:bg-blue-400/10 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200 cursor-pointer"
               >
                 View Features
               </button>
@@ -104,15 +104,21 @@ export default function Home() {
               className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto"
             >
               <div className="text-center">
-                <div className="text-3xl font-bold text-white">500K+</div>
+                <div className="text-3xl font-bold text-white">
+                  {STATS.commandsExecuted}
+                </div>
                 <div className="text-blue-300">Commands Executed</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-white">25K+</div>
+                <div className="text-3xl font-bold text-white">
+                  {STATS.serversProtected}
+                </div>
                 <div className="text-blue-300">Servers Protected</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-white">$500K+</div>
+                <div className="text-3xl font-bold text-white">
+                  {STATS.moneySaved}
+                </div>
                 <div className="text-blue-300">Money Saved</div>
               </div>
             </motion.div>
@@ -121,7 +127,10 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 px-6 bg-slate-800/50">
+      <section
+        id="features"
+        className="relative z-10 py-20 px-6 bg-slate-800/50"
+      >
         <div className="mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -439,7 +448,9 @@ export default function Home() {
               <h3 className="text-2xl font-bold text-white mb-2">
                 Annual savings with Pure
               </h3>
-              <div className="text-4xl font-bold text-green-400">$248+</div>
+              <div className="text-4xl font-bold text-green-400">
+                {STATS.annualSavings}
+              </div>
               <p className="text-red-200 mt-2">
                 That's enough for a new graphics card instead of Discord bot
                 subscriptions 🎮
@@ -558,7 +569,7 @@ export default function Home() {
             </p>
             <button
               type="button"
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-12 py-4 rounded-lg font-semibold text-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-3 mx-auto"
+              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-12 py-4 rounded-lg font-semibold text-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-3 mx-auto cursor-pointer"
             >
               <Bot className="w-6 h-6" />
               Add Pure to Discord
@@ -585,15 +596,15 @@ export default function Home() {
                   height={40}
                   className="rounded-lg"
                 />
-                <span className="text-white font-bold text-xl">Pure</span>
+                <span className="text-white font-bold text-xl">
+                  {SITE_INFO.name}
+                </span>
               </div>
               <p className="text-blue-200/70 mb-4 max-w-md">
-                The Discord bot as it should be: simple, powerful, and
-                completely free. No paywalls, no premium tiers, no feature
-                restrictions.
+                {SITE_INFO.description}
               </p>
               <div className="text-sm text-blue-300/60">
-                Apache 2.0 License • Open Source
+                {SITE_INFO.license} • Open Source
               </div>
             </div>
 
@@ -634,7 +645,7 @@ export default function Home() {
               <ul className="space-y-2">
                 <li>
                   <a
-                    href="https://github.com/AtsuLeVrai/pure"
+                    href={NAV_LINKS.github}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-200/70 hover:text-white transition-colors"
@@ -644,7 +655,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a
-                    href="https://discord.gg/pure"
+                    href={NAV_LINKS.discord}
                     className="text-blue-200/70 hover:text-white transition-colors"
                   >
                     Discord Server
@@ -652,7 +663,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a
-                    href="https://github.com/AtsuLeVrai/pure/issues"
+                    href={NAV_LINKS.issues}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-200/70 hover:text-white transition-colors"
@@ -666,7 +677,8 @@ export default function Home() {
 
           <div className="border-t border-slate-700/50 pt-8">
             <div className="text-center text-blue-300/60 text-sm">
-              © 2024 Pure Bot. Made with ❤️ by the community, for the community.
+              © {new Date().getFullYear()} {SITE_INFO.name} Bot. Made with ❤️ by
+              the community, for the community.
             </div>
           </div>
         </div>

@@ -223,7 +223,11 @@ export default defineSlashCommand({
     await interaction.deferReply();
 
     // Execute unmute (we know targetMember exists due to validation)
-    const result = await executeUnmute(targetMember!, executor, reason);
+    const result = await executeUnmute(
+      targetMember as GuildMember,
+      executor,
+      reason,
+    );
 
     // Add moderation log if unmute was successful
     if (result.success && result.user) {

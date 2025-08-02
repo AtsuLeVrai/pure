@@ -235,7 +235,11 @@ export default defineSlashCommand({
     }
 
     // Execute kick (we know targetMember exists due to validation)
-    const result = await executeKick(targetMember!, executor, reason);
+    const result = await executeKick(
+      targetMember as GuildMember,
+      executor,
+      reason,
+    );
 
     // Add moderation log if kick was successful
     if (result.success && result.user) {
