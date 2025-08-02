@@ -2,16 +2,13 @@ import { ActivityType, type Client, PresenceUpdateStatus } from "discord.js";
 import { defineEvent } from "@/types/index.js";
 import { commandRegistry, Logger, registerCommands } from "@/utils/index.js";
 
-// Define the structure for memory usage
-interface GetMemoryUsage {
+// Utility function to get memory usage in MB
+function getMemoryUsage(): {
   rss: number;
   heapUsed: number;
   heapTotal: number;
   external: number;
-}
-
-// Utility function to get memory usage in MB
-function getMemoryUsage(): GetMemoryUsage {
+} {
   const usage = process.memoryUsage();
   return {
     rss: Math.round(usage.rss / 1024 / 1024), // MB

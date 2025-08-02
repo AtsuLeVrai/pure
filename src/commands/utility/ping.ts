@@ -12,17 +12,14 @@ import {
 import { defineSlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
-// Define the structure for ping components
-interface CreatePingComponents {
-  embed: EmbedBuilder;
-  actionRow: ActionRowBuilder<ButtonBuilder>;
-}
-
 // Utility function to create ping components
 function createPingComponents(
   client: Client<true>,
   roundtripLatency: number,
-): CreatePingComponents {
+): {
+  embed: EmbedBuilder;
+  actionRow: ActionRowBuilder<ButtonBuilder>;
+} {
   const wsHeartbeat = client.ws.ping;
 
   // Create the embed

@@ -1,7 +1,24 @@
 import { type Client, Routes } from "discord.js";
+import banCommand from "@/commands/moderation/ban.js";
+import clearwarnsCommand from "@/commands/moderation/clearwarns.js";
+import kickCommand from "@/commands/moderation/kick.js";
+import lockCommand from "@/commands/moderation/lock.js";
+import massbanCommand from "@/commands/moderation/massban.js";
+import modlogsCommand from "@/commands/moderation/modlogs.js";
+import muteCommand from "@/commands/moderation/mute.js";
+import nicknameCommand from "@/commands/moderation/nickname.js";
+import purgeCommand from "@/commands/moderation/purge.js";
+import slowmodeCommand from "@/commands/moderation/slowmode.js";
+import timeoutCommand from "@/commands/moderation/timeout.js";
+import unbanCommand from "@/commands/moderation/unban.js";
+import unlockCommand from "@/commands/moderation/unlock.js";
+import unmuteCommand from "@/commands/moderation/unmute.js";
+import userinfoCommand from "@/commands/moderation/userinfo.js";
+import warnCommand from "@/commands/moderation/warn.js";
+import warningsCommand from "@/commands/moderation/warnings.js";
 import helpCommand from "@/commands/utility/help.js";
 import pingCommand from "@/commands/utility/ping.js";
-import interactionCreate from "@/events/client/interactionCreate.js";
+import interactionCreateEvent from "@/events/client/interactionCreate.js";
 import readyEvent from "@/events/client/ready.js";
 import { env } from "@/index.js";
 import type { EventHandler, SlashCommand } from "@/types/index.js";
@@ -13,6 +30,23 @@ export const isProd = process.env.NODE_ENV === "production";
 
 // Command registry for the bot
 export const commandRegistry: readonly SlashCommand[] = [
+  banCommand,
+  clearwarnsCommand,
+  kickCommand,
+  lockCommand,
+  massbanCommand,
+  modlogsCommand,
+  muteCommand,
+  nicknameCommand,
+  purgeCommand,
+  slowmodeCommand,
+  timeoutCommand,
+  unbanCommand,
+  unlockCommand,
+  unmuteCommand,
+  userinfoCommand,
+  warnCommand,
+  warningsCommand,
   helpCommand,
   pingCommand,
 ] as const;
@@ -71,7 +105,7 @@ export async function registerCommands(client: Client<true>): Promise<void> {
 // Event registry for the bot
 export const eventRegistry: readonly EventHandler<any>[] = [
   readyEvent,
-  interactionCreate,
+  interactionCreateEvent,
 ] as const;
 
 // Register events with the Discord client
