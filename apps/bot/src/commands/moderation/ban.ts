@@ -1,3 +1,4 @@
+import { ModerationType } from "@pure/database";
 import {
   ApplicationCommandOptionType,
   blockQuote,
@@ -9,96 +10,109 @@ import {
   type User,
 } from "discord.js";
 import { v7 } from "uuid";
-import { ModerationType } from "@/generated/prisma/index.js";
 import { prisma } from "@/index.js";
 import { defineSlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
-// Define the structure for kick result
-interface KickResult {
+// Define the structure for ban result
+interface BanResult {
   success: boolean;
   error?: string;
   member?: GuildMember;
   user?: User;
 }
 
-// Utility function to validate kick permissions and target
-async function validateKickPermissions(
+// Utility function to validate ban permissions and target
+async function validateBanPermissions(
   executor: GuildMember,
   target: GuildMember | null,
-): Promise<{ canKick: boolean; reason?: string }> {
+): Promise<{ canBan: boolean; reason?: string }> {
   // Check if target is in the guild
   if (!target) {
-    return {
-      canKick: false,
-      reason: "User is not in this server",
-    };
+    // User is not in guild, can still ban by ID
+    return { canBan: true };
   }
 
-  // Check if target is kickable
-  if (!target.kickable) {
+  // Check if target is bannable
+  if (!target.bannable) {
     return {
-      canKick: false,
-      reason: "This member cannot be kicked (higher role or bot owner)",
+      canBan: false,
+      reason: "This member cannot be banned (higher role or bot owner)",
     };
   }
 
   // Check role hierarchy
   if (target.roles.highest.position >= executor.roles.highest.position) {
     return {
-      canKick: false,
-      reason: "You cannot kick someone with equal or higher role",
+      canBan: false,
+      reason: "You cannot ban someone with equal or higher role",
     };
   }
 
   // Check if target is guild owner
   if (target.id === target.guild.ownerId) {
     return {
-      canKick: false,
-      reason: "Cannot kick the guild owner",
+      canBan: false,
+      reason: "Cannot ban the guild owner",
     };
   }
 
-  // Check if trying to kick self
+  // Check if trying to ban self
   if (target.id === executor.id) {
     return {
-      canKick: false,
-      reason: "You cannot kick yourself",
+      canBan: false,
+      reason: "You cannot ban yourself",
     };
   }
 
-  return { canKick: true };
+  return { canBan: true };
 }
 
-// Utility function to execute kick
-async function executeKick(
-  targetMember: GuildMember,
+// Utility function to execute ban
+async function executeBan(
+  targetUser: User,
   executor: GuildMember,
   reason: string,
-): Promise<KickResult> {
+  deleteMessageDays: number,
+): Promise<BanResult> {
   try {
-    // Attempt to kick the member
-    await targetMember.kick(
-      `${reason} | Kicked by: ${executor.user.tag} (${executor.id})`,
-    );
+    // Attempt to ban the user
+    await executor.guild.members.ban(targetUser, {
+      reason: `${reason} | Banned by: ${executor.user.tag} (${executor.id})`,
+      deleteMessageSeconds: deleteMessageDays * 24 * 3600, // Convert days to seconds
+    });
 
-    Logger.info("Member kicked successfully", {
-      targetId: targetMember.id,
-      targetTag: targetMember.user.tag,
+    // Add moderation log
+    await prisma.moderationLog.create({
+      data: {
+        log_id: v7(),
+        type: ModerationType.BAN,
+        target_user_id: targetUser.id,
+        moderator_id: executor.id,
+        guild_id: executor.guild.id,
+        reason,
+        metadata: { deleteMessageDays },
+      },
+    });
+
+    Logger.info("Member banned successfully", {
+      targetId: targetUser.id,
+      targetTag: targetUser.tag,
       executorId: executor.id,
       executorTag: executor.user.tag,
       guildId: executor.guild.id,
       reason,
+      deleteMessageDays,
     });
 
-    return { success: true, member: targetMember, user: targetMember.user };
+    return { success: true, user: targetUser };
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error occurred";
 
-    Logger.error("Failed to kick member", {
-      targetId: targetMember.id,
-      targetTag: targetMember.user.tag,
+    Logger.error("Failed to ban member", {
+      targetId: targetUser.id,
+      targetTag: targetUser.tag,
       executorId: executor.id,
       executorTag: executor.user.tag,
       guildId: executor.guild.id,
@@ -110,8 +124,8 @@ async function executeKick(
   }
 }
 
-// Utility function to send kick notification to user
-async function sendKickNotification(
+// Utility function to send ban notification to user
+async function sendBanNotification(
   user: User,
   guild: { name: string; iconURL: () => string | null },
   reason: string,
@@ -119,9 +133,9 @@ async function sendKickNotification(
 ): Promise<void> {
   try {
     const dmEmbed = new EmbedBuilder()
-      .setTitle("👢 You have been kicked")
-      .setDescription(`You have been kicked from **${guild.name}**`)
-      .setColor(Colors.Orange)
+      .setTitle("🔨 You have been banned")
+      .setDescription(`You have been banned from **${guild.name}**`)
+      .setColor(Colors.Red)
       .addFields(
         {
           name: "Reason",
@@ -133,23 +147,18 @@ async function sendKickNotification(
           value: executor.user.tag,
           inline: true,
         },
-        {
-          name: "Note",
-          value: "You can rejoin using an invite link",
-          inline: false,
-        },
       )
       .setThumbnail(guild.iconURL())
       .setTimestamp();
 
     await user.send({ embeds: [dmEmbed] });
 
-    Logger.debug("Kick notification sent to user", {
+    Logger.debug("Ban notification sent to user", {
       userId: user.id,
       guildId: executor.guild.id,
     });
   } catch (error) {
-    Logger.debug("Could not send kick notification to user", {
+    Logger.debug("Could not send ban notification to user", {
       userId: user.id,
       error: error instanceof Error ? error.message : String(error),
     });
@@ -158,26 +167,34 @@ async function sendKickNotification(
 
 export default defineSlashCommand({
   data: {
-    name: "kick",
-    description: "Kick a member from the server",
-    defaultMemberPermissions: "KickMembers",
+    name: "ban",
+    description: "Ban a member from the server",
+    defaultMemberPermissions: "BanMembers",
     options: [
       {
         name: "user",
-        description: "The user to kick",
+        description: "The user to ban",
         type: ApplicationCommandOptionType.User,
         required: true,
       },
       {
         name: "reason",
-        description: "Reason for the kick",
+        description: "Reason for the ban",
         type: ApplicationCommandOptionType.String,
         required: false,
         maxLength: 512,
       },
       {
+        name: "delete_messages",
+        description: "Number of days of messages to delete (0-7)",
+        type: ApplicationCommandOptionType.Integer,
+        required: false,
+        minValue: 0,
+        maxValue: 7,
+      },
+      {
         name: "silent",
-        description: "Don't send a DM notification to the kicked user",
+        description: "Don't send a DM notification to the banned user",
         type: ApplicationCommandOptionType.Boolean,
         required: false,
       },
@@ -200,6 +217,8 @@ export default defineSlashCommand({
     const targetUser = interaction.options.getUser("user", true);
     const reason =
       interaction.options.getString("reason") ?? "No reason provided";
+    const deleteMessageDays =
+      interaction.options.getInteger("delete_messages") ?? 0;
     const silent = interaction.options.getBoolean("silent") ?? false;
 
     // Get guild member objects
@@ -209,8 +228,8 @@ export default defineSlashCommand({
       .catch(() => null);
 
     // Validate permissions
-    const validation = await validateKickPermissions(executor, targetMember);
-    if (!validation.canKick) {
+    const validation = await validateBanPermissions(executor, targetMember);
+    if (!validation.canBan) {
       await interaction.reply({
         content: blockQuote(bold(`❌ ${validation.reason}`)),
         flags: MessageFlags.Ephemeral,
@@ -218,12 +237,12 @@ export default defineSlashCommand({
       return;
     }
 
-    // Defer reply as kick operation might take time
+    // Defer reply as ban operation might take time
     await interaction.deferReply();
 
-    // Send notification to user before kicking (if not silent)
+    // Send notification to user before banning (if not silent and user is in guild)
     if (!silent && targetMember) {
-      await sendKickNotification(
+      await sendBanNotification(
         targetUser,
         {
           name: interaction.guild.name,
@@ -234,36 +253,42 @@ export default defineSlashCommand({
       );
     }
 
-    // Execute kick (we know targetMember exists due to validation)
-    const result = await executeKick(targetMember!, executor, reason);
+    // Execute ban
+    const result = await executeBan(
+      targetUser,
+      executor,
+      reason,
+      deleteMessageDays,
+    );
 
-    // Add moderation log if kick was successful
+    // Add moderation log if ban was successful
     if (result.success && result.user) {
       await prisma.moderationLog.create({
         data: {
           log_id: v7(),
-          type: ModerationType.KICK,
+          type: ModerationType.BAN,
           target_user_id: result.user.id,
           moderator_id: executor.id,
           guild_id: executor.guild.id,
           reason,
+          metadata: { deleteMessageDays },
         },
       });
     }
 
     // Create and send response embed
     const embed = new EmbedBuilder().setTimestamp().setFooter({
-      text: `Kicked by ${executor.user.tag}`,
+      text: `Banned by ${executor.user.tag}`,
       iconURL: executor.user.displayAvatarURL(),
     });
 
     if (result.success && result.user) {
       embed
-        .setTitle("👢 Member Kicked")
+        .setTitle("🔨 Member Banned")
         .setDescription(
-          `**${result.user.tag}** has been kicked from the server`,
+          `**${result.user.tag}** has been banned from the server`,
         )
-        .setColor(Colors.Orange)
+        .setColor(Colors.Red)
         .addFields(
           {
             name: "User",
@@ -281,21 +306,21 @@ export default defineSlashCommand({
             inline: false,
           },
           {
-            name: "Moderator",
-            value: `${executor.user} (${executor.user.tag})`,
+            name: "Messages Deleted",
+            value: `${deleteMessageDays} day${deleteMessageDays !== 1 ? "s" : ""}`,
             inline: true,
           },
           {
-            name: "Note",
-            value: "User can rejoin with an invite",
+            name: "Moderator",
+            value: `${executor.user} (${executor.user.tag})`,
             inline: true,
           },
         )
         .setThumbnail(result.user.displayAvatarURL());
     } else {
       embed
-        .setTitle("❌ Kick Failed")
-        .setDescription("Failed to kick the specified user")
+        .setTitle("❌ Ban Failed")
+        .setDescription("Failed to ban the specified user")
         .setColor(Colors.Red)
         .addFields({
           name: "Error",
@@ -309,7 +334,7 @@ export default defineSlashCommand({
     });
 
     // Log the command usage
-    Logger.info("Kick command executed", {
+    Logger.info("Ban command executed", {
       success: result.success,
       targetId: targetUser.id,
       targetTag: targetUser.tag,
@@ -317,6 +342,7 @@ export default defineSlashCommand({
       executorTag: executor.user.tag,
       guildId: interaction.guild.id,
       reason,
+      deleteMessageDays,
       silent,
     });
   },

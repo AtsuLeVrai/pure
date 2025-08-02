@@ -1,7 +1,7 @@
-import { config as dotenv } from "@dotenvx/dotenvx";
+import { PrismaClient } from "@pure/database";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
+import { config as dotenv } from "dotenv";
 import { z } from "zod";
-import { PrismaClient } from "@/generated/prisma/index.js";
 import { isDev, Logger, registerEvents } from "@/utils/index.js";
 
 // Define the schema for environment variables using zod

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@pure/bot",
+  "description": "The Discord bot as it should be: simple, powerful, and completely free. No premium, no paywall, just pure Discord experience.",
+  "main": "dist/index.js",
+  "type": "module",
+  "private": true,
+  "version": "1.0.0",
+  "author": "AtsuLeVrai",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/AtsuLeVrai/pure#readme",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AtsuLeVrai/pure.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AtsuLeVrai/pure/issues"
+  },
+  "scripts": {
+    "bot:start": "cross-env NODE_ENV=production node dist/index.js",
+    "bot:dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
+    "bot:build": "tsdown",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@pure/database": "workspace:^",
+    "discord.js": "^14.21.0",
+    "dotenv": "^17.2.1",
+    "uuid": "^11.1.0",
+    "winston": "^3.17.0",
+    "zod": "^4.0.14"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "cross-env": "^10.0.0",
+    "discord-api-types": "^0.38.18",
+    "rimraf": "^6.0.1",
+    "tsdown": "^0.13.1",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  }
+}

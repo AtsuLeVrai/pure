@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@pure/database",
+  "description": "The database package for the Pure Discord bot, providing a Prisma client for database interactions.",
+  "type": "module",
+  "private": true,
+  "version": "1.0.0",
+  "author": "AtsuLeVrai",
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AtsuLeVrai/pure.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AtsuLeVrai/pure/issues"
+  },
+  "homepage": "https://github.com/AtsuLeVrai/pure#readme",
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.13.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.13.0"
+  }
+}

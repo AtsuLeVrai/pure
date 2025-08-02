@@ -1,3 +1,4 @@
+import { ModerationType } from "@pure/database";
 import {
   ApplicationCommandOptionType,
   blockQuote,
@@ -9,110 +10,121 @@ import {
   type User,
 } from "discord.js";
 import { v7 } from "uuid";
-import { ModerationType } from "@/generated/prisma/index.js";
 import { prisma } from "@/index.js";
 import { defineSlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
-// Define the structure for ban result
-interface BanResult {
+// Define the structure for mute result
+interface MuteResult {
   success: boolean;
   error?: string;
   member?: GuildMember;
   user?: User;
+  wasAlreadyMuted?: boolean;
 }
 
-// Utility function to validate ban permissions and target
-async function validateBanPermissions(
+// Utility function to validate mute permissions
+function validateMutePermissions(
   executor: GuildMember,
   target: GuildMember | null,
-): Promise<{ canBan: boolean; reason?: string }> {
+): { canMute: boolean; reason?: string } {
   // Check if target is in the guild
   if (!target) {
-    // User is not in guild, can still ban by ID
-    return { canBan: true };
+    return {
+      canMute: false,
+      reason: "User is not in this server",
+    };
   }
 
-  // Check if target is bannable
-  if (!target.bannable) {
+  // Check if target is voice mutable
+  if (!target.voice.mute && !target.manageable) {
     return {
-      canBan: false,
-      reason: "This member cannot be banned (higher role or bot owner)",
+      canMute: false,
+      reason: "This member cannot be voice muted (higher role or bot owner)",
     };
   }
 
   // Check role hierarchy
   if (target.roles.highest.position >= executor.roles.highest.position) {
     return {
-      canBan: false,
-      reason: "You cannot ban someone with equal or higher role",
+      canMute: false,
+      reason: "You cannot mute someone with equal or higher role",
     };
   }
 
   // Check if target is guild owner
   if (target.id === target.guild.ownerId) {
     return {
-      canBan: false,
-      reason: "Cannot ban the guild owner",
+      canMute: false,
+      reason: "Cannot mute the guild owner",
     };
   }
 
-  // Check if trying to ban self
+  // Check if trying to mute self
   if (target.id === executor.id) {
     return {
-      canBan: false,
-      reason: "You cannot ban yourself",
+      canMute: false,
+      reason: "You cannot mute yourself",
     };
   }
 
-  return { canBan: true };
+  return { canMute: true };
 }
 
-// Utility function to execute ban
-async function executeBan(
-  targetUser: User,
+// Utility function to execute voice mute
+async function executeMute(
+  targetMember: GuildMember,
   executor: GuildMember,
   reason: string,
-  deleteMessageDays: number,
-): Promise<BanResult> {
+): Promise<MuteResult> {
   try {
-    // Attempt to ban the user
-    await executor.guild.members.ban(targetUser, {
-      reason: `${reason} | Banned by: ${executor.user.tag} (${executor.id})`,
-      deleteMessageSeconds: deleteMessageDays * 24 * 3600, // Convert days to seconds
-    });
+    // Check if user is already voice muted
+    if (targetMember.voice.mute) {
+      return {
+        success: false,
+        wasAlreadyMuted: true,
+        error: "User is already voice muted",
+      };
+    }
 
-    // Add moderation log
-    await prisma.moderationLog.create({
-      data: {
-        log_id: v7(),
-        type: ModerationType.BAN,
-        target_user_id: targetUser.id,
-        moderator_id: executor.id,
-        guild_id: executor.guild.id,
-        reason,
-        metadata: { deleteMessageDays },
-      },
-    });
+    // Check if user is in a voice channel
+    if (!targetMember.voice.channel) {
+      // User not in voice, but we can still apply server mute
+      await targetMember.voice.setMute(
+        true,
+        `${reason} | Voice muted by: ${executor.user.tag} (${executor.id})`,
+      );
+    } else {
+      // User is in voice, apply mute immediately
+      await targetMember.voice.setMute(
+        true,
+        `${reason} | Voice muted by: ${executor.user.tag} (${executor.id})`,
+      );
+    }
 
-    Logger.info("Member banned successfully", {
-      targetId: targetUser.id,
-      targetTag: targetUser.tag,
+    Logger.info("Member voice muted successfully", {
+      targetId: targetMember.id,
+      targetTag: targetMember.user.tag,
       executorId: executor.id,
       executorTag: executor.user.tag,
       guildId: executor.guild.id,
+      wasInVoice: !!targetMember.voice.channel,
+      voiceChannelId: targetMember.voice.channelId,
       reason,
-      deleteMessageDays,
     });
 
-    return { success: true, user: targetUser };
+    return {
+      success: true,
+      member: targetMember,
+      user: targetMember.user,
+    };
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error occurred";
 
-    Logger.error("Failed to ban member", {
-      targetId: targetUser.id,
-      targetTag: targetUser.tag,
+    Logger.error("Failed to voice mute member", {
+      targetId: targetMember.id,
+      targetTag: targetMember.user.tag,
       executorId: executor.id,
       executorTag: executor.user.tag,
       guildId: executor.guild.id,
@@ -124,8 +136,8 @@ async function executeBan(
   }
 }
 
-// Utility function to send ban notification to user
-async function sendBanNotification(
+// Utility function to send mute notification to user
+async function sendMuteNotification(
   user: User,
   guild: { name: string; iconURL: () => string | null },
   reason: string,
@@ -133,9 +145,9 @@ async function sendBanNotification(
 ): Promise<void> {
   try {
     const dmEmbed = new EmbedBuilder()
-      .setTitle("🔨 You have been banned")
-      .setDescription(`You have been banned from **${guild.name}**`)
-      .setColor(Colors.Red)
+      .setTitle("🔇 You have been voice muted")
+      .setDescription(`You have been voice muted in **${guild.name}**`)
+      .setColor(Colors.Orange)
       .addFields(
         {
           name: "Reason",
@@ -147,18 +159,23 @@ async function sendBanNotification(
           value: executor.user.tag,
           inline: true,
         },
+        {
+          name: "Effect",
+          value: "You cannot speak in voice channels until unmuted",
+          inline: false,
+        },
       )
       .setThumbnail(guild.iconURL())
       .setTimestamp();
 
     await user.send({ embeds: [dmEmbed] });
 
-    Logger.debug("Ban notification sent to user", {
+    Logger.debug("Voice mute notification sent to user", {
       userId: user.id,
       guildId: executor.guild.id,
     });
   } catch (error) {
-    Logger.debug("Could not send ban notification to user", {
+    Logger.debug("Could not send voice mute notification to user", {
       userId: user.id,
       error: error instanceof Error ? error.message : String(error),
     });
@@ -167,34 +184,26 @@ async function sendBanNotification(
 
 export default defineSlashCommand({
   data: {
-    name: "ban",
-    description: "Ban a member from the server",
-    defaultMemberPermissions: "BanMembers",
+    name: "mute",
+    description: "Voice mute a member (they cannot speak in voice channels)",
+    defaultMemberPermissions: "MuteMembers",
     options: [
       {
         name: "user",
-        description: "The user to ban",
+        description: "The user to voice mute",
         type: ApplicationCommandOptionType.User,
         required: true,
       },
       {
         name: "reason",
-        description: "Reason for the ban",
+        description: "Reason for the voice mute",
         type: ApplicationCommandOptionType.String,
         required: false,
         maxLength: 512,
       },
       {
-        name: "delete_messages",
-        description: "Number of days of messages to delete (0-7)",
-        type: ApplicationCommandOptionType.Integer,
-        required: false,
-        minValue: 0,
-        maxValue: 7,
-      },
-      {
         name: "silent",
-        description: "Don't send a DM notification to the banned user",
+        description: "Don't send a DM notification to the muted user",
         type: ApplicationCommandOptionType.Boolean,
         required: false,
       },
@@ -217,8 +226,6 @@ export default defineSlashCommand({
     const targetUser = interaction.options.getUser("user", true);
     const reason =
       interaction.options.getString("reason") ?? "No reason provided";
-    const deleteMessageDays =
-      interaction.options.getInteger("delete_messages") ?? 0;
     const silent = interaction.options.getBoolean("silent") ?? false;
 
     // Get guild member objects
@@ -228,8 +235,8 @@ export default defineSlashCommand({
       .catch(() => null);
 
     // Validate permissions
-    const validation = await validateBanPermissions(executor, targetMember);
-    if (!validation.canBan) {
+    const validation = validateMutePermissions(executor, targetMember);
+    if (!validation.canMute) {
       await interaction.reply({
         content: blockQuote(bold(`❌ ${validation.reason}`)),
         flags: MessageFlags.Ephemeral,
@@ -237,12 +244,12 @@ export default defineSlashCommand({
       return;
     }
 
-    // Defer reply as ban operation might take time
+    // Defer reply as mute operation might take time
     await interaction.deferReply();
 
-    // Send notification to user before banning (if not silent and user is in guild)
+    // Send notification to user before muting (if not silent)
     if (!silent && targetMember) {
-      await sendBanNotification(
+      await sendMuteNotification(
         targetUser,
         {
           name: interaction.guild.name,
@@ -253,42 +260,62 @@ export default defineSlashCommand({
       );
     }
 
-    // Execute ban
-    const result = await executeBan(
-      targetUser,
-      executor,
-      reason,
-      deleteMessageDays,
-    );
+    // Execute mute (we know targetMember exists due to validation)
+    const result = await executeMute(targetMember!, executor, reason);
 
-    // Add moderation log if ban was successful
+    // Add moderation log if mute was successful
     if (result.success && result.user) {
       await prisma.moderationLog.create({
         data: {
           log_id: v7(),
-          type: ModerationType.BAN,
+          type: ModerationType.MUTE,
           target_user_id: result.user.id,
           moderator_id: executor.id,
           guild_id: executor.guild.id,
           reason,
-          metadata: { deleteMessageDays },
         },
       });
     }
 
+    // Handle special case where user was already muted
+    if (result.wasAlreadyMuted) {
+      const embed = new EmbedBuilder()
+        .setTitle("⚠️ User Already Muted")
+        .setDescription(`**${targetUser.tag}** is already voice muted`)
+        .setColor(Colors.Yellow)
+        .addFields(
+          {
+            name: "User",
+            value: `${targetUser} (${targetUser.tag})`,
+            inline: true,
+          },
+          {
+            name: "Status",
+            value: "Already voice muted",
+            inline: true,
+          },
+        )
+        .setTimestamp()
+        .setFooter({
+          text: `Checked by ${executor.user.tag}`,
+          iconURL: executor.user.displayAvatarURL(),
+        });
+
+      await interaction.editReply({ embeds: [embed] });
+      return;
+    }
+
     // Create and send response embed
     const embed = new EmbedBuilder().setTimestamp().setFooter({
-      text: `Banned by ${executor.user.tag}`,
+      text: `Voice muted by ${executor.user.tag}`,
       iconURL: executor.user.displayAvatarURL(),
     });
 
     if (result.success && result.user) {
       embed
-        .setTitle("🔨 Member Banned")
-        .setDescription(
-          `**${result.user.tag}** has been banned from the server`,
-        )
-        .setColor(Colors.Red)
+        .setTitle("🔇 Member Voice Muted")
+        .setDescription(`**${result.user.tag}** has been voice muted`)
+        .setColor(Colors.Orange)
         .addFields(
           {
             name: "User",
@@ -301,14 +328,16 @@ export default defineSlashCommand({
             inline: true,
           },
           {
+            name: "Voice Status",
+            value: targetMember?.voice.channel
+              ? `In ${targetMember.voice.channel}`
+              : "Not in voice",
+            inline: true,
+          },
+          {
             name: "Reason",
             value: reason,
             inline: false,
-          },
-          {
-            name: "Messages Deleted",
-            value: `${deleteMessageDays} day${deleteMessageDays !== 1 ? "s" : ""}`,
-            inline: true,
           },
           {
             name: "Moderator",
@@ -317,10 +346,17 @@ export default defineSlashCommand({
           },
         )
         .setThumbnail(result.user.displayAvatarURL());
+
+      // Add effect information
+      embed.addFields({
+        name: "Effect",
+        value: "User cannot speak in voice channels until unmuted",
+        inline: false,
+      });
     } else {
       embed
-        .setTitle("❌ Ban Failed")
-        .setDescription("Failed to ban the specified user")
+        .setTitle("❌ Voice Mute Failed")
+        .setDescription("Failed to voice mute the specified user")
         .setColor(Colors.Red)
         .addFields({
           name: "Error",
@@ -334,7 +370,7 @@ export default defineSlashCommand({
     });
 
     // Log the command usage
-    Logger.info("Ban command executed", {
+    Logger.info("Voice mute command executed", {
       success: result.success,
       targetId: targetUser.id,
       targetTag: targetUser.tag,
@@ -342,8 +378,9 @@ export default defineSlashCommand({
       executorTag: executor.user.tag,
       guildId: interaction.guild.id,
       reason,
-      deleteMessageDays,
       silent,
+      wasAlreadyMuted: result.wasAlreadyMuted,
+      wasInVoice: !!targetMember?.voice.channel,
     });
   },
 });

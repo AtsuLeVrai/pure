@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../dist"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enum for moderation types
+enum ModerationType {
+  BAN
+  KICK
+  TIMEOUT
+  WARN
+  UNBAN
+  PURGE
+  LOCK
+  UNLOCK
+  SLOWMODE
+  MUTE
+  UNMUTE
+  CLEAR_WARNINGS
+  MASSBAN
+  NICKNAME
+  TICKET
+}
+
+// Warnings based on warn.ts and warnings.ts
+model Warning {
+  id           String   @id @default(cuid())
+  warn_id      String   @unique // ID generated as warn_timestamp_random
+  user_id      String
+  guild_id     String
+  moderator_id String
+  reason       String   @db.Text
+  timestamp    DateTime @default(now())
+
+  @@index([user_id, guild_id])
+  @@index([moderator_id])
+  @@index([timestamp])
+  @@map("warnings")
+}
+
+// Moderation logs based on modlogs.ts
+model ModerationLog {
+  id             String         @id @default(cuid())
+  log_id         String         @unique // ID generated as modlog_timestamp_random
+  type           ModerationType // ban, kick, timeout, warn, unban, purge, lock, unlock, slowmode
+  target_user_id String
+  moderator_id   String
+  guild_id       String
+  reason         String         @db.Text
+  timestamp      DateTime       @default(now())
+  metadata       Json? // Action-specific data (duration, deleteMessageDays, etc.)
+
+  @@index([target_user_id, guild_id])
+  @@index([moderator_id])
+  @@index([type])
+  @@index([timestamp])
+  @@map("moderation_logs")
+}

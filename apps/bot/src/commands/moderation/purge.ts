@@ -1,3 +1,4 @@
+import { ModerationType } from "@pure/database";
 import {
   ApplicationCommandOptionType,
   blockQuote,
@@ -12,7 +13,6 @@ import {
   type User,
 } from "discord.js";
 import { v7 } from "uuid";
-import { ModerationType } from "@/generated/prisma/index.js";
 import { prisma } from "@/index.js";
 import { defineSlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";

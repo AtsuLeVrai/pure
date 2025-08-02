@@ -1,4 +1,9 @@
 import {
+  type ModerationLog,
+  ModerationType,
+  type Prisma,
+} from "@pure/database";
+import {
   ApplicationCommandOptionType,
   blockQuote,
   bold,
@@ -8,7 +13,6 @@ import {
   MessageFlags,
   type User,
 } from "discord.js";
-import type { ModerationLog, Prisma } from "@/generated/prisma/index.js";
 import { prisma } from "@/index.js";
 import { defineSlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
@@ -18,7 +22,7 @@ async function getModerationLogs(
   guildId: string,
   targetUserId?: string,
   moderatorId?: string,
-  type?: string,
+  type?: ModerationType,
   limit = 50,
 ): Promise<ModerationLog[]> {
   const where: Prisma.ModerationLogWhereInput = {
@@ -213,15 +217,15 @@ export default defineSlashCommand({
         type: ApplicationCommandOptionType.String,
         required: false,
         choices: [
-          { name: "Ban", value: "ban" },
-          { name: "Kick", value: "kick" },
-          { name: "Timeout", value: "timeout" },
-          { name: "Warn", value: "warn" },
-          { name: "Unban", value: "unban" },
-          { name: "Purge", value: "purge" },
-          { name: "Lock", value: "lock" },
-          { name: "Unlock", value: "unlock" },
-          { name: "Slowmode", value: "slowmode" },
+          { name: "Ban", value: ModerationType.BAN },
+          { name: "Kick", value: ModerationType.KICK },
+          { name: "Timeout", value: ModerationType.TIMEOUT },
+          { name: "Warn", value: ModerationType.WARN },
+          { name: "Unban", value: ModerationType.UNBAN },
+          { name: "Purge", value: ModerationType.PURGE },
+          { name: "Lock", value: ModerationType.LOCK },
+          { name: "Unlock", value: ModerationType.UNLOCK },
+          { name: "Slowmode", value: ModerationType.SLOWMODE },
         ],
       },
       {
@@ -250,7 +254,7 @@ export default defineSlashCommand({
     // Get options
     const targetUser = interaction.options.getUser("user");
     const moderator = interaction.options.getUser("moderator");
-    const type = interaction.options.getString("type");
+    const type = interaction.options.getString("type") as ModerationType | null;
     const limit = interaction.options.getInteger("limit") ?? 10;
 
     // Get guild member object

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@pure/web",
+  "description": "The web dashboard for the Pure Discord bot, providing a user-friendly interface for managing bot settings and features.",
+  "private": true,
+  "version": "1.0.0",
+  "author": "AtsuLeVrai",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/AtsuLeVrai/pure#readme",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AtsuLeVrai/pure.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AtsuLeVrai/pure/issues"
+  },
+  "scripts": {
+    "web:dev": "next dev --turbopack",
+    "web:build": "next build",
+    "web:start": "next start",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf .next"
+  },
+  "dependencies": {
+    "@pure/database": "workspace:^",
+    "@t3-oss/env-nextjs": "^0.13.8",
+    "framer-motion": "^12.23.12",
+    "lucide-react": "^0.536.0",
+    "next": "15.4.5",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "zod": "^4.0.14"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/node": "^24.1.0",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.9.2"
+  }
+}

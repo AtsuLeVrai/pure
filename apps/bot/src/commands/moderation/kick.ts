@@ -1,3 +1,4 @@
+import { ModerationType } from "@pure/database";
 import {
   ApplicationCommandOptionType,
   blockQuote,
@@ -9,120 +10,93 @@ import {
   type User,
 } from "discord.js";
 import { v7 } from "uuid";
-import { ModerationType } from "@/generated/prisma/index.js";
 import { prisma } from "@/index.js";
 import { defineSlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
-// Define the structure for mute result
-interface MuteResult {
+// Define the structure for kick result
+interface KickResult {
   success: boolean;
   error?: string;
   member?: GuildMember;
   user?: User;
-  wasAlreadyMuted?: boolean;
 }
 
-// Utility function to validate mute permissions
-function validateMutePermissions(
+// Utility function to validate kick permissions and target
+async function validateKickPermissions(
   executor: GuildMember,
   target: GuildMember | null,
-): { canMute: boolean; reason?: string } {
+): Promise<{ canKick: boolean; reason?: string }> {
   // Check if target is in the guild
   if (!target) {
     return {
-      canMute: false,
+      canKick: false,
       reason: "User is not in this server",
     };
   }
 
-  // Check if target is voice mutable
-  if (!target.voice.mute && !target.manageable) {
+  // Check if target is kickable
+  if (!target.kickable) {
     return {
-      canMute: false,
-      reason: "This member cannot be voice muted (higher role or bot owner)",
+      canKick: false,
+      reason: "This member cannot be kicked (higher role or bot owner)",
     };
   }
 
   // Check role hierarchy
   if (target.roles.highest.position >= executor.roles.highest.position) {
     return {
-      canMute: false,
-      reason: "You cannot mute someone with equal or higher role",
+      canKick: false,
+      reason: "You cannot kick someone with equal or higher role",
     };
   }
 
   // Check if target is guild owner
   if (target.id === target.guild.ownerId) {
     return {
-      canMute: false,
-      reason: "Cannot mute the guild owner",
+      canKick: false,
+      reason: "Cannot kick the guild owner",
     };
   }
 
-  // Check if trying to mute self
+  // Check if trying to kick self
   if (target.id === executor.id) {
     return {
-      canMute: false,
-      reason: "You cannot mute yourself",
+      canKick: false,
+      reason: "You cannot kick yourself",
     };
   }
 
-  return { canMute: true };
+  return { canKick: true };
 }
 
-// Utility function to execute voice mute
-async function executeMute(
+// Utility function to execute kick
+async function executeKick(
   targetMember: GuildMember,
   executor: GuildMember,
   reason: string,
-): Promise<MuteResult> {
+): Promise<KickResult> {
   try {
-    // Check if user is already voice muted
-    if (targetMember.voice.mute) {
-      return {
-        success: false,
-        wasAlreadyMuted: true,
-        error: "User is already voice muted",
-      };
-    }
+    // Attempt to kick the member
+    await targetMember.kick(
+      `${reason} | Kicked by: ${executor.user.tag} (${executor.id})`,
+    );
 
-    // Check if user is in a voice channel
-    if (!targetMember.voice.channel) {
-      // User not in voice, but we can still apply server mute
-      await targetMember.voice.setMute(
-        true,
-        `${reason} | Voice muted by: ${executor.user.tag} (${executor.id})`,
-      );
-    } else {
-      // User is in voice, apply mute immediately
-      await targetMember.voice.setMute(
-        true,
-        `${reason} | Voice muted by: ${executor.user.tag} (${executor.id})`,
-      );
-    }
-
-    Logger.info("Member voice muted successfully", {
+    Logger.info("Member kicked successfully", {
       targetId: targetMember.id,
       targetTag: targetMember.user.tag,
       executorId: executor.id,
       executorTag: executor.user.tag,
       guildId: executor.guild.id,
-      wasInVoice: !!targetMember.voice.channel,
-      voiceChannelId: targetMember.voice.channelId,
       reason,
     });
 
-    return {
-      success: true,
-      member: targetMember,
-      user: targetMember.user,
-    };
+    return { success: true, member: targetMember, user: targetMember.user };
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error occurred";
 
-    Logger.error("Failed to voice mute member", {
+    Logger.error("Failed to kick member", {
       targetId: targetMember.id,
       targetTag: targetMember.user.tag,
       executorId: executor.id,
@@ -136,8 +110,8 @@ async function executeMute(
   }
 }
 
-// Utility function to send mute notification to user
-async function sendMuteNotification(
+// Utility function to send kick notification to user
+async function sendKickNotification(
   user: User,
   guild: { name: string; iconURL: () => string | null },
   reason: string,
@@ -145,8 +119,8 @@ async function sendMuteNotification(
 ): Promise<void> {
   try {
     const dmEmbed = new EmbedBuilder()
-      .setTitle("🔇 You have been voice muted")
-      .setDescription(`You have been voice muted in **${guild.name}**`)
+      .setTitle("👢 You have been kicked")
+      .setDescription(`You have been kicked from **${guild.name}**`)
       .setColor(Colors.Orange)
       .addFields(
         {
@@ -160,8 +134,8 @@ async function sendMuteNotification(
           inline: true,
         },
         {
-          name: "Effect",
-          value: "You cannot speak in voice channels until unmuted",
+          name: "Note",
+          value: "You can rejoin using an invite link",
           inline: false,
         },
       )
@@ -170,12 +144,12 @@ async function sendMuteNotification(
 
     await user.send({ embeds: [dmEmbed] });
 
-    Logger.debug("Voice mute notification sent to user", {
+    Logger.debug("Kick notification sent to user", {
       userId: user.id,
       guildId: executor.guild.id,
     });
   } catch (error) {
-    Logger.debug("Could not send voice mute notification to user", {
+    Logger.debug("Could not send kick notification to user", {
       userId: user.id,
       error: error instanceof Error ? error.message : String(error),
     });
@@ -184,26 +158,26 @@ async function sendMuteNotification(
 
 export default defineSlashCommand({
   data: {
-    name: "mute",
-    description: "Voice mute a member (they cannot speak in voice channels)",
-    defaultMemberPermissions: "MuteMembers",
+    name: "kick",
+    description: "Kick a member from the server",
+    defaultMemberPermissions: "KickMembers",
     options: [
       {
         name: "user",
-        description: "The user to voice mute",
+        description: "The user to kick",
         type: ApplicationCommandOptionType.User,
         required: true,
       },
       {
         name: "reason",
-        description: "Reason for the voice mute",
+        description: "Reason for the kick",
         type: ApplicationCommandOptionType.String,
         required: false,
         maxLength: 512,
       },
       {
         name: "silent",
-        description: "Don't send a DM notification to the muted user",
+        description: "Don't send a DM notification to the kicked user",
         type: ApplicationCommandOptionType.Boolean,
         required: false,
       },
@@ -235,8 +209,8 @@ export default defineSlashCommand({
       .catch(() => null);
 
     // Validate permissions
-    const validation = validateMutePermissions(executor, targetMember);
-    if (!validation.canMute) {
+    const validation = await validateKickPermissions(executor, targetMember);
+    if (!validation.canKick) {
       await interaction.reply({
         content: blockQuote(bold(`❌ ${validation.reason}`)),
         flags: MessageFlags.Ephemeral,
@@ -244,12 +218,12 @@ export default defineSlashCommand({
       return;
     }
 
-    // Defer reply as mute operation might take time
+    // Defer reply as kick operation might take time
     await interaction.deferReply();
 
-    // Send notification to user before muting (if not silent)
+    // Send notification to user before kicking (if not silent)
     if (!silent && targetMember) {
-      await sendMuteNotification(
+      await sendKickNotification(
         targetUser,
         {
           name: interaction.guild.name,
@@ -260,15 +234,15 @@ export default defineSlashCommand({
       );
     }
 
-    // Execute mute (we know targetMember exists due to validation)
-    const result = await executeMute(targetMember!, executor, reason);
+    // Execute kick (we know targetMember exists due to validation)
+    const result = await executeKick(targetMember!, executor, reason);
 
-    // Add moderation log if mute was successful
+    // Add moderation log if kick was successful
     if (result.success && result.user) {
       await prisma.moderationLog.create({
         data: {
           log_id: v7(),
-          type: ModerationType.MUTE,
+          type: ModerationType.KICK,
           target_user_id: result.user.id,
           moderator_id: executor.id,
           guild_id: executor.guild.id,
@@ -277,44 +251,18 @@ export default defineSlashCommand({
       });
     }
 
-    // Handle special case where user was already muted
-    if (result.wasAlreadyMuted) {
-      const embed = new EmbedBuilder()
-        .setTitle("⚠️ User Already Muted")
-        .setDescription(`**${targetUser.tag}** is already voice muted`)
-        .setColor(Colors.Yellow)
-        .addFields(
-          {
-            name: "User",
-            value: `${targetUser} (${targetUser.tag})`,
-            inline: true,
-          },
-          {
-            name: "Status",
-            value: "Already voice muted",
-            inline: true,
-          },
-        )
-        .setTimestamp()
-        .setFooter({
-          text: `Checked by ${executor.user.tag}`,
-          iconURL: executor.user.displayAvatarURL(),
-        });
-
-      await interaction.editReply({ embeds: [embed] });
-      return;
-    }
-
     // Create and send response embed
     const embed = new EmbedBuilder().setTimestamp().setFooter({
-      text: `Voice muted by ${executor.user.tag}`,
+      text: `Kicked by ${executor.user.tag}`,
       iconURL: executor.user.displayAvatarURL(),
     });
 
     if (result.success && result.user) {
       embed
-        .setTitle("🔇 Member Voice Muted")
-        .setDescription(`**${result.user.tag}** has been voice muted`)
+        .setTitle("👢 Member Kicked")
+        .setDescription(
+          `**${result.user.tag}** has been kicked from the server`,
+        )
         .setColor(Colors.Orange)
         .addFields(
           {
@@ -328,13 +276,6 @@ export default defineSlashCommand({
             inline: true,
           },
           {
-            name: "Voice Status",
-            value: targetMember?.voice.channel
-              ? `In ${targetMember.voice.channel}`
-              : "Not in voice",
-            inline: true,
-          },
-          {
             name: "Reason",
             value: reason,
             inline: false,
@@ -344,19 +285,17 @@ export default defineSlashCommand({
             value: `${executor.user} (${executor.user.tag})`,
             inline: true,
           },
+          {
+            name: "Note",
+            value: "User can rejoin with an invite",
+            inline: true,
+          },
         )
         .setThumbnail(result.user.displayAvatarURL());
-
-      // Add effect information
-      embed.addFields({
-        name: "Effect",
-        value: "User cannot speak in voice channels until unmuted",
-        inline: false,
-      });
     } else {
       embed
-        .setTitle("❌ Voice Mute Failed")
-        .setDescription("Failed to voice mute the specified user")
+        .setTitle("❌ Kick Failed")
+        .setDescription("Failed to kick the specified user")
         .setColor(Colors.Red)
         .addFields({
           name: "Error",
@@ -370,7 +309,7 @@ export default defineSlashCommand({
     });
 
     // Log the command usage
-    Logger.info("Voice mute command executed", {
+    Logger.info("Kick command executed", {
       success: result.success,
       targetId: targetUser.id,
       targetTag: targetUser.tag,
@@ -379,8 +318,6 @@ export default defineSlashCommand({
       guildId: interaction.guild.id,
       reason,
       silent,
-      wasAlreadyMuted: result.wasAlreadyMuted,
-      wasInVoice: !!targetMember?.voice.channel,
     });
   },
 });
