@@ -8,6 +8,8 @@ import {
   MessageFlags,
   type User,
 } from "discord.js";
+import { v7 } from "uuid";
+import { prisma } from "@/index.js";
 import { defineSlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
@@ -20,36 +22,36 @@ interface WarnResult {
   warnId?: string;
 }
 
-// Mock warning storage - in production this would use Prisma/database
-interface Warning {
-  id: string;
-  userId: string;
-  guildId: string;
-  moderatorId: string;
-  reason: string;
-  timestamp: Date;
-}
-
-// In-memory store for demo purposes - replace with database in production
-const warningsStore = new Map<string, Warning[]>();
-
-// Utility function to generate warning ID
-function generateWarnId(): string {
-  return `warn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-}
-
-// Utility function to get user warnings
-function getUserWarnings(userId: string, guildId: string): Warning[] {
-  const key = `${guildId}:${userId}`;
-  return warningsStore.get(key) || [];
-}
-
 // Utility function to add warning
-function addWarning(warning: Warning): void {
-  const key = `${warning.guildId}:${warning.userId}`;
-  const existing = warningsStore.get(key) || [];
-  existing.push(warning);
-  warningsStore.set(key, existing);
+async function addWarning(
+  userId: string,
+  guildId: string,
+  moderatorId: string,
+  reason: string,
+) {
+  const warning = await prisma.warning.create({
+    data: {
+      warn_id: v7(),
+      user_id: userId,
+      guild_id: guildId,
+      moderator_id: moderatorId,
+      reason,
+    },
+  });
+
+  // Ajouter le log de modération
+  await prisma.moderationLog.create({
+    data: {
+      log_id: v7(),
+      type: "warn",
+      target_user_id: userId,
+      moderator_id: moderatorId,
+      guild_id: guildId,
+      reason,
+    },
+  });
+
+  return warning;
 }
 
 // Utility function to validate warn permissions and target
@@ -107,23 +109,16 @@ async function executeWarn(
   reason: string,
 ): Promise<WarnResult> {
   try {
-    const warnId = generateWarnId();
-
-    // Create warning record
-    const warning: Warning = {
-      id: warnId,
-      userId: targetMember.id,
-      guildId: targetMember.guild.id,
-      moderatorId: executor.id,
+    // Store warning in database
+    const warning = await addWarning(
+      targetMember.id,
+      targetMember.guild.id,
+      executor.id,
       reason,
-      timestamp: new Date(),
-    };
-
-    // Store warning
-    addWarning(warning);
+    );
 
     Logger.info("Member warned successfully", {
-      warnId,
+      warnId: warning.warn_id,
       targetId: targetMember.id,
       targetTag: targetMember.user.tag,
       executorId: executor.id,
@@ -136,7 +131,7 @@ async function executeWarn(
       success: true,
       member: targetMember,
       user: targetMember.user,
-      warnId,
+      warnId: warning.warn_id,
     };
   } catch (error) {
     const errorMessage =
@@ -300,7 +295,16 @@ export default defineSlashCommand({
     }
 
     // Get user's warning count
-    const userWarnings = getUserWarnings(targetUser.id, interaction.guild.id);
+    const userWarnings = await prisma.warning.findMany({
+      where: {
+        user_id: targetUser.id,
+        guild_id: interaction.guild.id,
+      },
+      orderBy: {
+        timestamp: "desc",
+      },
+    });
+
     const warnCount = userWarnings.length;
 
     // Send notification to user (if not silent)

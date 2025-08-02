@@ -8,64 +8,97 @@ import {
   MessageFlags,
   type User,
 } from "discord.js";
+import { v7 } from "uuid";
+import type { Warning } from "@/generated/prisma/index.js";
+import { prisma } from "@/index.js";
 import { defineSlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
-// Warning interface (should match warn.ts)
-interface Warning {
-  id: string;
-  userId: string;
-  guildId: string;
-  moderatorId: string;
-  reason: string;
-  timestamp: Date;
-}
-
-// In-memory store for demo purposes - replace with database in production
-// This should be shared with warn.ts and warnings.ts in a real implementation
-const warningsStore = new Map<string, Warning[]>();
-
-// Utility function to get user warnings
-function getUserWarnings(userId: string, guildId: string): Warning[] {
-  const key = `${guildId}:${userId}`;
-  return warningsStore.get(key) || [];
-}
-
 // Utility function to clear all warnings for a user
-function clearAllWarnings(userId: string, guildId: string): number {
-  const key = `${guildId}:${userId}`;
-  const warnings = warningsStore.get(key) || [];
+async function clearAllWarnings(
+  userId: string,
+  guildId: string,
+  moderatorId: string,
+  reason: string,
+): Promise<number> {
+  const warnings = await prisma.warning.findMany({
+    where: {
+      user_id: userId,
+      guild_id: guildId,
+    },
+    orderBy: {
+      timestamp: "desc",
+    },
+  });
   const count = warnings.length;
 
-  warningsStore.delete(key);
+  if (count > 0) {
+    // Supprimer tous les warnings
+    await prisma.warning.deleteMany({
+      where: {
+        user_id: userId,
+        guild_id: guildId,
+      },
+    });
+
+    // Ajouter le log de modération
+    await prisma.moderationLog.create({
+      data: {
+        log_id: v7(),
+        type: "clear_warnings",
+        target_user_id: userId,
+        moderator_id: moderatorId,
+        guild_id: guildId,
+        reason,
+        metadata: { cleared_count: count },
+      },
+    });
+  }
 
   return count;
 }
 
 // Utility function to clear specific warning by ID
-function clearWarningById(
+async function clearWarningById(
   userId: string,
   guildId: string,
   warningId: string,
-): { success: boolean; warning?: Warning } {
-  const key = `${guildId}:${userId}`;
-  const warnings = warningsStore.get(key) || [];
+  moderatorId: string,
+  reason: string,
+): Promise<{ success: boolean; warning?: Warning }> {
+  const warning = await prisma.warning.findFirst({
+    where: {
+      warn_id: warningId,
+      user_id: userId,
+      guild_id: guildId,
+    },
+  });
 
-  const warningIndex = warnings.findIndex((w) => w.id === warningId);
-
-  if (warningIndex === -1) {
+  if (!warning) {
     return { success: false };
   }
 
-  const removedWarning = warnings.splice(warningIndex, 1)[0];
+  // Supprimer le warning
+  await prisma.warning.delete({
+    where: {
+      id: warning.id,
+    },
+  });
 
-  if (warnings.length === 0) {
-    warningsStore.delete(key);
-  } else {
-    warningsStore.set(key, warnings);
-  }
+  // Ajouter le log de modération
+  await prisma.moderationLog.create({
+    data: {
+      log_id: v7(),
+      type: "clear_warnings",
+      target_user_id: userId,
+      moderator_id: moderatorId,
+      guild_id: guildId,
+      reason,
+      metadata: { warning_id: warningId, original_reason: warning.reason },
+    },
+  });
 
-  return { success: true, warning: removedWarning };
+  return { success: true, warning };
 }
 
 // Utility function to send clear warnings notification to user
@@ -107,7 +140,7 @@ async function sendClearWarningsNotification(
     if (specificWarning) {
       dmEmbed.addFields({
         name: "Cleared Warning",
-        value: `**Reason:** ${specificWarning.reason}\n**ID:** \`${specificWarning.id}\``,
+        value: `**Reason:** ${specificWarning.reason}\n**ID:** \`${specificWarning.warn_id}\``,
         inline: false,
       });
     }
@@ -214,10 +247,12 @@ export default defineSlashCommand({
 
       if (warningId) {
         // Clear specific warning
-        const result = clearWarningById(
+        const result = await clearWarningById(
           targetUser.id,
           interaction.guild.id,
           warningId,
+          executor.id,
+          reason,
         );
 
         if (!result.success) {
@@ -254,10 +289,15 @@ export default defineSlashCommand({
         isSpecificClear = true;
       } else {
         // Clear all warnings
-        const currentWarnings = getUserWarnings(
-          targetUser.id,
-          interaction.guild.id,
-        );
+        const currentWarnings = await prisma.warning.findMany({
+          where: {
+            user_id: targetUser.id,
+            guild_id: interaction.guild.id,
+          },
+          orderBy: {
+            timestamp: "desc",
+          },
+        });
 
         if (currentWarnings.length === 0) {
           const embed = new EmbedBuilder()
@@ -279,7 +319,12 @@ export default defineSlashCommand({
           return;
         }
 
-        clearedCount = clearAllWarnings(targetUser.id, interaction.guild.id);
+        clearedCount = await clearAllWarnings(
+          targetUser.id,
+          interaction.guild.id,
+          executor.id,
+          reason,
+        );
       }
 
       // Send notification to user (if not silent)
@@ -342,7 +387,7 @@ export default defineSlashCommand({
       if (isSpecificClear && clearedWarning) {
         embed.addFields({
           name: "Cleared Warning Details",
-          value: `**ID:** \`${clearedWarning.id}\`\n**Reason:** ${clearedWarning.reason}\n**Date:** ${clearedWarning.timestamp.toLocaleDateString()}`,
+          value: `**ID:** \`${clearedWarning.warn_id}\`\n**Reason:** ${clearedWarning.reason}\n**Date:** ${clearedWarning.timestamp.toLocaleDateString()}`,
           inline: false,
         });
       }

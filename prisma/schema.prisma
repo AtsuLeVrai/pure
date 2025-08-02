@@ -13,3 +13,38 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// Warnings basé sur warn.ts et warnings.ts
+model Warning {
+  id            String   @id @default(cuid())
+  warn_id       String   @unique // ID généré comme warn_timestamp_random
+  user_id       String
+  guild_id      String
+  moderator_id  String
+  reason        String   @db.Text
+  timestamp     DateTime @default(now())
+  
+  @@index([user_id, guild_id])
+  @@index([moderator_id])
+  @@index([timestamp])
+  @@map("warnings")
+}
+
+// Logs de modération basé sur modlogs.ts
+model ModerationLog {
+  id                String   @id @default(cuid())
+  log_id            String   @unique // ID généré comme modlog_timestamp_random
+  type              String   // ban, kick, timeout, warn, unban, purge, lock, unlock, slowmode
+  target_user_id    String
+  moderator_id      String
+  guild_id          String
+  reason            String   @db.Text
+  timestamp         DateTime @default(now())
+  metadata          Json?    // Données spécifiques à l'action (duration, deleteMessageDays, etc.)
+  
+  @@index([target_user_id, guild_id])
+  @@index([moderator_id])
+  @@index([type])
+  @@index([timestamp])
+  @@map("moderation_logs")
+}

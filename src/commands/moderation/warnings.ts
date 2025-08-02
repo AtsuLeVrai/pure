@@ -8,28 +8,10 @@ import {
   MessageFlags,
   type User,
 } from "discord.js";
+import type { Warning } from "@/generated/prisma/index.js";
+import { prisma } from "@/index.js";
 import { defineSlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
-
-// Warning interface (should match warn.ts)
-interface Warning {
-  id: string;
-  userId: string;
-  guildId: string;
-  moderatorId: string;
-  reason: string;
-  timestamp: Date;
-}
-
-// In-memory store for demo purposes - replace with database in production
-// This should be shared with warn.ts in a real implementation
-const warningsStore = new Map<string, Warning[]>();
-
-// Utility function to get user warnings
-function getUserWarnings(userId: string, guildId: string): Warning[] {
-  const key = `${guildId}:${userId}`;
-  return warningsStore.get(key) || [];
-}
 
 // Utility function to format warning for display
 function formatWarning(warning: Warning, index: number): string {
@@ -43,7 +25,7 @@ function formatWarning(warning: Warning, index: number): string {
 
   return (
     `**${index + 1}.** ${warning.reason}\n` +
-    `└ ID: \`${warning.id}\` | ${date} | <@${warning.moderatorId}>`
+    `└ ID: \`${warning.warn_id}\` | ${date} | <@${warning.moderator_id}>`
   );
 }
 
@@ -82,7 +64,7 @@ async function createWarningsEmbed(
 
     // Split warnings into chunks if there are too many
     const maxWarningsPerField = 5;
-    const warningChunks: Warning[][] = [];
+    const warningChunks: any[][] = [];
 
     for (let i = 0; i < warnings.length; i += maxWarningsPerField) {
       warningChunks.push(warnings.slice(i, i + maxWarningsPerField));
@@ -190,7 +172,15 @@ export default defineSlashCommand({
 
     try {
       // Get user warnings
-      const warnings = getUserWarnings(targetUser.id, interaction.guild.id);
+      const warnings = await prisma.warning.findMany({
+        where: {
+          user_id: targetUser.id,
+          guild_id: interaction.guild.id,
+        },
+        orderBy: {
+          timestamp: "desc",
+        },
+      });
 
       // Sort warnings by timestamp (newest first)
       warnings.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());

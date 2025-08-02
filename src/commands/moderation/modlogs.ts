@@ -8,79 +8,42 @@ import {
   MessageFlags,
   type User,
 } from "discord.js";
+import type { ModerationLog, Prisma } from "@/generated/prisma/index.js";
+import { prisma } from "@/index.js";
 import { defineSlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
-// Mock moderation log storage - in production this would use Prisma/database
-interface ModerationLog {
-  id: string;
-  type:
-    | "ban"
-    | "kick"
-    | "timeout"
-    | "warn"
-    | "unban"
-    | "purge"
-    | "lock"
-    | "unlock"
-    | "slowmode";
-  targetUserId: string;
-  moderatorId: string;
-  guildId: string;
-  reason: string;
-  timestamp: Date;
-  metadata?: Record<string, any>;
-}
-
-// In-memory store for demo purposes - replace with database in production
-const modLogsStore = new Map<string, ModerationLog[]>();
-
-// Mock function to add moderation log (this would be called from other commands)
-function addModerationLog(log: Omit<ModerationLog, "id" | "timestamp">): void {
-  const fullLog: ModerationLog = {
-    ...log,
-    id: `modlog_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    timestamp: new Date(),
-  };
-
-  const key = log.guildId;
-  const existing = modLogsStore.get(key) || [];
-  existing.push(fullLog);
-  modLogsStore.set(key, existing);
-}
-
 // Utility function to get moderation logs
-function getModerationLogs(
+async function getModerationLogs(
   guildId: string,
   targetUserId?: string,
   moderatorId?: string,
   type?: string,
   limit = 50,
-): ModerationLog[] {
-  const allLogs = modLogsStore.get(guildId) || [];
-
-  let filteredLogs = allLogs;
+): Promise<ModerationLog[]> {
+  const where: Prisma.ModerationLogWhereInput = {
+    guild_id: guildId,
+  };
 
   if (targetUserId) {
-    filteredLogs = filteredLogs.filter(
-      (log) => log.targetUserId === targetUserId,
-    );
+    where.target_user_id = targetUserId;
   }
 
   if (moderatorId) {
-    filteredLogs = filteredLogs.filter(
-      (log) => log.moderatorId === moderatorId,
-    );
+    where.moderator_id = moderatorId;
   }
 
   if (type) {
-    filteredLogs = filteredLogs.filter((log) => log.type === type);
+    where.type = type;
   }
 
-  // Sort by timestamp (newest first) and limit results
-  return filteredLogs
-    .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
-    .slice(0, limit);
+  return prisma.moderationLog.findMany({
+    where: where,
+    orderBy: {
+      timestamp: "desc",
+    },
+    take: limit,
+  });
 }
 
 // Utility function to format log entry
@@ -93,7 +56,7 @@ function formatLogEntry(log: ModerationLog, index: number): string {
     minute: "2-digit",
   });
 
-  const typeEmojis = {
+  const typeEmojis: Record<string, string> = {
     ban: "🔨",
     kick: "👢",
     timeout: "⏰",
@@ -103,14 +66,15 @@ function formatLogEntry(log: ModerationLog, index: number): string {
     lock: "🔒",
     unlock: "🔓",
     slowmode: "⏱️",
+    clear_warnings: "🗑️",
   };
 
   const emoji = typeEmojis[log.type] || "📝";
 
   return (
-    `**${index + 1}.** ${emoji} **${log.type.toUpperCase()}** - <@${log.targetUserId}>\n` +
+    `**${index + 1}.** ${emoji} **${log.type.toUpperCase()}** - <@${log.target_user_id}>\n` +
     `└ **Reason:** ${log.reason}\n` +
-    `└ **Mod:** <@${log.moderatorId}> | **Date:** ${date} | **ID:** \`${log.id}\``
+    `└ **Mod:** <@${log.moderator_id}> | **Date:** ${date} | **ID:** \`${log.log_id}\``
   );
 }
 
@@ -296,45 +260,8 @@ export default defineSlashCommand({
     await interaction.deferReply();
 
     try {
-      // Generate some sample logs for demonstration
-      // In production, this would come from your database
-      if (
-        modLogsStore.get(interaction.guild.id)?.length === 0 ||
-        !modLogsStore.has(interaction.guild.id)
-      ) {
-        // Add some sample logs
-        const sampleLogs = [
-          {
-            type: "ban" as const,
-            targetUserId: "123456789012345678",
-            moderatorId: executor.id,
-            guildId: interaction.guild.id,
-            reason: "Spam and inappropriate behavior",
-            metadata: { deleteMessageDays: 1 },
-          },
-          {
-            type: "warn" as const,
-            targetUserId: "987654321098765432",
-            moderatorId: executor.id,
-            guildId: interaction.guild.id,
-            reason: "Inappropriate language in #general",
-            metadata: { warnCount: 2 },
-          },
-          {
-            type: "timeout" as const,
-            targetUserId: "456789012345678901",
-            moderatorId: executor.id,
-            guildId: interaction.guild.id,
-            reason: "Disruptive behavior during events",
-            metadata: { duration: "1 hour" },
-          },
-        ];
-
-        sampleLogs.forEach((log) => addModerationLog(log));
-      }
-
       // Get moderation logs
-      const logs = getModerationLogs(
+      const logs = await getModerationLogs(
         interaction.guild.id,
         targetUser?.id,
         moderator?.id,

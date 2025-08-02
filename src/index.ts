@@ -1,7 +1,8 @@
 import { config as dotenv } from "@dotenvx/dotenvx";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import { z } from "zod";
-import { Logger, registerEvents } from "@/utils/index.js";
+import { PrismaClient } from "@/generated/prisma/index.js";
+import { isDev, Logger, registerEvents } from "@/utils/index.js";
 
 // Define the schema for environment variables using zod
 const dotenvConfig = z.object({
@@ -71,11 +72,43 @@ const client = new Client<true>({
   },
 });
 
+// Initialize Prisma Client
+export const prisma = new PrismaClient({
+  log: isDev ? ["query", "error", "warn"] : ["error"],
+});
+
+// Handle Prisma Client errors
+prisma.$on("error", (error) => {
+  Logger.error("Prisma Client Error", {
+    error,
+  });
+  process.exit(1);
+});
+
+// Handle Prisma Client query events
+prisma.$on("query", (e) => {
+  Logger.debug("Prisma Query", {
+    query: e.query,
+    params: e.params,
+    duration: `${e.duration}ms`,
+    target: e.target,
+  });
+});
+
+// Handle Prisma Client warn events
+prisma.$on("warn", (e) => {
+  Logger.warn("Prisma Warning", {
+    message: e.message,
+    target: e.target,
+  });
+});
+
 // Graceful shutdown
 async function gracefulShutdown(signal: string) {
   Logger.info(`Received ${signal}, shutting down gracefully...`);
 
   try {
+    await prisma.$disconnect();
     await client.destroy();
     Logger.info("Discord client destroyed successfully");
   } catch (error) {
@@ -87,6 +120,7 @@ async function gracefulShutdown(signal: string) {
 
 process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("beforeExit", () => gracefulShutdown("beforeExit"));
 
 // Global error handling
 process.on("unhandledRejection", (reason, promise) => {
