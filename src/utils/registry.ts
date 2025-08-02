@@ -1,6 +1,5 @@
 import { type Client, Routes } from "discord.js";
 import banCommand from "@/commands/moderation/ban.js";
-import clearwarnsCommand from "@/commands/moderation/clearwarns.js";
 import kickCommand from "@/commands/moderation/kick.js";
 import lockCommand from "@/commands/moderation/lock.js";
 import massbanCommand from "@/commands/moderation/massban.js";
@@ -15,7 +14,6 @@ import unlockCommand from "@/commands/moderation/unlock.js";
 import unmuteCommand from "@/commands/moderation/unmute.js";
 import userinfoCommand from "@/commands/moderation/userinfo.js";
 import warnCommand from "@/commands/moderation/warn.js";
-import warningsCommand from "@/commands/moderation/warnings.js";
 import helpCommand from "@/commands/utility/help.js";
 import pingCommand from "@/commands/utility/ping.js";
 import interactionCreateEvent from "@/events/client/interactionCreate.js";
@@ -31,7 +29,6 @@ export const isProd = process.env.NODE_ENV === "production";
 // Command registry for the bot
 export const commandRegistry: readonly SlashCommand[] = [
   banCommand,
-  clearwarnsCommand,
   kickCommand,
   lockCommand,
   massbanCommand,
@@ -46,7 +43,6 @@ export const commandRegistry: readonly SlashCommand[] = [
   unmuteCommand,
   userinfoCommand,
   warnCommand,
-  warningsCommand,
   helpCommand,
   pingCommand,
 ] as const;

@@ -74,32 +74,33 @@ const client = new Client<true>({
 
 // Initialize Prisma Client
 export const prisma = new PrismaClient({
-  log: isDev ? ["query", "error", "warn"] : ["error"],
+  log: isDev ? ["query", "error", "warn"] : ["error", "warn"],
 });
 
 // Handle Prisma Client errors
-prisma.$on("error", (error) => {
+prisma.$on("error", (event) => {
   Logger.error("Prisma Client Error", {
-    error,
+    message: event.message,
+    target: event.target,
   });
   process.exit(1);
 });
 
 // Handle Prisma Client query events
-prisma.$on("query", (e) => {
+prisma.$on("query", (event) => {
   Logger.debug("Prisma Query", {
-    query: e.query,
-    params: e.params,
-    duration: `${e.duration}ms`,
-    target: e.target,
+    query: event.query,
+    params: event.params,
+    duration: `${event.duration}ms`,
+    target: event.target,
   });
 });
 
 // Handle Prisma Client warn events
-prisma.$on("warn", (e) => {
+prisma.$on("warn", (event) => {
   Logger.warn("Prisma Warning", {
-    message: e.message,
-    target: e.target,
+    message: event.message,
+    target: event.target,
   });
 });
 

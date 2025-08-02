@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(for file in *.ts)",
+      "Bash(do if ! grep -q \"prisma.moderationLog.create\" \"$file\")",
+      "Bash(then echo \"Missing logs: $file\")",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(grep:*)",
+      "Bash(rm:*)"
+    ],
+    "deny": []
+  }
+}

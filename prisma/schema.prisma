@@ -14,37 +14,298 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Warnings basé sur warn.ts et warnings.ts
+// Warnings based on warn.ts and warnings.ts
 model Warning {
-  id            String   @id @default(cuid())
-  warn_id       String   @unique // ID généré comme warn_timestamp_random
-  user_id       String
-  guild_id      String
-  moderator_id  String
-  reason        String   @db.Text
-  timestamp     DateTime @default(now())
-  
+  id           String   @id @default(cuid())
+  warn_id      String   @unique // ID generated as warn_timestamp_random
+  user_id      String
+  guild_id     String
+  moderator_id String
+  reason       String   @db.Text
+  timestamp    DateTime @default(now())
+
   @@index([user_id, guild_id])
   @@index([moderator_id])
   @@index([timestamp])
   @@map("warnings")
 }
 
-// Logs de modération basé sur modlogs.ts
+// Moderation logs based on modlogs.ts
 model ModerationLog {
-  id                String   @id @default(cuid())
-  log_id            String   @unique // ID généré comme modlog_timestamp_random
-  type              String   // ban, kick, timeout, warn, unban, purge, lock, unlock, slowmode
-  target_user_id    String
-  moderator_id      String
-  guild_id          String
-  reason            String   @db.Text
-  timestamp         DateTime @default(now())
-  metadata          Json?    // Données spécifiques à l'action (duration, deleteMessageDays, etc.)
-  
+  id             String         @id @default(cuid())
+  log_id         String         @unique // ID generated as modlog_timestamp_random
+  type           ModerationType // ban, kick, timeout, warn, unban, purge, lock, unlock, slowmode
+  target_user_id String
+  moderator_id   String
+  guild_id       String
+  reason         String         @db.Text
+  timestamp      DateTime       @default(now())
+  metadata       Json? // Action-specific data (duration, deleteMessageDays, etc.)
+
   @@index([target_user_id, guild_id])
   @@index([moderator_id])
   @@index([type])
   @@index([timestamp])
   @@map("moderation_logs")
+}
+
+// Enum for moderation types
+enum ModerationType {
+  BAN
+  KICK
+  TIMEOUT
+  WARN
+  UNBAN
+  PURGE
+  LOCK
+  UNLOCK
+  SLOWMODE
+  MUTE
+  UNMUTE
+  CLEAR_WARNINGS
+  MASSBAN
+  NICKNAME
+  TICKET
+}
+
+// Ticket system enums
+enum TicketStatus {
+  OPEN
+  PENDING
+  RESOLVED
+  CLOSED
+  ARCHIVED
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+  CRITICAL
+}
+
+enum TicketType {
+  SUPPORT
+  REPORT
+  SUGGESTION
+  APPEAL
+  OTHER
+}
+
+// Enterprise ticket system
+model TicketCategory {
+  id               String   @id @default(cuid())
+  name             String
+  description      String?  @db.Text
+  guild_id         String
+  emoji            String?
+  color            String?  @default("#5865F2")
+  
+  // Permissions and roles
+  support_roles    String[] // Role IDs that can handle tickets in this category
+  view_roles       String[] // Role IDs that can view tickets in this category
+  ping_roles       String[] // Role IDs to ping when ticket is created
+  
+  // Channel settings
+  category_id      String?  // Discord category ID where tickets are created
+  log_channel_id   String?  // Channel for ticket logs
+  
+  // Auto-assignment
+  auto_assign      Boolean  @default(false)
+  assignment_mode  String   @default("round_robin") // round_robin, random, least_active
+  
+  // Templates and automation
+  welcome_message  String?  @db.Text
+  questions        Json?    // Array of questions to ask when opening ticket
+  
+  // Limits and controls
+  max_tickets      Int      @default(5) // Max open tickets per user
+  cooldown_minutes Int      @default(0) // Cooldown between ticket creation
+  
+  // Status
+  is_active        Boolean  @default(true)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  
+  // Relations
+  tickets          Ticket[]
+  
+  @@index([guild_id])
+  @@index([is_active])
+  @@map("ticket_categories")
+}
+
+model Ticket {
+  id                String        @id @default(cuid())
+  ticket_number     Int           // Auto-increment per guild
+  guild_id          String
+  channel_id        String        @unique // Discord channel ID
+  category_id       String        // Reference to TicketCategory
+  
+  // User info
+  creator_id        String        // User who created the ticket
+  creator_tag       String        // Username#discriminator at time of creation
+  
+  // Ticket details
+  title             String
+  description       String?       @db.Text
+  status            TicketStatus  @default(OPEN)
+  priority          TicketPriority @default(NORMAL)
+  type              TicketType    @default(SUPPORT)
+  
+  // Staff assignment
+  assigned_to       String?       // Staff member ID
+  assigned_at       DateTime?
+  assigned_by       String?       // Who assigned the ticket
+  
+  // Timing
+  created_at        DateTime      @default(now())
+  updated_at        DateTime      @updatedAt
+  first_response_at DateTime?     // When staff first responded
+  resolved_at       DateTime?     // When ticket was resolved
+  closed_at         DateTime?     // When ticket was closed
+  
+  // Metrics
+  response_time_ms  BigInt?       // Time to first response
+  resolution_time_ms BigInt?      // Time to resolution
+  
+  // Feedback
+  rating            Int?          // 1-5 star rating
+  feedback          String?       @db.Text
+  
+  // Security and tracking
+  last_activity_at  DateTime      @default(now())
+  activity_count    Int           @default(0) // Number of messages
+  participants      String[]      // User IDs who participated
+  
+  // Metadata
+  tags              String[]      // Custom tags for organization
+  metadata          Json?         // Additional custom data
+  
+  // Relations
+  category          TicketCategory @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  messages          TicketMessage[]
+  events            TicketEvent[]
+  
+  @@index([guild_id, status])
+  @@index([creator_id])
+  @@index([assigned_to])
+  @@index([category_id])
+  @@index([ticket_number, guild_id])
+  @@index([created_at])
+  @@unique([guild_id, ticket_number])
+  @@map("tickets")
+}
+
+model TicketMessage {
+  id            String   @id @default(cuid())
+  ticket_id     String
+  message_id    String   @unique // Discord message ID
+  channel_id    String   // Discord channel ID
+  
+  // Message content
+  author_id     String
+  author_tag    String
+  content       String   @db.Text
+  attachments   Json?    // Array of attachment URLs/info
+  embeds        Json?    // Array of embed data
+  
+  // Metadata
+  is_staff      Boolean  @default(false)
+  is_system     Boolean  @default(false)
+  created_at    DateTime @default(now())
+  edited_at     DateTime?
+  deleted_at    DateTime?
+  
+  // Relations
+  ticket        Ticket   @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+  
+  @@index([ticket_id])
+  @@index([author_id])
+  @@index([created_at])
+  @@map("ticket_messages")
+}
+
+model TicketEvent {
+  id          String   @id @default(cuid())
+  ticket_id   String
+  
+  // Event details
+  event_type  String   // created, assigned, status_changed, priority_changed, etc.
+  actor_id    String   // User who performed the action
+  actor_tag   String   // Username at time of action
+  
+  // Event data
+  old_value   String?  // Previous value (for changes)
+  new_value   String?  // New value (for changes)
+  reason      String?  // Reason for the action
+  metadata    Json?    // Additional event data
+  
+  created_at  DateTime @default(now())
+  
+  // Relations
+  ticket      Ticket   @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+  
+  @@index([ticket_id])
+  @@index([event_type])
+  @@index([created_at])
+  @@map("ticket_events")
+}
+
+// Ticket transcripts for permanent storage
+model TicketTranscript {
+  id            String   @id @default(cuid())
+  ticket_id     String   @unique
+  guild_id      String
+  
+  // Transcript data
+  html_content  String   @db.Text // Full HTML transcript
+  json_data     Json     // Structured message data
+  file_url      String?  // URL to uploaded transcript file
+  
+  // Metadata
+  message_count Int      @default(0)
+  created_at    DateTime @default(now())
+  expires_at    DateTime? // Optional expiration
+  
+  @@index([guild_id])
+  @@index([created_at])
+  @@map("ticket_transcripts")
+}
+
+// Guild ticket configuration
+model TicketConfig {
+  id                    String   @id @default(cuid())
+  guild_id              String   @unique
+  
+  // General settings
+  is_enabled            Boolean  @default(true)
+  max_tickets_per_user  Int      @default(5)
+  global_cooldown_mins  Int      @default(0)
+  
+  // Channel settings
+  log_channel_id        String?  // General ticket logs
+  transcript_channel_id String?  // Where to send transcripts
+  
+  // Staff settings
+  staff_roles           String[] // Global staff roles
+  admin_roles           String[] // Roles that can manage ticket system
+  
+  // Notifications
+  dm_notifications      Boolean  @default(true)
+  mention_on_create     Boolean  @default(true)
+  
+  // Auto-close settings
+  auto_close_hours      Int?     // Hours of inactivity before auto-close
+  auto_archive_days     Int      @default(30) // Days before archiving closed tickets
+  
+  // Customization
+  embed_color           String   @default("#5865F2")
+  support_team_name     String   @default("Support Team")
+  
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+  
+  @@map("ticket_configs")
 }

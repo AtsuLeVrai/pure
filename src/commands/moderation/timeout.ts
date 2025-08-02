@@ -8,6 +8,9 @@ import {
   MessageFlags,
   type User,
 } from "discord.js";
+import { v7 } from "uuid";
+import { ModerationType } from "@/generated/prisma/index.js";
+import { prisma } from "@/index.js";
 import { defineSlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
@@ -401,6 +404,24 @@ export default defineSlashCommand({
       reason,
       durationMinutes,
     );
+
+    // Add moderation log if timeout was successful
+    if (result.success && result.user) {
+      await prisma.moderationLog.create({
+        data: {
+          log_id: v7(),
+          type: ModerationType.TIMEOUT,
+          target_user_id: result.user.id,
+          moderator_id: executor.id,
+          guild_id: executor.guild.id,
+          reason,
+          metadata: {
+            durationMinutes: result.duration || null,
+            isRemoval: result.isRemoval || false,
+          },
+        },
+      });
+    }
 
     // Create and send response embed
     const embed = new EmbedBuilder().setTimestamp().setFooter({
