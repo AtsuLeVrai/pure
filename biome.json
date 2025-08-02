@@ -54,6 +54,9 @@
         "noReExportAll": "off",
         "noBarrelFile": "off"
       },
+      "suspicious": {
+        "noExplicitAny": "off"
+      },
       "style": {
         "useAsConstAssertion": "error",
         "noUnusedTemplateLiteral": "error",

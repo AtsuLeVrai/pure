@@ -1,12 +1,11 @@
 import { config as dotenv } from "@dotenvx/dotenvx";
-import { ActivityType, Client, GatewayIntentBits, Partials } from "discord.js";
+import { Client, GatewayIntentBits, Partials } from "discord.js";
 import { z } from "zod";
-import { Logger } from "@/utils/index.js";
+import { Logger, registerEvents } from "@/utils/index.js";
 
 // Define the schema for environment variables using zod
 const dotenvConfig = z.object({
   DISCORD_TOKEN: z.string().min(1),
-  DISCORD_CLIENT_ID: z.string().min(1),
   DISCORD_GUILD_ID: z.string().min(1),
   DATABASE_URL: z.url(),
 });
@@ -70,15 +69,6 @@ const client = new Client<true>({
     parse: ["users", "roles"],
     repliedUser: false,
   },
-  presence: {
-    status: "online",
-    activities: [
-      {
-        name: "/help • Pure Discord Bot",
-        type: ActivityType.Playing,
-      },
-    ],
-  },
 });
 
 // Graceful shutdown
@@ -129,16 +119,15 @@ async function main(): Promise<void> {
   try {
     Logger.info("Starting Discord Bot...");
 
+    // Register events
+    registerEvents(client);
+
     // Login to Discord
     Logger.info("Logging in to Discord...");
     await client.login(env.DISCORD_TOKEN);
 
-    // Log successful login
-    Logger.info("Logged in to Discord", {
-      id: client.user.id,
-      username: client.user.username,
-      discriminator: client.user.discriminator,
-    });
+    // Finish client setup
+    Logger.info("Setting up Discord client...");
   } catch (error) {
     Logger.error("Failed to start bot", {
       error:

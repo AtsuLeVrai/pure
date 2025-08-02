@@ -1,5 +1,6 @@
 import path from "node:path";
 import winston from "winston";
+import { isDev, isProd } from "@/utils/registry.js";
 
 // Define custom log levels and colors
 const logLevels = {
@@ -25,10 +26,6 @@ const logLevels = {
 
 // Add colors to winston
 winston.addColors(logLevels.colors);
-
-// Environment configuration
-const isDev = process.env.NODE_ENV === "development";
-const isProd = process.env.NODE_ENV === "production";
 
 // Custom format for console (development)
 const consoleFormat = winston.format.combine(
