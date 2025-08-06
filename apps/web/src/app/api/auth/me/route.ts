@@ -10,13 +10,17 @@ export async function GET() {
     const sessionCookie = cookieStore.get("session");
 
     if (!sessionCookie?.value) {
-      return null;
+      return NextResponse.json({ error: "No session found" }, { status: 401 });
     }
 
-    const { exp, ...user } = jwt.verify(
+    const { exp, access_token, token_expires_at, ...user } = jwt.verify(
       sessionCookie.value,
       env.JWT_SECRET,
-    ) as APIUser & { exp: number };
+    ) as APIUser & {
+      exp: number;
+      access_token: string;
+      token_expires_at: number;
+    };
 
     if (!user) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });

@@ -1,13 +1,9 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity,
-  ArrowLeftRight,
   BarChart3,
   Bell,
-  ChevronLeft,
-  ChevronRight,
   Crown,
   HelpCircle,
   Home,
@@ -21,8 +17,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { SITE_INFO } from "@/utils/constants";
 import { getAvatarUrl, getDisplayName } from "@/utils/discord";
 
 interface SidebarItem {
@@ -108,8 +104,6 @@ const BOTTOM_ITEMS: SidebarItem[] = [
   },
 ];
 
-type SidebarPosition = "left" | "right";
-
 interface DashboardSidebarProps {
   children: React.ReactNode;
 }
@@ -117,36 +111,6 @@ interface DashboardSidebarProps {
 export default function DashboardSidebar({ children }: DashboardSidebarProps) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [position, setPosition] = useState<SidebarPosition>("left");
-
-  // Load preferences from localStorage
-  useEffect(() => {
-    const savedCollapsed = localStorage.getItem("sidebar-collapsed");
-    const savedPosition = localStorage.getItem(
-      "sidebar-position",
-    ) as SidebarPosition;
-
-    if (savedCollapsed !== null) {
-      setIsCollapsed(JSON.parse(savedCollapsed));
-    }
-    if (savedPosition) {
-      setPosition(savedPosition);
-    }
-  }, []);
-
-  // Save preferences to localStorage
-  const toggleCollapsed = () => {
-    const newCollapsed = !isCollapsed;
-    setIsCollapsed(newCollapsed);
-    localStorage.setItem("sidebar-collapsed", JSON.stringify(newCollapsed));
-  };
-
-  const togglePosition = () => {
-    const newPosition = position === "left" ? "right" : "left";
-    setPosition(newPosition);
-    localStorage.setItem("sidebar-position", newPosition);
-  };
 
   const isActive = (href: string) => {
     if (href === "/dashboard") {
@@ -155,76 +119,34 @@ export default function DashboardSidebar({ children }: DashboardSidebarProps) {
     return pathname.startsWith(href);
   };
 
-  const sidebarWidth = isCollapsed ? "w-16" : "w-64";
-  const sidebarPosition = position === "left" ? "left-0" : "right-0";
-  const contentMargin =
-    position === "left"
-      ? isCollapsed
-        ? "ml-16"
-        : "ml-64"
-      : isCollapsed
-        ? "mr-16"
-        : "mr-64";
+  const sidebarWidth = "w-64";
+  const contentMargin = "ml-64";
 
   return (
     <div className="min-h-screen bg-slate-900 relative flex">
       {/* Sidebar */}
-      <motion.div
-        className={`fixed top-0 ${sidebarPosition} h-full ${sidebarWidth} bg-slate-800/90 backdrop-blur-lg border-r border-slate-700/50 z-40 transition-all duration-300`}
-        initial={false}
-        animate={{ width: isCollapsed ? 64 : 256 }}
+      <div
+        className={`fixed top-0 left-0 h-full ${sidebarWidth} bg-slate-800/90 backdrop-blur-lg border-r border-slate-700/50 z-40`}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-4 border-b border-slate-700/50">
-            <div className="flex items-center justify-between">
-              {!isCollapsed && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex items-center gap-3"
-                >
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">P</span>
-                  </div>
-                  <span className="text-white font-semibold">
-                    Pure Dashboard
-                  </span>
-                </motion.div>
-              )}
-
-              <div className="flex items-center gap-1">
-                {!isCollapsed && (
-                  <button
-                    type="button"
-                    onClick={togglePosition}
-                    className="p-1.5 hover:bg-slate-700/50 rounded-lg transition-colors"
-                    title="Switch sidebar position"
-                  >
-                    <ArrowLeftRight className="w-4 h-4 text-slate-400" />
-                  </button>
-                )}
-
-                <button
-                  type="button"
-                  onClick={toggleCollapsed}
-                  className="p-1.5 hover:bg-slate-700/50 rounded-lg transition-colors"
-                >
-                  {position === "left" ? (
-                    isCollapsed ? (
-                      <ChevronRight className="w-4 h-4 text-slate-400" />
-                    ) : (
-                      <ChevronLeft className="w-4 h-4 text-slate-400" />
-                    )
-                  ) : isCollapsed ? (
-                    <ChevronLeft className="w-4 h-4 text-slate-400" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4 text-slate-400" />
-                  )}
-                </button>
+            <Link href="/" className="cursor-pointer">
+              <div className="flex items-center gap-3 hover:opacity-80 transition-opacity duration-200">
+                <div className="relative">
+                  <Image
+                    src="/logo.png"
+                    alt="Pure Bot Logo"
+                    width={32}
+                    height={32}
+                    className="rounded-full ring-2 ring-blue-400/30 hover:ring-blue-400/50 transition-all duration-200"
+                  />
+                </div>
+                <span className="text-xl font-bold text-white hover:text-blue-100 transition-colors duration-200">
+                  {SITE_INFO.name}
+                </span>
               </div>
-            </div>
+            </Link>
           </div>
 
           {/* User Profile */}
@@ -238,23 +160,12 @@ export default function DashboardSidebar({ children }: DashboardSidebarProps) {
                   height={32}
                   className="rounded-full ring-2 ring-blue-400/30"
                 />
-                <AnimatePresence>
-                  {!isCollapsed && (
-                    <motion.div
-                      initial={{ opacity: 0, width: 0 }}
-                      animate={{ opacity: 1, width: "auto" }}
-                      exit={{ opacity: 0, width: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="text-white font-medium text-sm">
-                        {getDisplayName(user)}
-                      </div>
-                      <div className="text-slate-400 text-xs">
-                        @{user.username}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                <div>
+                  <div className="text-white font-medium text-sm">
+                    {getDisplayName(user)}
+                  </div>
+                  <div className="text-slate-400 text-xs">@{user.username}</div>
+                </div>
               </div>
             </div>
           )}
@@ -266,35 +177,21 @@ export default function DashboardSidebar({ children }: DashboardSidebarProps) {
                 <Link
                   key={item.id}
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group cursor-pointer ${
                     isActive(item.href)
                       ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                       : "text-slate-300 hover:text-white hover:bg-slate-700/50"
                   }`}
                 >
                   <item.icon className="w-5 h-5 flex-shrink-0" />
-                  <AnimatePresence>
-                    {!isCollapsed && (
-                      <motion.div
-                        initial={{ opacity: 0, width: 0 }}
-                        animate={{ opacity: 1, width: "auto" }}
-                        exit={{ opacity: 0, width: 0 }}
-                        className="flex items-center justify-between flex-1 overflow-hidden"
-                      >
-                        <span className="text-sm font-medium whitespace-nowrap">
-                          {item.label}
-                        </span>
-                        {item.badge && (
-                          <span className="bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
-                            {item.badge}
-                          </span>
-                        )}
-                      </motion.div>
+                  <div className="flex items-center justify-between flex-1">
+                    <span className="text-sm font-medium">{item.label}</span>
+                    {item.badge && (
+                      <span className="bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+                        {item.badge}
+                      </span>
                     )}
-                  </AnimatePresence>
-                  {isCollapsed && item.badge && (
-                    <div className="absolute left-8 top-1 bg-red-500 text-white text-xs rounded-full w-2 h-2"></div>
-                  )}
+                  </div>
                 </Link>
               ))}
             </nav>
@@ -306,50 +203,28 @@ export default function DashboardSidebar({ children }: DashboardSidebarProps) {
               <Link
                 key={item.id}
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 cursor-pointer ${
                   isActive(item.href)
                     ? "bg-blue-500/20 text-blue-400"
                     : "text-slate-300 hover:text-white hover:bg-slate-700/50"
                 }`}
               >
                 <item.icon className="w-5 h-5 flex-shrink-0" />
-                <AnimatePresence>
-                  {!isCollapsed && (
-                    <motion.span
-                      initial={{ opacity: 0, width: 0 }}
-                      animate={{ opacity: 1, width: "auto" }}
-                      exit={{ opacity: 0, width: 0 }}
-                      className="text-sm font-medium whitespace-nowrap overflow-hidden"
-                    >
-                      {item.label}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
+                <span className="text-sm font-medium">{item.label}</span>
               </Link>
             ))}
 
             <button
               type="button"
               onClick={() => logout()}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer"
             >
               <LogOut className="w-5 h-5 flex-shrink-0" />
-              <AnimatePresence>
-                {!isCollapsed && (
-                  <motion.span
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    className="text-sm font-medium whitespace-nowrap overflow-hidden"
-                  >
-                    Sign Out
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              <span className="text-sm font-medium">Sign Out</span>
             </button>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Main Content */}
       <div className={`flex-1 transition-all duration-300 ${contentMargin}`}>

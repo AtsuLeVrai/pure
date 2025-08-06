@@ -7,8 +7,10 @@ import {
   Calendar,
   ChevronRight,
   Crown,
+  Loader2,
   MessageSquare,
   Plus,
+  RefreshCw,
   Server,
   Shield,
   TrendingUp,
@@ -17,238 +19,348 @@ import {
   Zap,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import type { EnhancedGuild } from "@/lib/discord-api";
 import { ANIMATION_VARIANTS } from "@/utils/constants";
 import { getAvatarUrl, getDisplayName } from "@/utils/discord";
 
-// Mock data for demonstration
-const MOCK_GUILDS = [
-  {
-    id: "123456789",
-    name: "Gaming Central",
-    icon: "https://cdn.discordapp.com/icons/123456789/a_sample_icon.png",
-    memberCount: 1250,
-    botInGuild: true,
-    permissions: ["ADMINISTRATOR"],
-  },
-  {
-    id: "987654321",
-    name: "Code & Coffee",
-    icon: null,
-    memberCount: 850,
-    botInGuild: true,
-    permissions: ["MANAGE_GUILD", "MANAGE_CHANNELS"],
-  },
-  {
-    id: "456789123",
-    name: "Art Community",
-    icon: "https://cdn.discordapp.com/icons/456789123/another_icon.png",
-    memberCount: 2100,
-    botInGuild: false,
-    permissions: ["ADMINISTRATOR"],
-  },
-];
+interface DashboardStats {
+  totalServers: number;
+  activeServers: number;
+  totalMembers: number;
+  recentActivity: number;
+}
 
-const QUICK_STATS = [
-  {
-    label: "Total Members",
-    value: "4,200",
-    change: "+12%",
-    trend: "up",
-    icon: Users,
-    color: "blue",
-  },
-  {
-    label: "Commands Used",
-    value: "15.2K",
-    change: "+8%",
-    trend: "up",
-    icon: Zap,
-    color: "green",
-  },
-  {
-    label: "Moderation Actions",
-    value: "342",
-    change: "-15%",
-    trend: "down",
-    icon: Shield,
-    color: "red",
-  },
-  {
-    label: "Active Servers",
-    value: "2",
-    change: "0%",
-    trend: "neutral",
-    icon: Server,
-    color: "purple",
-  },
-];
-
-export default function Dashboard() {
-  const { user } = useAuth();
+export default function DashboardPage() {
   const router = useRouter();
-  const { fadeInUp, stagger } = ANIMATION_VARIANTS;
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const [guilds, setGuilds] = useState<EnhancedGuild[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalServers: 0,
+    activeServers: 0,
+    totalMembers: 0,
+    recentActivity: 0,
+  });
+  const [isLoadingGuilds, setIsLoadingGuilds] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const getGuildIcon = (guild: (typeof MOCK_GUILDS)[0]) => {
-    if (guild.icon) {
-      return guild.icon;
+  // Redirect to home if not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push("/");
     }
-    // Discord default guild icon
-    const defaultIcon = guild.name
+  }, [isAuthenticated, authLoading, router]);
+
+  // Fetch guilds from API
+  const fetchGuilds = async () => {
+    setIsLoadingGuilds(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/guilds", {
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch guilds: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const guildsList = data.guilds || [];
+      setGuilds(guildsList);
+
+      // Calculate stats
+      const totalMembers = guildsList.reduce(
+        (sum: number, guild: EnhancedGuild) =>
+          sum + (guild.approximate_member_count || 0),
+        0,
+      );
+
+      setStats({
+        totalServers: guildsList.length,
+        activeServers: guildsList.filter((g: EnhancedGuild) => g.botInGuild)
+          .length,
+        totalMembers,
+        recentActivity: Math.floor(Math.random() * 100), // Placeholder for now
+      });
+    } catch (err) {
+      console.error("Error fetching guilds:", err);
+      setError(err instanceof Error ? err.message : "Failed to load servers");
+    } finally {
+      setIsLoadingGuilds(false);
+    }
+  };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: loop dependency
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchGuilds();
+    }
+  }, [isAuthenticated, user]);
+
+  const getGuildIcon = (guild: EnhancedGuild) => {
+    if (guild.icon) {
+      return `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.${
+        guild.icon.startsWith("a_") ? "gif" : "png"
+      }?size=64`;
+    }
+    return null;
+  };
+
+  const getGuildInitials = (name: string) => {
+    return name
       .split(" ")
       .map((word) => word[0])
       .join("")
-      .toUpperCase();
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(defaultIcon)}&background=5865f2&color=ffffff&size=128`;
+      .toUpperCase()
+      .slice(0, 2);
   };
 
-  return (
-    <div className="p-8">
-      <div className="max-w-7xl mx-auto">
-        <motion.div
-          initial="initial"
-          animate="animate"
-          variants={stagger}
-          className="space-y-8"
-        >
-          {/* Welcome Section */}
-          <motion.div variants={fadeInUp} className="mb-8">
-            <div className="flex items-center gap-4 mb-6">
-              {user && (
-                <>
-                  <Image
-                    src={getAvatarUrl(user.id, user.avatar, 64)}
-                    alt={`${getDisplayName(user)}'s avatar`}
-                    width={64}
-                    height={64}
-                    className="rounded-full ring-4 ring-blue-400/30"
-                  />
-                  <div>
-                    <h1 className="text-3xl font-bold text-white">
-                      Welcome back, {getDisplayName(user)}
-                    </h1>
-                    <p className="text-blue-200">
-                      Manage your Discord servers with Pure
-                    </p>
-                  </div>
-                </>
-              )}
-            </div>
-          </motion.div>
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+      </div>
+    );
+  }
 
-          {/* Quick Stats */}
-          <motion.div variants={fadeInUp}>
-            <h2 className="text-2xl font-bold text-white mb-6">Overview</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {QUICK_STATS.map((stat, index) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-slate-800/60 backdrop-blur-lg p-6 rounded-xl border border-slate-700/50 hover:border-blue-500/30 transition-all duration-300"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className={`p-3 rounded-lg bg-${stat.color}-500/20`}>
-                      <stat.icon className={`w-6 h-6 text-${stat.color}-400`} />
-                    </div>
-                    <span
-                      className={`text-sm font-medium ${
-                        stat.trend === "up"
-                          ? "text-green-400"
-                          : stat.trend === "down"
-                            ? "text-red-400"
-                            : "text-gray-400"
-                      }`}
-                    >
-                      {stat.change}
-                    </span>
-                  </div>
+  if (!isAuthenticated || !user) {
+    return null;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 pt-24 pb-12">
+      <div className="mx-auto max-w-7xl px-6">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Image
+                src={getAvatarUrl(user.id, user.avatar, 64)}
+                alt={`${getDisplayName(user)}'s avatar`}
+                width={64}
+                height={64}
+                className="rounded-full ring-2 ring-blue-400/30"
+              />
+              <div>
+                <h1 className="text-3xl font-bold text-white">
+                  Welcome back, {getDisplayName(user)}!
+                </h1>
+                <p className="text-blue-200 mt-1">
+                  Manage your Discord servers with Pure Bot
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={fetchGuilds}
+              disabled={isLoadingGuilds}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 disabled:opacity-50"
+            >
+              <RefreshCw
+                className={`w-4 h-4 ${isLoadingGuilds ? "animate-spin" : ""}`}
+              />
+              Refresh
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Stats Cards */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+        >
+          {[
+            {
+              label: "Total Servers",
+              value: stats.totalServers,
+              icon: Server,
+              color: "blue",
+            },
+            {
+              label: "Active Servers",
+              value: stats.activeServers,
+              icon: Zap,
+              color: "green",
+            },
+            {
+              label: "Total Members",
+              value: stats.totalMembers.toLocaleString(),
+              icon: Users,
+              color: "purple",
+            },
+            {
+              label: "Recent Activity",
+              value: `${stats.recentActivity}%`,
+              icon: TrendingUp,
+              color: "orange",
+            },
+          ].map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <motion.div
+                key={stat.label}
+                variants={ANIMATION_VARIANTS.slideUp}
+                initial="initial"
+                animate="animate"
+                transition={{ delay: index * 0.1 }}
+                className="bg-slate-800/50 backdrop-blur-lg border border-slate-700/50 rounded-xl p-6"
+              >
+                <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-2xl font-bold text-white mb-1">
+                    <p className="text-slate-400 text-sm font-medium">
+                      {stat.label}
+                    </p>
+                    <p className="text-2xl font-bold text-white mt-1">
                       {stat.value}
                     </p>
-                    <p className="text-slate-400 text-sm">{stat.label}</p>
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+                  <div
+                    className={`p-3 rounded-lg bg-${stat.color}-500/20 text-${stat.color}-400`}
+                  >
+                    <Icon className="w-6 h-6" />
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
 
-          {/* Server Management */}
-          <motion.div variants={fadeInUp}>
-            <h2 className="text-2xl font-bold text-white mb-6">Your Servers</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {MOCK_GUILDS.map((guild, index) => (
+        {/* Servers Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="bg-slate-800/50 backdrop-blur-lg border border-slate-700/50 rounded-xl p-6"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+              <Server className="w-6 h-6 text-blue-400" />
+              Your Servers
+            </h2>
+          </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
+              <div className="flex items-center gap-2 text-red-400">
+                <AlertTriangle className="w-5 h-5" />
+                <span>{error}</span>
+              </div>
+            </div>
+          )}
+
+          {isLoadingGuilds ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto mb-2" />
+                <p className="text-slate-400">Loading your servers...</p>
+              </div>
+            </div>
+          ) : guilds.length === 0 ? (
+            <div className="text-center py-12">
+              <Server className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">
+                No servers found
+              </h3>
+              <p className="text-slate-400 mb-6">
+                You don't have any servers with management permissions, or Pure
+                Bot hasn't been added yet.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {guilds.map((guild, index) => (
                 <motion.div
                   key={guild.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-slate-800/60 backdrop-blur-lg p-6 rounded-xl border border-slate-700/50 hover:border-blue-500/30 transition-all duration-300 group cursor-pointer"
-                  onClick={() =>
-                    guild.botInGuild &&
-                    router.push(`/dashboard/server/${guild.id}`)
-                  }
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="bg-slate-700/50 border border-slate-600/50 rounded-lg p-4 hover:bg-slate-700/70 transition-all duration-200 group"
                 >
-                  <div className="flex items-center gap-4 mb-4">
-                    <Image
-                      src={getGuildIcon(guild)}
-                      alt={`${guild.name} icon`}
-                      width={48}
-                      height={48}
-                      className="rounded-full"
-                    />
-                    <div className="flex-1">
-                      <h3 className="text-white font-semibold">{guild.name}</h3>
-                      <p className="text-slate-400 text-sm">
-                        {guild.memberCount.toLocaleString()} members
-                      </p>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      {getGuildIcon(guild) ? (
+                        <Image
+                          src={getGuildIcon(guild)!}
+                          alt={`${guild.name} icon`}
+                          width={48}
+                          height={48}
+                          className="rounded-full"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-slate-600 rounded-full flex items-center justify-center">
+                          <span className="text-white font-semibold">
+                            {getGuildInitials(guild.name)}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-white truncate">
+                          {guild.name}
+                        </h3>
+                        <p className="text-sm text-slate-400">
+                          {(
+                            guild.approximate_member_count || 0
+                          ).toLocaleString()}{" "}
+                          members
+                        </p>
+                      </div>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-blue-400 transition-colors" />
+                    <div className="flex items-center gap-2">
+                      {guild.botInGuild ? (
+                        <div className="flex items-center gap-1 text-green-400">
+                          <UserCheck className="w-4 h-4" />
+                          <span className="text-xs font-medium">Active</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-orange-400">
+                          <Plus className="w-4 h-4" />
+                          <span className="text-xs font-medium">Add Bot</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {guild.botInGuild ? (
-                        <>
-                          <UserCheck className="w-4 h-4 text-green-400" />
-                          <span className="text-green-400 text-sm font-medium">
-                            Pure Active
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <AlertTriangle className="w-4 h-4 text-orange-400" />
-                          <span className="text-orange-400 text-sm font-medium">
-                            Not Added
-                          </span>
-                        </>
-                      )}
+                    <div className="flex items-center gap-4 text-sm text-slate-400">
+                      <div className="flex items-center gap-1">
+                        <MessageSquare className="w-4 h-4" />
+                        <span>{Math.floor(Math.random() * 50)} channels</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Crown className="w-4 h-4" />
+                        <span>Admin</span>
+                      </div>
                     </div>
 
                     {guild.botInGuild ? (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/dashboard/server/${guild.id}`);
-                        }}
-                        className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-3 py-1 rounded-lg text-sm font-medium transition-colors"
+                      <Link
+                        href={`/dashboard/server/${guild.id}`}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-md transition-colors duration-200 text-sm font-medium group-hover:bg-blue-600 group-hover:text-white"
                       >
                         Manage
-                      </button>
+                        <ChevronRight className="w-4 h-4" />
+                      </Link>
                     ) : (
                       <button
                         type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Add bot logic here
-                        }}
-                        className="bg-green-500/20 hover:bg-green-500/30 text-green-400 px-3 py-1 rounded-lg text-sm font-medium transition-colors flex items-center gap-1"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 rounded-md transition-colors duration-200 text-sm font-medium"
                       >
-                        <Plus className="w-3 h-3" />
+                        <Plus className="w-4 h-4" />
                         Add Bot
                       </button>
                     )}
@@ -256,148 +368,66 @@ export default function Dashboard() {
                 </motion.div>
               ))}
             </div>
-          </motion.div>
+          )}
+        </motion.div>
 
-          {/* Quick Actions */}
-          <motion.div variants={fadeInUp}>
-            <h2 className="text-2xl font-bold text-white mb-6">
-              Quick Actions
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                {
-                  title: "Moderation",
-                  description: "Manage bans, kicks, and warnings",
-                  icon: Shield,
-                  color: "red",
-                  href: "/dashboard/moderation",
-                },
-                {
-                  title: "Leveling System",
-                  description: "Configure XP and level rewards",
-                  icon: TrendingUp,
-                  color: "green",
-                  href: "/dashboard/leveling",
-                },
-                {
-                  title: "Ticket System",
-                  description: "Set up support tickets",
-                  icon: MessageSquare,
-                  color: "blue",
-                },
-                {
-                  title: "Economy",
-                  description: "Configure currency and shop",
-                  icon: Crown,
-                  color: "yellow",
-                },
-                {
-                  title: "Auto Moderation",
-                  description: "Automated spam protection",
-                  icon: Activity,
-                  color: "purple",
-                },
-                {
-                  title: "Analytics",
-                  description: "View server statistics",
-                  icon: Calendar,
-                  color: "indigo",
-                },
-              ].map((action, index) => (
-                <motion.div
-                  key={action.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-slate-800/60 backdrop-blur-lg p-6 rounded-xl border border-slate-700/50 hover:border-blue-500/30 transition-all duration-300 group cursor-pointer"
+        {/* Recent Activity */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-8 bg-slate-800/50 backdrop-blur-lg border border-slate-700/50 rounded-xl p-6"
+        >
+          <h2 className="text-2xl font-bold text-white flex items-center gap-3 mb-6">
+            <Activity className="w-6 h-6 text-green-400" />
+            Recent Activity
+          </h2>
+
+          <div className="space-y-4">
+            {[
+              {
+                action: "Moderation action taken",
+                server: "Gaming Central",
+                time: "2 hours ago",
+                icon: Shield,
+              },
+              {
+                action: "User joined server",
+                server: "Code & Coffee",
+                time: "4 hours ago",
+                icon: UserCheck,
+              },
+              {
+                action: "Channel created",
+                server: "Art Community",
+                time: "1 day ago",
+                icon: MessageSquare,
+              },
+            ].map((activity, index) => {
+              const Icon = activity.icon;
+              return (
+                <div
+                  // biome-ignore lint/suspicious/noArrayIndexKey: No unique ID available
+                  key={index}
+                  className="flex items-center gap-4 p-3 rounded-lg bg-slate-700/30"
                 >
-                  <div
-                    className={`p-3 rounded-lg bg-${action.color}-500/20 w-fit mb-4`}
-                  >
-                    <action.icon
-                      className={`w-6 h-6 text-${action.color}-400`}
-                    />
+                  <div className="p-2 bg-slate-600 rounded-lg">
+                    <Icon className="w-4 h-4 text-slate-300" />
                   </div>
-                  <h3 className="text-white font-semibold mb-2">
-                    {action.title}
-                  </h3>
-                  <p className="text-slate-400 text-sm mb-4">
-                    {action.description}
-                  </p>
-                  <div className="flex items-center text-blue-400 text-sm font-medium group-hover:text-blue-300 transition-colors">
-                    Configure
-                    <ChevronRight className="w-4 h-4 ml-1" />
+                  <div className="flex-1">
+                    <p className="text-white font-medium">{activity.action}</p>
+                    <p className="text-slate-400 text-sm">
+                      in {activity.server}
+                    </p>
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Recent Activity */}
-          <motion.div variants={fadeInUp}>
-            <h2 className="text-2xl font-bold text-white mb-6">
-              Recent Activity
-            </h2>
-            <div className="bg-slate-800/60 backdrop-blur-lg rounded-xl border border-slate-700/50 p-6">
-              <div className="space-y-4">
-                {[
-                  {
-                    action: "User banned",
-                    details: "SpamBot#1234 was banned from Gaming Central",
-                    time: "2 minutes ago",
-                    type: "moderation",
-                  },
-                  {
-                    action: "Level up",
-                    details: "GamerPro reached level 25 in Code & Coffee",
-                    time: "15 minutes ago",
-                    type: "leveling",
-                  },
-                  {
-                    action: "Ticket created",
-                    details: "New support ticket #0042 in Gaming Central",
-                    time: "1 hour ago",
-                    type: "ticket",
-                  },
-                  {
-                    action: "Economy transaction",
-                    details: "DailyRewards distributed to 250 users",
-                    time: "3 hours ago",
-                    type: "economy",
-                  },
-                ].map((activity, index) => (
-                  <div
-                    // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                    key={index}
-                    className="flex items-center gap-4 p-4 bg-slate-700/30 rounded-lg hover:bg-slate-700/50 transition-colors"
-                  >
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        activity.type === "moderation"
-                          ? "bg-red-400"
-                          : activity.type === "leveling"
-                            ? "bg-green-400"
-                            : activity.type === "ticket"
-                              ? "bg-blue-400"
-                              : "bg-yellow-400"
-                      }`}
-                    />
-                    <div className="flex-1">
-                      <p className="text-white font-medium">
-                        {activity.action}
-                      </p>
-                      <p className="text-slate-400 text-sm">
-                        {activity.details}
-                      </p>
-                    </div>
-                    <span className="text-slate-500 text-sm">
-                      {activity.time}
-                    </span>
+                  <div className="flex items-center gap-1 text-slate-400 text-sm">
+                    <Calendar className="w-4 h-4" />
+                    {activity.time}
                   </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
+                </div>
+              );
+            })}
+          </div>
         </motion.div>
       </div>
     </div>

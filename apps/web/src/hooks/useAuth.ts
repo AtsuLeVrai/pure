@@ -3,15 +3,14 @@
 import type { APIUser } from "discord-api-types/v10";
 import { useEffect, useState } from "react";
 
+// This interface defines the shape of the authentication state
 interface AuthState {
   user: APIUser | null;
   isLoading: boolean;
   isAuthenticated: boolean;
 }
 
-/**
- * Client-side auth hook - fetches user data from server
- */
+// This hook provides authentication state and methods for login/logout
 export function useAuth(): AuthState & {
   login: (redirect?: string) => void;
   logout: (redirect?: string) => void;
@@ -52,7 +51,7 @@ export function useAuth(): AuthState & {
     }
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: loop dependency
   useEffect(() => {
     fetchUser();
   }, []);

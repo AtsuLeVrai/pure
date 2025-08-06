@@ -5,6 +5,7 @@ import type {
 import jwt from "jsonwebtoken";
 import { type NextRequest, NextResponse } from "next/server";
 import { env } from "@/env";
+import { logger } from "@/lib/logger";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -70,10 +71,12 @@ export async function GET(request: NextRequest) {
 
     const userData = (await userResponse.json()) as APIUser;
 
-    // Create JWT session token
+    // Create JWT session token with access token
     const sessionToken = jwt.sign(
       {
         ...userData,
+        access_token: tokenData.access_token,
+        token_expires_at: Math.floor(Date.now() / 1000) + tokenData.expires_in,
         exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60, // 30 days
       },
       env.JWT_SECRET,
@@ -93,9 +96,25 @@ export async function GET(request: NextRequest) {
       path: "/",
     });
 
+    logger.auth("login", {
+      userId: userData.id,
+      userAgent: request.headers.get("user-agent") || undefined,
+      ip:
+        request.headers.get("x-forwarded-for") ||
+        request.headers.get("x-real-ip") ||
+        undefined,
+    });
+
     return response;
   } catch (error) {
-    console.error("OAuth callback error:", error);
+    logger.auth("failed", {
+      error: error instanceof Error ? error : String(error),
+      userAgent: request.headers.get("user-agent") || undefined,
+      ip:
+        request.headers.get("x-forwarded-for") ||
+        request.headers.get("x-real-ip") ||
+        undefined,
+    });
     return NextResponse.redirect(
       new URL("/?error=authentication_failed", request.url),
     );

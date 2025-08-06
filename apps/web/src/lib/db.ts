@@ -1,5 +1,6 @@
 import { PrismaClient } from "@pure/database";
 import { env } from "@/env";
+import { logger } from "@/lib/logger";
 
 export const prisma = new PrismaClient({
   log:
@@ -9,9 +10,20 @@ export const prisma = new PrismaClient({
 });
 
 prisma.$on("query", (event) => {
-  if (env.NODE_ENV === "development") {
-    console.log(`Query: ${event.query}`);
-    console.log(`Params: ${event.params}`);
-    console.log(`Duration: ${event.duration}ms`);
-  }
+  logger.database("query", true, {
+    duration: event.duration,
+    metadata: {
+      query: event.query,
+      params: event.params,
+    },
+  });
+});
+
+prisma.$on("error", (event) => {
+  logger.database("error", false, {
+    error: event.message,
+    metadata: {
+      target: event.target,
+    },
+  });
 });

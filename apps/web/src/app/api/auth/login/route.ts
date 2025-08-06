@@ -1,7 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { env } from "@/env";
+import { rateLimiters, withRateLimit } from "@/lib/rate-limit";
 
-export async function GET(request: NextRequest) {
+async function handleLogin(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const redirectTo = searchParams.get("redirect") || "/dashboard";
 
@@ -22,3 +23,5 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.redirect(discordAuthUrl.toString());
 }
+
+export const GET = withRateLimit(rateLimiters.auth, handleLogin);

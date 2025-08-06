@@ -12,7 +12,13 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: z.string().min(1),
     DISCORD_REDIRECT_URI: z.url().min(1),
     DATABASE_URL: z.url().min(1),
-    JWT_SECRET: z.string().min(1),
+    JWT_SECRET: z
+      .string()
+      .min(32, "JWT_SECRET must be at least 32 characters long")
+      .regex(
+        /^[A-Za-z0-9+/=]+$/,
+        "JWT_SECRET must contain only alphanumeric characters, +, /, and =",
+      ),
   },
 
   /**
@@ -30,8 +36,8 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     DATABASE_URL: process.env.DATABASE_URL,
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
-    DISCORD_REDIRECT_URI: process.env.DISCORD_REDIRECT_URI,
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
+    DISCORD_REDIRECT_URI: process.env.DISCORD_REDIRECT_URI,
     JWT_SECRET: process.env.JWT_SECRET,
   },
   /**
