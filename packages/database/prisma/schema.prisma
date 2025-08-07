@@ -179,6 +179,302 @@ enum AnalyticsType {
   RETENTION_RATE
 }
 
+enum CasinoGameType {
+  BLACKJACK
+  SLOTS
+  ROULETTE
+  COINFLIP
+  DICE
+  POKER
+  BACCARAT
+  CRASH
+}
+
+enum GameResult {
+  WIN
+  LOSS
+  DRAW
+  JACKPOT
+}
+
+enum MiniGameType {
+  ROCK_PAPER_SCISSORS
+  TRIVIA
+  EIGHT_BALL
+  GUESS_NUMBER
+  WORD_SCRAMBLE
+  QUIZ
+  MEMORY_GAME
+}
+
+enum AchievementCategory {
+  ECONOMY
+  GAMING
+  SOCIAL
+  MODERATION
+  VOICE
+  MESSAGING
+  SPECIAL
+  SEASONAL
+}
+
+enum AchievementRarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+  MYTHIC
+}
+
+enum MarriageStatus {
+  SINGLE
+  ENGAGED
+  MARRIED
+  DIVORCED
+}
+
+enum TicketTagType {
+  PRIORITY
+  CATEGORY
+  STATUS
+  DEPARTMENT
+  CUSTOM
+}
+
+enum CaptchaType {
+  IMAGE
+  TEXT
+  MATH
+  EMOJI
+  SLIDER
+}
+
+enum JoinType {
+  ORGANIC
+  INVITE
+  VANITY_URL
+  BOT_INVITE
+  WIDGET
+  UNKNOWN
+}
+
+enum BackupType {
+  FULL
+  CHANNELS
+  ROLES
+  SETTINGS
+  MESSAGES
+  EMOJIS
+}
+
+enum BackupScheduleFrequency {
+  HOURLY
+  DAILY
+  WEEKLY
+  MONTHLY
+  CUSTOM
+}
+
+enum SocialPlatform {
+  TWITTER
+  YOUTUBE
+  INSTAGRAM
+  TIKTOK
+  REDDIT
+  RSS
+  GITHUB
+}
+
+enum NotificationTrigger {
+  NEW_POST
+  LIVE_STREAM
+  VIDEO_UPLOAD
+  TWEET
+  COMMIT
+  RELEASE
+}
+
+enum CryptoAlertType {
+  PRICE_ABOVE
+  PRICE_BELOW
+  PERCENT_CHANGE
+  VOLUME_SPIKE
+  NEWS
+}
+
+enum WeatherAlertType {
+  TEMPERATURE
+  PRECIPITATION
+  STORM
+  AIR_QUALITY
+  UV_INDEX
+}
+
+enum TranslationProvider {
+  GOOGLE
+  DEEPL
+  MICROSOFT
+  AMAZON
+}
+
+enum LogCategory {
+  MODERATION
+  MEMBER_MANAGEMENT
+  CHANNEL_MANAGEMENT
+  ROLE_MANAGEMENT
+  MESSAGE_MANAGEMENT
+  VOICE_ACTIVITY
+  SERVER_MANAGEMENT
+  SECURITY
+  AUTOMOD
+  SOCIAL
+  ECONOMY
+  TICKETS
+  GAMING
+  BACKUP
+  CUSTOM
+  SYSTEM
+}
+
+enum LogEventType {
+  // Moderation Events
+  BAN_ADD
+  BAN_REMOVE
+  TIMEOUT_ADD
+  TIMEOUT_REMOVE
+  KICK
+  WARN
+  MUTE
+  UNMUTE
+  PURGE
+  MASS_BAN
+  MASS_KICK
+
+  // Member Management
+  MEMBER_JOIN
+  MEMBER_LEAVE
+  MEMBER_UPDATE
+  MEMBER_ROLE_ADD
+  MEMBER_ROLE_REMOVE
+  MEMBER_NICKNAME_CHANGE
+
+  // Channel Management
+  CHANNEL_CREATE
+  CHANNEL_DELETE
+  CHANNEL_UPDATE
+  CHANNEL_PINS_UPDATE
+  THREAD_CREATE
+  THREAD_DELETE
+  THREAD_UPDATE
+
+  // Role Management  
+  ROLE_CREATE
+  ROLE_DELETE
+  ROLE_UPDATE
+  ROLE_ASSIGN
+  ROLE_REMOVE
+
+  // Message Management
+  MESSAGE_DELETE
+  MESSAGE_EDIT
+  MESSAGE_BULK_DELETE
+  MESSAGE_PIN
+  MESSAGE_UNPIN
+
+  // Voice Activity
+  VOICE_JOIN
+  VOICE_LEAVE
+  VOICE_MOVE
+  VOICE_MUTE
+  VOICE_UNMUTE
+  VOICE_DEAFEN
+  VOICE_UNDEAFEN
+  VOICE_STREAM_START
+  VOICE_STREAM_END
+
+  // Server Management
+  GUILD_UPDATE
+  EMOJI_CREATE
+  EMOJI_DELETE
+  EMOJI_UPDATE
+  INVITE_CREATE
+  INVITE_DELETE
+  INTEGRATION_UPDATE
+
+  // Security
+  SUSPICIOUS_JOIN
+  RAID_DETECTED
+  CAPTCHA_FAILED
+  IP_BLOCKED
+  SECURITY_VIOLATION
+  AUTH_FAILURE
+
+  // AutoMod
+  AUTOMOD_TRIGGER
+  SPAM_DETECTED
+  LINK_FILTERED
+  WORD_FILTERED
+  MENTION_SPAM
+
+  // Social
+  REACTION_ADD
+  REACTION_REMOVE
+  STARBOARD_ADD
+  STARBOARD_REMOVE
+
+  // Economy
+  ECONOMY_TRANSACTION
+  CASINO_WIN
+  CASINO_LOSS
+  SHOP_PURCHASE
+  DAILY_CLAIM
+
+  // Tickets
+  TICKET_CREATE
+  TICKET_CLOSE
+  TICKET_ASSIGN
+  TICKET_ESCALATE
+
+  // Gaming
+  TOURNAMENT_START
+  TOURNAMENT_END
+  GAME_WIN
+  GAME_LOSS
+
+  // Backup
+  BACKUP_CREATED
+  BACKUP_RESTORED
+  TEMPLATE_USED
+
+  // Custom
+  CUSTOM_COMMAND_USED
+  AUTOMATION_TRIGGERED
+
+  // System
+  BOT_START
+  BOT_RESTART
+  ERROR_OCCURRED
+  PERFORMANCE_ALERT
+}
+
+enum LogLevel {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+  CRITICAL
+}
+
+enum LogRetention {
+  ONE_WEEK
+  ONE_MONTH
+  THREE_MONTHS
+  SIX_MONTHS
+  ONE_YEAR
+  PERMANENT
+}
+
 model GuildConfig {
   id       String @id @default(cuid())
   guild_id String @unique
@@ -281,6 +577,7 @@ model GuildConfig {
   tournaments           Tournament[]
   stream_notifications  StreamNotification[]
   ab_tests              ABTest[]
+  log_configurations    LogConfiguration[]
 
   @@map("guild_configs")
 }
@@ -342,30 +639,39 @@ model AutoModerationRule {
 }
 
 model Ticket {
-  id             String         @id @default(cuid())
-  ticket_id      String         @unique
-  guild_id       String
-  channel_id     String         @unique
-  creator_id     String
-  assigned_to_id String?
-  category       String?
-  subject        String
-  description    String         @db.Text
-  status         TicketStatus   @default(OPEN)
-  priority       TicketPriority @default(MEDIUM)
-  created_at     DateTime       @default(now())
-  updated_at     DateTime       @updatedAt
-  closed_at      DateTime?
-  closed_by_id   String?
-  close_reason   String?
-  transcript_url String?
+  id                String         @id @default(cuid())
+  ticket_id         String         @unique
+  guild_id          String
+  channel_id        String         @unique
+  creator_id        String
+  assigned_to_id    String?
+  category          String?
+  subject           String
+  description       String         @db.Text
+  status            TicketStatus   @default(OPEN)
+  priority          TicketPriority @default(MEDIUM)
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @updatedAt
+  closed_at         DateTime?
+  closed_by_id      String?
+  close_reason      String?
+  transcript_url    String?
+  first_response_at DateTime?
+  last_activity_at  DateTime       @default(now())
 
-  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+  guild_config    GuildConfig           @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+  template_data   TicketFromTemplate?
+  tag_assignments TicketTagAssignment[]
+  notes           TicketNote[]
+  sla_violations  TicketSLAViolation[]
+  rating          TicketRating?
 
   @@index([guild_id])
   @@index([creator_id])
   @@index([status])
   @@index([assigned_to_id])
+  @@index([first_response_at])
+  @@index([last_activity_at])
   @@map("tickets")
 }
 
@@ -1341,4 +1647,1464 @@ model GuildLog {
   @@index([action])
   @@index([timestamp])
   @@map("guild_logs")
+}
+
+model CasinoGame {
+  id            String         @id @default(cuid())
+  user_id       String
+  guild_id      String
+  game_type     CasinoGameType
+  bet_amount    BigInt
+  payout_amount BigInt         @default(0)
+  result        GameResult
+  multiplier    Float?
+  game_data     Json?
+  house_edge    Float          @default(0.02)
+  session_id    String?
+  created_at    DateTime       @default(now())
+
+  @@index([user_id, guild_id])
+  @@index([game_type])
+  @@index([created_at])
+  @@index([session_id])
+  @@map("casino_games")
+}
+
+model CasinoSession {
+  id               String    @id @default(cuid())
+  session_id       String    @unique
+  user_id          String
+  guild_id         String
+  starting_balance BigInt
+  ending_balance   BigInt?
+  total_bet        BigInt    @default(0)
+  total_won        BigInt    @default(0)
+  games_played     Int       @default(0)
+  session_duration Int? // in seconds
+  is_active        Boolean   @default(true)
+  started_at       DateTime  @default(now())
+  ended_at         DateTime?
+
+  @@index([user_id, guild_id])
+  @@index([session_id])
+  @@index([is_active])
+  @@map("casino_sessions")
+}
+
+model MiniGame {
+  id           String       @id @default(cuid())
+  user_id      String
+  guild_id     String
+  opponent_id  String?
+  game_type    MiniGameType
+  bet_amount   BigInt       @default(0)
+  winner_id    String?
+  game_data    Json
+  completed    Boolean      @default(false)
+  expires_at   DateTime?
+  created_at   DateTime     @default(now())
+  completed_at DateTime?
+
+  @@index([user_id, guild_id])
+  @@index([opponent_id])
+  @@index([game_type])
+  @@index([completed])
+  @@index([expires_at])
+  @@map("mini_games")
+}
+
+model UserAchievement {
+  id             String    @id @default(cuid())
+  user_id        String
+  guild_id       String
+  achievement_id String
+  progress       Float     @default(0)
+  max_progress   Float
+  unlocked       Boolean   @default(false)
+  unlocked_at    DateTime?
+  created_at     DateTime  @default(now())
+
+  achievement Achievement @relation(fields: [achievement_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, guild_id, achievement_id])
+  @@index([user_id, guild_id])
+  @@index([achievement_id])
+  @@index([unlocked])
+  @@map("user_achievements")
+}
+
+model Achievement {
+  id           String              @id @default(cuid())
+  name         String
+  description  String              @db.Text
+  category     AchievementCategory
+  rarity       AchievementRarity
+  icon_url     String?
+  requirements Json
+  rewards      Json?
+  points       Int                 @default(0)
+  hidden       Boolean             @default(false)
+  seasonal     Boolean             @default(false)
+  start_date   DateTime?
+  end_date     DateTime?
+  created_at   DateTime            @default(now())
+
+  user_achievements UserAchievement[]
+
+  @@index([category])
+  @@index([rarity])
+  @@index([seasonal])
+  @@map("achievements")
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  user_id   String
+  guild_id  String
+  badge_id  String
+  equipped  Boolean  @default(false)
+  earned_at DateTime @default(now())
+
+  badge Badge @relation(fields: [badge_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, guild_id, badge_id])
+  @@index([user_id, guild_id])
+  @@index([badge_id])
+  @@index([equipped])
+  @@map("user_badges")
+}
+
+model Badge {
+  id          String            @id @default(cuid())
+  name        String
+  description String            @db.Text
+  icon_url    String
+  color       String            @default("#000000")
+  rarity      AchievementRarity
+  obtainable  Boolean           @default(true)
+  created_at  DateTime          @default(now())
+
+  user_badges UserBadge[]
+
+  @@index([rarity])
+  @@index([obtainable])
+  @@map("badges")
+}
+
+model Marriage {
+  id            String         @id @default(cuid())
+  user_id       String
+  partner_id    String
+  guild_id      String
+  status        MarriageStatus @default(SINGLE)
+  married_at    DateTime?
+  divorced_at   DateTime?
+  proposal_date DateTime?
+  love_points   Int            @default(0)
+  anniversary   DateTime?
+  created_at    DateTime       @default(now())
+
+  @@unique([user_id, guild_id])
+  @@index([partner_id])
+  @@index([status])
+  @@index([anniversary])
+  @@map("marriages")
+}
+
+model UserStats {
+  id                       String   @id @default(cuid())
+  user_id                  String
+  guild_id                 String
+  total_commands_used      Int      @default(0)
+  total_messages_sent      Int      @default(0)
+  total_voice_time         BigInt   @default(0)
+  total_reactions_given    Int      @default(0)
+  total_reactions_received Int      @default(0)
+  total_casino_wins        Int      @default(0)
+  total_casino_losses      Int      @default(0)
+  total_money_won          BigInt   @default(0)
+  total_money_lost         BigInt   @default(0)
+  biggest_win              BigInt   @default(0)
+  biggest_loss             BigInt   @default(0)
+  win_streak               Int      @default(0)
+  loss_streak              Int      @default(0)
+  reputation_points        Int      @default(0)
+  created_at               DateTime @default(now())
+  updated_at               DateTime @updatedAt
+
+  @@unique([user_id, guild_id])
+  @@index([guild_id])
+  @@index([reputation_points])
+  @@map("user_stats")
+}
+
+model GlobalLeaderboard {
+  id         String   @id @default(cuid())
+  user_id    String
+  metric     String
+  value      BigInt
+  rank       Int
+  updated_at DateTime @updatedAt
+  created_at DateTime @default(now())
+
+  @@unique([user_id, metric])
+  @@index([metric, rank])
+  @@index([updated_at])
+  @@map("global_leaderboards")
+}
+
+model TicketTemplate {
+  id                   String   @id @default(cuid())
+  guild_id             String
+  name                 String
+  title                String
+  description          String   @db.Text
+  color                String   @default("#5865f2")
+  emoji                String?
+  category_id          String?
+  auto_assign_role     String?
+  welcome_message      String?  @db.Text
+  required_fields      Json?
+  custom_fields        Json?
+  ping_roles           String[]
+  max_tickets_per_user Int?     @default(1)
+  cooldown_minutes     Int?     @default(0)
+  enabled              Boolean  @default(true)
+  position             Int      @default(0)
+  created_by_id        String
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
+
+  tickets TicketFromTemplate[]
+
+  @@unique([guild_id, name])
+  @@index([guild_id])
+  @@index([enabled])
+  @@index([position])
+  @@map("ticket_templates")
+}
+
+model TicketFromTemplate {
+  id          String   @id @default(cuid())
+  ticket_id   String   @unique
+  template_id String
+  field_data  Json?
+  created_at  DateTime @default(now())
+
+  ticket   Ticket         @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+  template TicketTemplate @relation(fields: [template_id], references: [id], onDelete: Cascade)
+
+  @@index([template_id])
+  @@map("ticket_from_template")
+}
+
+model TicketTag {
+  id       String        @id @default(cuid())
+  guild_id String
+  name     String
+  color    String        @default("#5865f2")
+  type     TicketTagType @default(CUSTOM)
+  emoji    String?
+  enabled  Boolean       @default(true)
+
+  ticket_assignments TicketTagAssignment[]
+
+  @@unique([guild_id, name])
+  @@index([guild_id])
+  @@index([type])
+  @@map("ticket_tags")
+}
+
+model TicketTagAssignment {
+  id        String   @id @default(cuid())
+  ticket_id String
+  tag_id    String
+  added_by  String
+  added_at  DateTime @default(now())
+
+  ticket Ticket    @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+  tag    TicketTag @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+
+  @@unique([ticket_id, tag_id])
+  @@index([ticket_id])
+  @@index([tag_id])
+  @@map("ticket_tag_assignments")
+}
+
+model TicketNote {
+  id         String   @id @default(cuid())
+  ticket_id  String
+  author_id  String
+  content    String   @db.Text
+  internal   Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+
+  @@index([ticket_id])
+  @@index([author_id])
+  @@index([internal])
+  @@map("ticket_notes")
+}
+
+model TicketSLA {
+  id                  String         @id @default(cuid())
+  guild_id            String
+  name                String
+  priority_level      TicketPriority
+  first_response_time Int // minutes
+  resolution_time     Int // minutes
+  business_hours_only Boolean        @default(false)
+  escalation_enabled  Boolean        @default(false)
+  escalation_role_id  String?
+  escalation_delay    Int? // minutes
+  enabled             Boolean        @default(true)
+  created_at          DateTime       @default(now())
+
+  sla_violations TicketSLAViolation[]
+
+  @@unique([guild_id, name])
+  @@index([guild_id])
+  @@index([priority_level])
+  @@map("ticket_sla")
+}
+
+model TicketSLAViolation {
+  id             String    @id @default(cuid())
+  ticket_id      String
+  sla_id         String
+  violation_type String // "first_response" or "resolution"
+  expected_time  DateTime
+  actual_time    DateTime?
+  escalated      Boolean   @default(false)
+  escalated_at   DateTime?
+  resolved       Boolean   @default(false)
+  created_at     DateTime  @default(now())
+
+  ticket Ticket    @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+  sla    TicketSLA @relation(fields: [sla_id], references: [id], onDelete: Cascade)
+
+  @@unique([ticket_id, sla_id, violation_type])
+  @@index([ticket_id])
+  @@index([sla_id])
+  @@index([escalated])
+  @@map("ticket_sla_violations")
+}
+
+model KnowledgeBase {
+  id          String   @id @default(cuid())
+  guild_id    String
+  title       String
+  content     String   @db.Text
+  category    String
+  tags        String[]
+  views       Int      @default(0)
+  helpful     Int      @default(0)
+  not_helpful Int      @default(0)
+  searchable  Boolean  @default(true)
+  public      Boolean  @default(true)
+  author_id   String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  feedback KnowledgeBaseFeedback[]
+
+  @@index([guild_id])
+  @@index([category])
+  @@index([public])
+  @@index([searchable])
+  @@index([title])
+  @@map("knowledge_base")
+}
+
+model KnowledgeBaseFeedback {
+  id         String   @id @default(cuid())
+  kb_id      String
+  user_id    String
+  helpful    Boolean
+  comment    String?  @db.Text
+  created_at DateTime @default(now())
+
+  knowledge_base KnowledgeBase @relation(fields: [kb_id], references: [id], onDelete: Cascade)
+
+  @@unique([kb_id, user_id])
+  @@index([kb_id])
+  @@index([helpful])
+  @@map("knowledge_base_feedback")
+}
+
+model TicketRating {
+  id        String   @id @default(cuid())
+  ticket_id String   @unique
+  rating    Int // 1-5 stars
+  feedback  String?  @db.Text
+  rated_by  String
+  rated_at  DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+
+  @@index([rating])
+  @@index([rated_at])
+  @@map("ticket_ratings")
+}
+
+model CaptchaChallenge {
+  id             String      @id @default(cuid())
+  user_id        String
+  guild_id       String
+  challenge_type CaptchaType
+  challenge_data Json
+  solution       String?
+  attempts       Int         @default(0)
+  max_attempts   Int         @default(3)
+  completed      Boolean     @default(false)
+  failed         Boolean     @default(false)
+  expires_at     DateTime
+  completed_at   DateTime?
+  created_at     DateTime    @default(now())
+
+  @@unique([user_id, guild_id])
+  @@index([guild_id])
+  @@index([expires_at])
+  @@index([completed])
+  @@index([failed])
+  @@map("captcha_challenges")
+}
+
+model JoinLog {
+  id               String    @id @default(cuid())
+  user_id          String
+  guild_id         String
+  username         String
+  discriminator    String
+  avatar_url       String?
+  account_age_days Int
+  join_type        JoinType
+  invite_code      String?
+  inviter_id       String?
+  ip_address       String?
+  country          String?
+  device_info      String?
+  suspicious_flags String[]
+  risk_score       Float     @default(0.0)
+  action_taken     String?
+  joined_at        DateTime  @default(now())
+  left_at          DateTime?
+
+  @@index([user_id])
+  @@index([guild_id])
+  @@index([join_type])
+  @@index([risk_score])
+  @@index([joined_at])
+  @@map("join_logs")
+}
+
+model CustomAutoModRule {
+  id                  String               @id @default(cuid())
+  guild_id            String
+  name                String
+  description         String?              @db.Text
+  regex_pattern       String               @db.Text
+  case_sensitive      Boolean              @default(false)
+  whole_word          Boolean              @default(false)
+  enabled             Boolean              @default(true)
+  trigger_count       Int                  @default(1)
+  time_window         Int                  @default(60) // seconds
+  action              AutoModerationAction
+  punishment_duration Int? // minutes for timeout/ban
+  delete_message      Boolean              @default(true)
+  send_warning        Boolean              @default(false)
+  log_violation       Boolean              @default(true)
+  exempt_roles        String[]
+  exempt_channels     String[]
+  exempt_permissions  String[]
+  whitelist_urls      String[]
+  created_by_id       String
+  created_at          DateTime             @default(now())
+  updated_at          DateTime             @updatedAt
+
+  violations CustomAutoModViolation[]
+
+  @@unique([guild_id, name])
+  @@index([guild_id])
+  @@index([enabled])
+  @@map("custom_automod_rules")
+}
+
+model CustomAutoModViolation {
+  id           String   @id @default(cuid())
+  rule_id      String
+  user_id      String
+  guild_id     String
+  channel_id   String
+  message_id   String?
+  content      String?  @db.Text
+  matched_text String?
+  action_taken String
+  timestamp    DateTime @default(now())
+
+  rule CustomAutoModRule @relation(fields: [rule_id], references: [id], onDelete: Cascade)
+
+  @@index([rule_id])
+  @@index([user_id, guild_id])
+  @@index([timestamp])
+  @@map("custom_automod_violations")
+}
+
+model RaidDetection {
+  id                String    @id @default(cuid())
+  guild_id          String
+  detection_type    String // "mass_join", "mass_mention", "spam_wave", etc.
+  trigger_count     Int
+  time_window       Int // seconds
+  confidence_score  Float
+  affected_users    String[]
+  channels_affected String[]
+  auto_action_taken String?
+  status            String    @default("active") // "active", "resolved", "false_positive"
+  resolved_by_id    String?
+  resolved_at       DateTime?
+  notes             String?   @db.Text
+  detected_at       DateTime  @default(now())
+
+  @@index([guild_id])
+  @@index([detection_type])
+  @@index([detected_at])
+  @@index([status])
+  @@map("raid_detection")
+}
+
+model MassActionLog {
+  id            String    @id @default(cuid())
+  guild_id      String
+  moderator_id  String
+  action_type   String // "mass_ban", "mass_kick", "mass_timeout", "mass_role"
+  target_users  String[]
+  reason        String    @db.Text
+  success_count Int       @default(0)
+  failed_count  Int       @default(0)
+  failed_users  String[]
+  metadata      Json?
+  completed     Boolean   @default(false)
+  started_at    DateTime  @default(now())
+  completed_at  DateTime?
+
+  @@index([guild_id])
+  @@index([moderator_id])
+  @@index([action_type])
+  @@index([started_at])
+  @@map("mass_action_logs")
+}
+
+model QuarantineUser {
+  id             String    @id @default(cuid())
+  user_id        String
+  guild_id       String
+  reason         String    @db.Text
+  quarantined_by String
+  role_backup    String[]
+  channel_backup String[]
+  auto_release   Boolean   @default(false)
+  release_at     DateTime?
+  released       Boolean   @default(false)
+  released_by    String?
+  released_at    DateTime?
+  created_at     DateTime  @default(now())
+
+  @@unique([user_id, guild_id])
+  @@index([guild_id])
+  @@index([quarantined_by])
+  @@index([auto_release])
+  @@index([released])
+  @@map("quarantine_users")
+}
+
+model IPTracker {
+  id                String   @id @default(cuid())
+  ip_address        String
+  guild_id          String
+  associated_users  String[]
+  country           String?
+  city              String?
+  isp               String?
+  is_vpn            Boolean  @default(false)
+  is_proxy          Boolean  @default(false)
+  risk_score        Float    @default(0.0)
+  blocked           Boolean  @default(false)
+  blocked_reason    String?
+  blocked_by        String?
+  first_seen_at     DateTime @default(now())
+  last_seen_at      DateTime @default(now())
+  total_connections Int      @default(1)
+
+  @@unique([ip_address, guild_id])
+  @@index([guild_id])
+  @@index([risk_score])
+  @@index([blocked])
+  @@index([is_vpn])
+  @@index([last_seen_at])
+  @@map("ip_tracker")
+}
+
+model ServerTemplate {
+  id              String   @id @default(cuid())
+  template_id     String   @unique
+  name            String
+  description     String?  @db.Text
+  icon_url        String?
+  banner_url      String?
+  template_data   Json
+  categories      String[]
+  tags            String[]
+  public          Boolean  @default(false)
+  verified        Boolean  @default(false)
+  featured        Boolean  @default(false)
+  usage_count     Int      @default(0)
+  rating          Float    @default(0.0)
+  rating_count    Int      @default(0)
+  created_by_id   String
+  source_guild_id String
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  uses    ServerTemplateUsage[]
+  ratings ServerTemplateRating[]
+
+  @@index([public])
+  @@index([verified])
+  @@index([featured])
+  @@index([usage_count])
+  @@index([rating])
+  @@index([created_by_id])
+  @@index([name])
+  @@map("server_templates")
+}
+
+model ServerTemplateUsage {
+  id          String   @id @default(cuid())
+  template_id String
+  user_id     String
+  guild_id    String
+  used_at     DateTime @default(now())
+
+  template ServerTemplate @relation(fields: [template_id], references: [id], onDelete: Cascade)
+
+  @@index([template_id])
+  @@index([user_id])
+  @@index([guild_id])
+  @@map("server_template_usage")
+}
+
+model ServerTemplateRating {
+  id          String   @id @default(cuid())
+  template_id String
+  user_id     String
+  rating      Int // 1-5 stars
+  review      String?  @db.Text
+  created_at  DateTime @default(now())
+
+  template ServerTemplate @relation(fields: [template_id], references: [id], onDelete: Cascade)
+
+  @@unique([template_id, user_id])
+  @@index([template_id])
+  @@index([rating])
+  @@map("server_template_ratings")
+}
+
+model BackupSchedule {
+  id               String                  @id @default(cuid())
+  guild_id         String
+  name             String
+  backup_type      BackupType
+  frequency        BackupScheduleFrequency
+  custom_cron      String?
+  enabled          Boolean                 @default(true)
+  retain_count     Int                     @default(5)
+  include_messages Boolean                 @default(false)
+  include_files    Boolean                 @default(false)
+  channels         String[]
+  roles            String[]
+  categories       String[]
+  next_run         DateTime?
+  last_run         DateTime?
+  last_success     DateTime?
+  created_by_id    String
+  created_at       DateTime                @default(now())
+  updated_at       DateTime                @updatedAt
+
+  backups BackupExecution[]
+
+  @@unique([guild_id, name])
+  @@index([guild_id])
+  @@index([enabled])
+  @@index([next_run])
+  @@map("backup_schedules")
+}
+
+model BackupExecution {
+  id             String     @id @default(cuid())
+  schedule_id    String?
+  guild_id       String
+  backup_id      String     @unique
+  name           String
+  backup_type    BackupType
+  status         String     @default("in_progress") // "in_progress", "completed", "failed"
+  progress       Int        @default(0)
+  backup_data    Json?
+  file_url       String?
+  size_bytes     BigInt?
+  error_message  String?    @db.Text
+  channels_count Int?
+  roles_count    Int?
+  messages_count Int?
+  files_count    Int?
+  started_by_id  String
+  started_at     DateTime   @default(now())
+  completed_at   DateTime?
+
+  schedule     BackupSchedule?     @relation(fields: [schedule_id], references: [id], onDelete: SetNull)
+  restorations BackupRestoration[]
+
+  @@index([guild_id])
+  @@index([schedule_id])
+  @@index([status])
+  @@index([started_at])
+  @@map("backup_executions")
+}
+
+model BackupRestoration {
+  id               String    @id @default(cuid())
+  backup_id        String
+  guild_id         String
+  target_guild_id  String?
+  restore_type     String // "full", "channels", "roles", "specific"
+  items_to_restore Json
+  status           String    @default("in_progress") // "in_progress", "completed", "failed"
+  progress         Int       @default(0)
+  error_message    String?   @db.Text
+  restored_items   Json?
+  started_by_id    String
+  started_at       DateTime  @default(now())
+  completed_at     DateTime?
+
+  backup BackupExecution @relation(fields: [backup_id], references: [backup_id], onDelete: Cascade)
+
+  @@index([backup_id])
+  @@index([guild_id])
+  @@index([target_guild_id])
+  @@index([status])
+  @@index([started_at])
+  @@map("backup_restorations")
+}
+
+model ClonedServer {
+  id              String   @id @default(cuid())
+  source_guild_id String
+  target_guild_id String
+  clone_type      String // "full", "structure", "partial"
+  cloned_items    Json
+  created_by_id   String
+  created_at      DateTime @default(now())
+
+  @@index([source_guild_id])
+  @@index([target_guild_id])
+  @@index([created_by_id])
+  @@map("cloned_servers")
+}
+
+model SocialNotification {
+  id                    String              @id @default(cuid())
+  guild_id              String
+  channel_id            String
+  platform              SocialPlatform
+  platform_user_id      String
+  platform_username     String
+  platform_display_name String?
+  trigger_type          NotificationTrigger
+  message_template      String              @db.Text
+  embed_template        Json?
+  role_to_ping          String?
+  enabled               Boolean             @default(true)
+  last_post_id          String?
+  last_notification_at  DateTime?
+  check_interval        Int                 @default(300) // seconds
+  custom_webhook_url    String?
+  filter_keywords       String[]
+  exclude_keywords      String[]
+  min_followers         Int?
+  created_by_id         String
+  created_at            DateTime            @default(now())
+  updated_at            DateTime            @updatedAt
+
+  posts SocialPost[]
+
+  @@unique([guild_id, platform, platform_user_id, trigger_type])
+  @@index([guild_id])
+  @@index([platform])
+  @@index([enabled])
+  @@index([last_notification_at])
+  @@map("social_notifications")
+}
+
+model SocialPost {
+  id               String   @id @default(cuid())
+  notification_id  String
+  platform_post_id String
+  content          String?  @db.Text
+  author_name      String
+  author_avatar    String?
+  media_urls       String[]
+  post_url         String
+  published_at     DateTime
+  likes_count      Int?
+  shares_count     Int?
+  comments_count   Int?
+  notified_at      DateTime @default(now())
+
+  notification SocialNotification @relation(fields: [notification_id], references: [id], onDelete: Cascade)
+
+  @@unique([notification_id, platform_post_id])
+  @@index([notification_id])
+  @@index([published_at])
+  @@map("social_posts")
+}
+
+model CryptoAlert {
+  id                String          @id @default(cuid())
+  guild_id          String
+  channel_id        String
+  user_id           String
+  symbol            String          @db.VarChar(20)
+  name              String
+  alert_type        CryptoAlertType
+  target_value      Float
+  current_value     Float?
+  percentage_change Float?
+  triggered         Boolean         @default(false)
+  triggered_at      DateTime?
+  message_template  String?         @db.Text
+  role_to_ping      String?
+  enabled           Boolean         @default(true)
+  created_at        DateTime        @default(now())
+  updated_at        DateTime        @updatedAt
+
+  @@index([guild_id])
+  @@index([user_id])
+  @@index([symbol])
+  @@index([triggered])
+  @@index([enabled])
+  @@map("crypto_alerts")
+}
+
+model CryptoPriceHistory {
+  id          String   @id @default(cuid())
+  symbol      String   @db.VarChar(20)
+  price_usd   Float
+  market_cap  BigInt?
+  volume_24h  BigInt?
+  change_24h  Float?
+  change_7d   Float?
+  recorded_at DateTime @default(now())
+
+  @@unique([symbol, recorded_at])
+  @@index([symbol])
+  @@index([recorded_at])
+  @@map("crypto_price_history")
+}
+
+model WeatherAlert {
+  id               String           @id @default(cuid())
+  guild_id         String
+  channel_id       String
+  user_id          String
+  location         String
+  latitude         Float?
+  longitude        Float?
+  alert_type       WeatherAlertType
+  condition        String // "above", "below", "equals"
+  threshold_value  Float
+  current_value    Float?
+  triggered        Boolean          @default(false)
+  triggered_at     DateTime?
+  message_template String?          @db.Text
+  role_to_ping     String?
+  enabled          Boolean          @default(true)
+  created_at       DateTime         @default(now())
+  updated_at       DateTime         @updatedAt
+
+  @@index([guild_id])
+  @@index([user_id])
+  @@index([location])
+  @@index([triggered])
+  @@index([enabled])
+  @@map("weather_alerts")
+}
+
+model WeatherData {
+  id              String   @id @default(cuid())
+  location        String
+  latitude        Float
+  longitude       Float
+  temperature     Float
+  feels_like      Float
+  humidity        Int
+  pressure        Float
+  visibility      Float?
+  uv_index        Float?
+  wind_speed      Float?
+  wind_direction  Int?
+  condition       String
+  description     String
+  precipitation   Float?
+  air_quality_aqi Int?
+  recorded_at     DateTime @default(now())
+
+  @@unique([location, recorded_at])
+  @@index([location])
+  @@index([recorded_at])
+  @@map("weather_data")
+}
+
+model RSSFeed {
+  id               String    @id @default(cuid())
+  guild_id         String
+  channel_id       String
+  feed_url         String
+  feed_title       String?
+  feed_description String?   @db.Text
+  last_updated     DateTime?
+  last_post_id     String?
+  check_interval   Int       @default(1800) // seconds
+  message_template String?   @db.Text
+  embed_enabled    Boolean   @default(true)
+  role_to_ping     String?
+  enabled          Boolean   @default(true)
+  created_by_id    String
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  posts RSSPost[]
+
+  @@unique([guild_id, feed_url])
+  @@index([guild_id])
+  @@index([enabled])
+  @@index([last_updated])
+  @@map("rss_feeds")
+}
+
+model RSSPost {
+  id           String   @id @default(cuid())
+  feed_id      String
+  post_id      String
+  title        String
+  description  String?  @db.Text
+  link         String
+  author       String?
+  published_at DateTime
+  notified_at  DateTime @default(now())
+
+  feed RSSFeed @relation(fields: [feed_id], references: [id], onDelete: Cascade)
+
+  @@unique([feed_id, post_id])
+  @@index([feed_id])
+  @@index([published_at])
+  @@map("rss_posts")
+}
+
+model TranslationCache {
+  id               String              @id @default(cuid())
+  source_text_hash String              @unique
+  source_text      String              @db.Text
+  source_language  String
+  target_language  String
+  translated_text  String              @db.Text
+  provider         TranslationProvider
+  confidence_score Float?
+  character_count  Int
+  created_at       DateTime            @default(now())
+  expires_at       DateTime?
+
+  @@index([source_language, target_language])
+  @@index([provider])
+  @@index([created_at])
+  @@index([expires_at])
+  @@map("translation_cache")
+}
+
+model APIUsage {
+  id         String   @id @default(cuid())
+  guild_id   String
+  user_id    String?
+  service    String // "weather", "crypto", "translate", "social"
+  endpoint   String
+  requests   Int      @default(1)
+  date       DateTime @db.Date
+  created_at DateTime @default(now())
+
+  @@unique([guild_id, user_id, service, endpoint, date])
+  @@index([guild_id])
+  @@index([service])
+  @@index([date])
+  @@map("api_usage")
+}
+
+model TempVoiceChannel {
+  id               String    @id @default(cuid())
+  guild_id         String
+  channel_id       String    @unique
+  owner_id         String
+  parent_category  String?
+  channel_name     String
+  user_limit       Int?
+  bitrate          Int?
+  region           String?
+  allowed_users    String[]
+  banned_users     String[]
+  locked           Boolean   @default(false)
+  hidden           Boolean   @default(false)
+  auto_delete      Boolean   @default(true)
+  delete_timeout   Int       @default(300) // seconds after empty
+  activity_timeout Int       @default(600) // seconds of inactivity
+  last_activity    DateTime  @default(now())
+  created_at       DateTime  @default(now())
+  expires_at       DateTime?
+
+  @@index([guild_id])
+  @@index([owner_id])
+  @@index([auto_delete])
+  @@index([expires_at])
+  @@index([last_activity])
+  @@map("temp_voice_channels")
+}
+
+model VoiceChannelTemplate {
+  id               String   @id @default(cuid())
+  guild_id         String
+  template_name    String
+  channel_name     String // Can include variables like {user}, {count}
+  category_id      String?
+  user_limit       Int?
+  bitrate          Int?
+  region           String?
+  permissions      Json?
+  auto_role        String?
+  delete_timeout   Int      @default(300)
+  activity_timeout Int      @default(600)
+  enabled          Boolean  @default(true)
+  created_by_id    String
+  created_at       DateTime @default(now())
+
+  @@unique([guild_id, template_name])
+  @@index([guild_id])
+  @@index([enabled])
+  @@map("voice_channel_templates")
+}
+
+model BumpReminder {
+  id               String    @id @default(cuid())
+  guild_id         String    @unique
+  channel_id       String
+  message_template String    @db.Text
+  interval_hours   Int       @default(2)
+  role_to_ping     String?
+  next_bump_at     DateTime
+  last_bump_at     DateTime?
+  auto_bump        Boolean   @default(false)
+  enabled          Boolean   @default(true)
+  created_by_id    String
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  logs BumpLog[]
+
+  @@index([guild_id])
+  @@index([next_bump_at])
+  @@index([enabled])
+  @@map("bump_reminders")
+}
+
+model BumpLog {
+  id          String   @id @default(cuid())
+  reminder_id String
+  guild_id    String
+  bumped_by   String
+  bumped_at   DateTime @default(now())
+  auto_bump   Boolean  @default(false)
+
+  reminder BumpReminder @relation(fields: [reminder_id], references: [id], onDelete: Cascade)
+
+  @@index([reminder_id])
+  @@index([guild_id])
+  @@index([bumped_at])
+  @@map("bump_logs")
+}
+
+model AutoRole {
+  id            String   @id @default(cuid())
+  guild_id      String
+  role_id       String
+  trigger       String // "join", "boost", "react", "button", "verification"
+  conditions    Json? // Additional conditions for role assignment
+  delay         Int? // Delay in seconds
+  message_id    String? // For reaction/button roles
+  emoji         String? // For reaction roles
+  button_data   Json? // For button roles
+  enabled       Boolean  @default(true)
+  position      Int      @default(0)
+  created_by_id String
+  created_at    DateTime @default(now())
+
+  assignments AutoRoleAssignment[]
+
+  @@index([guild_id])
+  @@index([trigger])
+  @@index([enabled])
+  @@index([message_id])
+  @@map("auto_roles")
+}
+
+model AutoRoleAssignment {
+  id           String    @id @default(cuid())
+  auto_role_id String
+  user_id      String
+  guild_id     String
+  assigned_at  DateTime  @default(now())
+  removed_at   DateTime?
+
+  auto_role AutoRole @relation(fields: [auto_role_id], references: [id], onDelete: Cascade)
+
+  @@unique([auto_role_id, user_id])
+  @@index([user_id, guild_id])
+  @@index([assigned_at])
+  @@map("auto_role_assignments")
+}
+
+model VoiceActivity {
+  id               String    @id @default(cuid())
+  user_id          String
+  guild_id         String
+  channel_id       String
+  session_start    DateTime  @default(now())
+  session_end      DateTime?
+  duration_seconds Int?
+  muted            Boolean   @default(false)
+  deafened         Boolean   @default(false)
+  streaming        Boolean   @default(false)
+  camera           Boolean   @default(false)
+
+  @@index([user_id, guild_id])
+  @@index([channel_id])
+  @@index([session_start])
+  @@index([duration_seconds])
+  @@map("voice_activity")
+}
+
+model MessageTemplate {
+  id            String   @id @default(cuid())
+  guild_id      String
+  name          String
+  description   String?  @db.Text
+  content       String   @db.Text
+  embed_data    Json?
+  variables     String[] // Available variables like {user}, {server}, etc.
+  category      String   @default("general")
+  uses          Int      @default(0)
+  enabled       Boolean  @default(true)
+  created_by_id String
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@unique([guild_id, name])
+  @@index([guild_id])
+  @@index([category])
+  @@index([enabled])
+  @@map("message_templates")
+}
+
+model AutoModerationWhitelist {
+  id            String   @id @default(cuid())
+  guild_id      String
+  type          String // "url", "word", "regex", "user", "role", "channel"
+  value         String
+  description   String?
+  enabled       Boolean  @default(true)
+  created_by_id String
+  created_at    DateTime @default(now())
+
+  @@unique([guild_id, type, value])
+  @@index([guild_id])
+  @@index([type])
+  @@index([enabled])
+  @@map("automod_whitelist")
+}
+
+model ServerStats {
+  id              String    @id @default(cuid())
+  guild_id        String
+  stat_type       String // "members", "bots", "online", "channels", "roles"
+  channel_id      String
+  format_string   String    @default("{stat}")
+  update_interval Int       @default(600) // seconds
+  last_updated    DateTime?
+  enabled         Boolean   @default(true)
+  created_by_id   String
+  created_at      DateTime  @default(now())
+
+  @@unique([guild_id, stat_type, channel_id])
+  @@index([guild_id])
+  @@index([enabled])
+  @@index([last_updated])
+  @@map("server_stats")
+}
+
+model AFKSystem {
+  id       String   @id @default(cuid())
+  user_id  String
+  guild_id String
+  reason   String?  @db.Text
+  set_at   DateTime @default(now())
+  mentions Int      @default(0)
+
+  @@unique([user_id, guild_id])
+  @@index([guild_id])
+  @@index([set_at])
+  @@map("afk_system")
+}
+
+model CustomEmoji {
+  id          String   @id @default(cuid())
+  guild_id    String
+  emoji_id    String
+  name        String
+  animated    Boolean  @default(false)
+  url         String
+  uses        Int      @default(0)
+  uploaded_by String
+  uploaded_at DateTime @default(now())
+
+  @@unique([guild_id, emoji_id])
+  @@index([guild_id])
+  @@index([name])
+  @@index([uses])
+  @@map("custom_emojis")
+}
+
+model LogConfiguration {
+  id               String         @id @default(cuid())
+  guild_id         String
+  category         LogCategory
+  enabled          Boolean        @default(true)
+  events           LogEventType[]
+  log_level        LogLevel       @default(INFO)
+  retention_period LogRetention   @default(THREE_MONTHS)
+  include_metadata Boolean        @default(true)
+  include_content  Boolean        @default(false) // For message content
+  rate_limit       Int? // Max logs per minute for this category
+  created_by_id    String
+  created_at       DateTime       @default(now())
+  updated_at       DateTime       @updatedAt
+
+  guild_config GuildConfig        @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+  channels     LogChannelConfig[]
+  filters      LogFilter[]
+  alerts       LogAlert[]
+
+  @@unique([guild_id, category])
+  @@index([guild_id])
+  @@index([enabled])
+  @@map("log_configurations")
+}
+
+model LogChannelConfig {
+  id               String   @id @default(cuid())
+  configuration_id String
+  channel_id       String
+  webhook_url      String?
+  custom_format    String?  @db.Text
+  embed_enabled    Boolean  @default(true)
+  mention_roles    String[]
+  color_scheme     Json?
+  created_at       DateTime @default(now())
+
+  configuration LogConfiguration @relation(fields: [configuration_id], references: [id], onDelete: Cascade)
+
+  @@unique([configuration_id, channel_id])
+  @@index([configuration_id])
+  @@index([channel_id])
+  @@map("log_channel_configs")
+}
+
+model EventLog {
+  id               String       @id @default(cuid())
+  guild_id         String
+  event_id         String       @unique @default(cuid())
+  category         LogCategory
+  event_type       LogEventType
+  level            LogLevel     @default(INFO)
+  user_id          String?
+  target_user_id   String?
+  moderator_id     String?
+  channel_id       String?
+  message_id       String?
+  title            String
+  description      String?      @db.Text
+  metadata         Json?
+  ip_address       String?
+  user_agent       String?
+  session_id       String?
+  correlation_id   String? // For linking related events
+  error_stack      String?      @db.Text
+  performance_data Json?
+  tags             String[]
+  search_vector    String? // For text search optimization
+  archived         Boolean      @default(false)
+  created_at       DateTime     @default(now())
+
+  related_events   EventLog[]          @relation("RelatedEvents")
+  parent_event     EventLog?           @relation("RelatedEvents", fields: [correlation_id], references: [event_id])
+  alert_executions LogAlertExecution[]
+
+  @@index([guild_id])
+  @@index([category])
+  @@index([event_type])
+  @@index([level])
+  @@index([user_id])
+  @@index([moderator_id])
+  @@index([created_at])
+  @@index([correlation_id])
+  @@index([archived])
+  @@index([guild_id, category, created_at])
+  @@index([guild_id, user_id, created_at])
+  @@map("event_logs")
+}
+
+model LogFilter {
+  id               String   @id @default(cuid())
+  configuration_id String
+  name             String
+  filter_type      String // "include", "exclude", "transform"
+  conditions       Json // Complex filter conditions
+  actions          Json? // Actions to take when filter matches
+  priority         Int      @default(0)
+  enabled          Boolean  @default(true)
+  created_by_id    String
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  configuration LogConfiguration @relation(fields: [configuration_id], references: [id], onDelete: Cascade)
+
+  @@unique([configuration_id, name])
+  @@index([configuration_id])
+  @@index([enabled])
+  @@index([priority])
+  @@map("log_filters")
+}
+
+model LogAlert {
+  id                    String         @id @default(cuid())
+  configuration_id      String
+  name                  String
+  description           String?        @db.Text
+  trigger_events        LogEventType[]
+  trigger_level         LogLevel       @default(WARN)
+  conditions            Json // Alert conditions (frequency, patterns, etc.)
+  cooldown_minutes      Int            @default(5)
+  notification_channels String[]
+  webhook_urls          String[]
+  mention_roles         String[]
+  custom_message        String?        @db.Text
+  enabled               Boolean        @default(true)
+  last_triggered        DateTime?
+  trigger_count         Int            @default(0)
+  created_by_id         String
+  created_at            DateTime       @default(now())
+  updated_at            DateTime       @updatedAt
+
+  configuration LogConfiguration    @relation(fields: [configuration_id], references: [id], onDelete: Cascade)
+  executions    LogAlertExecution[]
+
+  @@unique([configuration_id, name])
+  @@index([configuration_id])
+  @@index([enabled])
+  @@index([last_triggered])
+  @@map("log_alerts")
+}
+
+model LogAlertExecution {
+  id            String   @id @default(cuid())
+  alert_id      String
+  event_log_id  String
+  triggered_at  DateTime @default(now())
+  success       Boolean  @default(true)
+  error_message String?  @db.Text
+  response_time Int? // milliseconds
+
+  alert     LogAlert @relation(fields: [alert_id], references: [id], onDelete: Cascade)
+  event_log EventLog @relation(fields: [event_log_id], references: [id], onDelete: Cascade)
+
+  @@index([alert_id])
+  @@index([triggered_at])
+  @@index([success])
+  @@map("log_alert_executions")
+}
+
+model LogArchive {
+  id                String       @id @default(cuid())
+  guild_id          String
+  archive_date      DateTime     @db.Date
+  category          LogCategory?
+  total_events      Int          @default(0)
+  file_path         String
+  file_size_bytes   BigInt
+  compression_type  String       @default("gzip")
+  encryption_key_id String?
+  checksum          String
+  created_at        DateTime     @default(now())
+
+  @@unique([guild_id, archive_date, category])
+  @@index([guild_id])
+  @@index([archive_date])
+  @@index([category])
+  @@map("log_archives")
+}
+
+model LogMetrics {
+  id                String       @id @default(cuid())
+  guild_id          String
+  category          LogCategory
+  event_type        LogEventType
+  date              DateTime     @db.Date
+  hour              Int?
+  event_count       Int          @default(0)
+  error_count       Int          @default(0)
+  warning_count     Int          @default(0)
+  avg_response_time Float?
+  created_at        DateTime     @default(now())
+
+  @@unique([guild_id, category, event_type, date, hour])
+  @@index([guild_id])
+  @@index([category])
+  @@index([date])
+  @@map("log_metrics")
+}
+
+model LogSession {
+  id               String    @id @default(cuid())
+  session_id       String    @unique
+  guild_id         String
+  user_id          String?
+  ip_address       String?
+  user_agent       String?
+  started_at       DateTime  @default(now())
+  ended_at         DateTime?
+  event_count      Int       @default(0)
+  last_activity_at DateTime  @default(now())
+  duration_seconds Int?
+  flags            String[]
+
+  @@index([guild_id])
+  @@index([user_id])
+  @@index([session_id])
+  @@index([started_at])
+  @@map("log_sessions")
 }

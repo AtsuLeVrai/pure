@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c8541eee-d01a-435d-9f6f-3028d7e951ee" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/utility/help.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/utility/help.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/prisma/schema.prisma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "AtsuLeVrai"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/AtsuLeVrai/pure.git",
+    "accountId": "e6807067-55ce-4cf3-8da0-44c27c3ea460"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 3
+}]]></component>
+  <component name="ProjectId" id="30xfw5AlKtZ9vMNgNtKWWtCGLNS" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Node.js.bot > help.ts.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "code.cleanup.on.save": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/minec/WebstormProjects/pure/apps/bot",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "pnpm",
+    "npm.biome:check.executor": "Run",
+    "npm.bot > bot:dev.executor": "Run",
+    "npm.bot > type-check.executor": "Run",
+    "npm.database > db:generate.executor": "Run",
+    "rearrange.code.on.save": "true",
+    "settings.editor.selected.configurable": "Settings.Biome",
+    "ts.external.directory.path": "C:\\Users\\minec\\WebstormProjects\\pure\\apps\\bot\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\minec\WebstormProjects\pure\apps\bot" />
+    </key>
+  </component>
+  <component name="RunManager" selected="npm.biome:check">
+    <configuration name="bot &gt; help.ts" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/apps/bot/src/commands/utility/help.ts" typescript-loader="bundled" working-dir="$PROJECT_DIR$/apps/bot/src/commands/utility">
+      <method v="2" />
+    </configuration>
+    <configuration name="biome:check" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="biome:check" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="bot &gt; bot:dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/apps/bot/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="bot:dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="bot &gt; type-check" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/apps/bot/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="type-check" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="database &gt; db:generate" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/packages/database/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="db:generate" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.biome:check" />
+        <item itemvalue="npm.bot &gt; type-check" />
+        <item itemvalue="npm.bot &gt; bot:dev" />
+        <item itemvalue="Node.js.bot &gt; help.ts" />
+        <item itemvalue="npm.database &gt; db:generate" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-WS-252.23892.411" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c8541eee-d01a-435d-9f6f-3028d7e951ee" name="Changes" comment="" />
+      <created>1754574381888</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1754574381888</updated>
+      <workItem from="1754574383265" duration="3054000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
