@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { env } from "@/env";
-import { logger } from "@/lib/logger";
 import { MetricsStore, MetricsUtils } from "@/lib/metrics";
 
 /**
@@ -27,15 +26,6 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
       }
     }
-
-    logger.info("Metrics endpoint accessed", {
-      format,
-      userAgent: request.headers.get("user-agent") || undefined,
-      ip:
-        request.headers.get("x-forwarded-for") ||
-        request.headers.get("x-real-ip") ||
-        "unknown",
-    });
 
     if (format === "prometheus") {
       // Return metrics in Prometheus format
@@ -64,11 +54,7 @@ export async function GET(request: Request) {
         },
       },
     );
-  } catch (error) {
-    logger.error("Failed to export metrics", {
-      error: error instanceof Error ? error : String(error),
-    });
-
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },
@@ -79,7 +65,7 @@ export async function GET(request: Request) {
 /**
  * POST /api/metrics/reset - Reset all metrics (development only)
  */
-export async function POST(request: Request) {
+export async function POST(_request: Request) {
   if (env.NODE_ENV === "production") {
     return NextResponse.json(
       { error: "Not allowed in production" },
@@ -90,20 +76,8 @@ export async function POST(request: Request) {
   try {
     MetricsStore.reset();
 
-    logger.info("Metrics reset", {
-      userAgent: request.headers.get("user-agent") || undefined,
-      ip:
-        request.headers.get("x-forwarded-for") ||
-        request.headers.get("x-real-ip") ||
-        "unknown",
-    });
-
     return NextResponse.json({ message: "Metrics reset successfully" });
-  } catch (error) {
-    logger.error("Failed to reset metrics", {
-      error: error instanceof Error ? error : String(error),
-    });
-
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

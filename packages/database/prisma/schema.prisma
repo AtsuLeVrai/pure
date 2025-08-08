@@ -1,3 +1,21 @@
+// ============================================================================
+// PURE DISCORD BOT - ENTERPRISE DATABASE SCHEMA
+// ============================================================================
+// 
+// This schema defines the complete data model for the Pure Discord Bot
+// platform, supporting advanced Discord server management, moderation,
+// economy systems, gaming features, and comprehensive analytics.
+//
+// Architecture:
+// - Guild-centric design with GuildConfig as the central hub
+// - Modular feature organization (moderation, economy, tickets, etc.)
+// - Comprehensive audit trails and analytics
+// - Enterprise-grade security and compliance features
+//
+// Database: PostgreSQL (production-ready with ACID compliance)
+// ID Strategy: CUID for all primary keys (collision-resistant, sortable)
+// ============================================================================
+
 generator client {
   provider = "prisma-client-js"
   output   = "../dist"
@@ -8,48 +26,63 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ============================================================================
+// ENUMERATION TYPES
+// ============================================================================
+// These enums define the valid values for various fields throughout the schema
+// and provide type safety at the database and application level.
+// ============================================================================
+
+/// Defines the types of moderation actions that can be performed
+/// Used in moderation logs, auto-moderation rules, and punishment systems
 enum ModerationType {
-  BAN
-  KICK
-  TIMEOUT
-  WARN
-  UNBAN
-  PURGE
-  LOCK
-  UNLOCK
-  SLOWMODE
-  MUTE
-  UNMUTE
-  CLEAR_WARNINGS
-  MASSBAN
-  NICKNAME
-  ANTIRAID
+  BAN // Permanently ban a user from the server
+  KICK // Remove a user from the server (can rejoin)
+  TIMEOUT // Temporarily restrict a user's ability to interact
+  WARN // Issue a formal warning to a user
+  UNBAN // Remove a permanent ban
+  PURGE // Bulk delete messages
+  LOCK // Lock a channel to prevent new messages
+  UNLOCK // Unlock a previously locked channel
+  SLOWMODE // Enable/modify channel slowmode settings
+  MUTE // Mute a user in voice channels
+  UNMUTE // Unmute a previously muted user
+  CLEAR_WARNINGS // Remove all warnings from a user
+  MASSBAN // Ban multiple users simultaneously
+  NICKNAME // Change or reset a user's nickname
+  ANTIRAID // Activate anti-raid protection measures
 }
 
+/// Lifecycle status of support tickets
+/// Controls workflow and permissions for ticket management
 enum TicketStatus {
-  OPEN
-  PENDING
-  RESOLVED
-  CLOSED
+  OPEN // Ticket is active and awaiting response
+  PENDING // Ticket is waiting for user response
+  RESOLVED // Issue has been resolved, awaiting confirmation
+  CLOSED // Ticket is permanently closed
 }
 
+/// Priority levels for support tickets
+/// Determines response time expectations and queue ordering
 enum TicketPriority {
-  LOW
-  MEDIUM
-  HIGH
-  URGENT
+  LOW // Response within 24-48 hours
+  MEDIUM // Response within 8-24 hours  
+  HIGH // Response within 2-8 hours
+  URGENT // Immediate response required
 }
 
+/// Types of economy transactions for comprehensive tracking
+/// Used for analytics, balancing, and audit trails
 enum EconomyTransactionType {
-  EARN
-  SPEND
-  TRANSFER
-  DAILY_REWARD
-  WEEKLY_REWARD
-  GAME_WIN
-  GAME_LOSS
-  SHOP_PURCHASE
-  ADMIN_ADJUSTMENT
+  EARN // User earned currency through activities
+  SPEND // User spent currency on items/services
+  TRANSFER // Currency transferred between users
+  DAILY_REWARD // Automated daily bonus distribution
+  WEEKLY_REWARD // Automated weekly bonus distribution
+  GAME_WIN // Currency won through gaming activities
+  GAME_LOSS // Currency lost through gaming activities
+  SHOP_PURCHASE // Purchase from the server shop
+  ADMIN_ADJUSTMENT // Manual adjustment by administrators
 }
 
 enum GiveawayStatus {
@@ -475,41 +508,158 @@ enum LogRetention {
   PERMANENT
 }
 
+// ============================================================================
+// CORE CONFIGURATION MODEL
+// ============================================================================
+
+/// Central configuration hub for Discord guild (server) settings
+/// 
+/// This model serves as the primary configuration store for all bot features
+/// within a Discord server. It follows a guild-centric architecture where
+/// each Discord server has exactly one configuration record that controls
+/// all bot behavior and feature enablement.
+/// 
+/// @businessLogic One configuration per Discord guild - enforced by unique constraint
+/// @performance Heavily cached due to frequent reads across all bot operations  
+/// @security Contains no sensitive user data, only server configuration
+/// @audit Changes to this model should be tracked via ConfigurationAudit
 model GuildConfig {
-  id       String @id @default(cuid())
-  guild_id String @unique
+  /// Internal unique identifier for this configuration record
+  /// @technical Uses CUID for collision-free distributed generation
+  id String @id @default(cuid())
 
-  // Moderation Configuration
-  moderation_enabled        Boolean @default(true)
-  moderation_log_channel_id String?
-  auto_moderation_enabled   Boolean @default(false)
-  anti_raid_enabled         Boolean @default(false)
+  /// Discord guild (server) ID - unique across all Discord servers
+  /// @constraint Must be a valid Discord snowflake ID (max 20 characters)
+  /// @businessRule One configuration per guild enforced by unique constraint
+  guild_id String @unique @db.VarChar(20)
 
-  // Leveling Configuration
-  leveling_enabled         Boolean @default(true)
-  leveling_channel_id      String?
-  xp_rate_multiplier       Float   @default(1.0)
+  // ========================================================================
+  // MODERATION SYSTEM CONFIGURATION
+  // ========================================================================
+
+  /// Enable/disable all moderation features for this guild
+  /// @default true - Most guilds require basic moderation capabilities
+  /// @impact Disabling this affects warnings, bans, kicks, and auto-moderation
+  moderation_enabled Boolean @default(true)
+
+  /// Discord channel ID where moderation actions are logged
+  /// @businessRule Optional - if not set, moderation logs are not sent
+  /// @validation Must be a valid Discord channel ID if provided
+  moderation_log_channel_id String? @db.VarChar(20)
+
+  /// Enable automated moderation based on predefined rules
+  /// @default false - Requires manual configuration of AutoModerationRule records
+  /// @performance Can impact message processing latency when enabled
+  auto_moderation_enabled Boolean @default(false)
+
+  /// Enable anti-raid protection measures
+  /// @default false - Activates enhanced monitoring for suspicious join patterns
+  /// @businessLogic Works in conjunction with SecurityAnalysis for pattern detection
+  anti_raid_enabled Boolean @default(false)
+
+  // ========================================================================
+  // LEVELING & XP SYSTEM CONFIGURATION
+  // ========================================================================
+
+  /// Enable/disable the XP and leveling system
+  /// @default true - Popular feature for member engagement
+  /// @performance Adds database writes on every qualifying message
+  leveling_enabled Boolean @default(true)
+
+  /// Discord channel ID where level-up announcements are sent
+  /// @businessRule Optional - if not set, level-ups are sent to current channel
+  leveling_channel_id String? @db.VarChar(20)
+
+  /// Multiplier applied to base XP gains (0.1 to 5.0 recommended range)
+  /// @default 1.0 - Standard XP rate
+  /// @businessRule Values below 0.1 or above 10.0 may cause poor user experience
+  /// @validation Should be between 0.1 and 10.0
+  xp_rate_multiplier Float @default(1.0)
+
+  /// Whether to send a message when users level up
+  /// @default true - Provides positive feedback for engagement
+  /// @performance Disabled reduces message posting overhead
   level_up_message_enabled Boolean @default(true)
 
-  // Economy Configuration
-  economy_enabled         Boolean @default(true)
-  economy_currency_name   String  @default("coins")
-  economy_currency_symbol String  @default("🪙")
-  daily_reward_amount     Int     @default(100)
-  weekly_reward_amount    Int     @default(700)
+  // ========================================================================
+  // ECONOMY SYSTEM CONFIGURATION  
+  // ========================================================================
 
-  // Ticket Configuration
-  tickets_enabled        Boolean @default(false)
-  tickets_category_id    String?
-  tickets_log_channel_id String?
+  /// Enable/disable the virtual economy system
+  /// @default true - Core engagement feature for most communities
+  /// @impact Affects daily rewards, shop, gambling, and transactions
+  economy_enabled Boolean @default(true)
 
-  // Welcome/Leave Configuration
-  welcome_enabled    Boolean @default(false)
-  welcome_channel_id String?
-  welcome_message    String?
-  leave_enabled      Boolean @default(false)
-  leave_channel_id   String?
-  leave_message      String?
+  /// Display name for the server's virtual currency
+  /// @default "coins" - Should be themed to server context
+  /// @validation Max 50 characters, no special characters except spaces
+  economy_currency_name String @default("coins") @db.VarChar(50)
+
+  /// Emoji symbol representing the currency in messages
+  /// @default "🪙" - Should be a single Unicode emoji or custom Discord emoji
+  /// @businessRule Custom emojis should use <:name:id> format
+  economy_currency_symbol String @default("🪙") @db.VarChar(100)
+
+  /// Amount awarded for daily reward claims
+  /// @default 100 - Should be balanced with shop item prices
+  /// @businessRule Recommend 1-10% of cheapest shop items
+  /// @validation Must be positive integer
+  daily_reward_amount Int @default(100) @db.Integer
+
+  /// Amount awarded for weekly reward claims  
+  /// @default 700 - Should be 7x daily amount for consistency
+  /// @businessRule Typically 5-10x daily reward amount
+  /// @validation Must be positive integer
+  weekly_reward_amount Int @default(700) @db.Integer
+
+  // ========================================================================
+  // SUPPORT TICKET SYSTEM CONFIGURATION
+  // ========================================================================
+
+  /// Enable/disable the support ticket system
+  /// @default false - Requires setup of ticket category and permissions
+  /// @businessRule Should only be enabled if staff can handle tickets
+  tickets_enabled Boolean @default(false)
+
+  /// Discord category ID where ticket channels are created
+  /// @businessRule Required if tickets_enabled is true
+  /// @technical Category should have appropriate permissions configured
+  tickets_category_id String? @db.VarChar(20)
+
+  /// Discord channel ID where ticket events are logged
+  /// @businessRule Optional - useful for staff coordination and metrics
+  tickets_log_channel_id String? @db.VarChar(20)
+
+  // ========================================================================
+  // WELCOME & FAREWELL SYSTEM CONFIGURATION
+  // ========================================================================
+
+  /// Enable welcome messages for new members
+  /// @default false - Requires configuration of channel and message
+  /// @performance Adds processing overhead on member joins
+  welcome_enabled Boolean @default(false)
+
+  /// Discord channel ID where welcome messages are sent
+  /// @businessRule Required if welcome_enabled is true
+  welcome_channel_id String? @db.VarChar(20)
+
+  /// Template message for welcoming new members
+  /// @businessRule Supports Discord markdown and mentions
+  /// @variables {user} - mentions the new user, {server} - server name
+  welcome_message String? @db.Text
+
+  /// Enable farewell messages when members leave
+  /// @default false - Less commonly used than welcome messages
+  leave_enabled Boolean @default(false)
+
+  /// Discord channel ID where farewell messages are sent
+  /// @businessRule Required if leave_enabled is true
+  leave_channel_id String? @db.VarChar(20)
+
+  /// Template message for member departures
+  /// @businessRule Cannot mention the user (they've left the server)
+  /// @variables {username} - user's name, {server} - server name
+  leave_message String? @db.Text
 
   // Music Configuration
   music_enabled        Boolean @default(true)
@@ -579,41 +729,149 @@ model GuildConfig {
   ab_tests              ABTest[]
   log_configurations    LogConfiguration[]
 
+  // Performance indexes for common query patterns
+  @@index([guild_id]) // Primary lookup by Discord guild
+  @@index([created_at]) // Temporal queries for analytics
+  @@index([updated_at]) // Recently modified configurations
   @@map("guild_configs")
 }
 
-model Warning {
-  id           String   @id @default(cuid())
-  warn_id      String   @unique
-  user_id      String
-  guild_id     String
-  moderator_id String
-  reason       String   @db.Text
-  timestamp    DateTime @default(now())
-  is_active    Boolean  @default(true)
+// ============================================================================
+// MODERATION SYSTEM MODELS
+// ============================================================================
 
-  @@index([user_id, guild_id])
-  @@index([moderator_id])
-  @@index([timestamp])
+/// User warnings issued by moderators
+/// 
+/// Tracks disciplinary warnings given to users with full audit trail.
+/// Supports warning expiration, bulk operations, and moderator accountability.
+/// Used for escalation policies and user behavior pattern analysis.
+/// 
+/// @businessLogic Warnings can be deactivated but never deleted for audit compliance
+/// @performance Heavily queried for user lookup and moderator dashboard
+/// @retention Warnings should be retained indefinitely for pattern analysis
+model Warning {
+  /// Internal unique identifier for this warning record
+  /// @technical Uses CUID for collision-free distributed generation
+  id String @id @default(cuid())
+
+  /// Human-readable warning identifier (auto-generated)
+  /// @format W-{timestamp}-{short-id} for easy reference in moderation discussions
+  /// @businessRule Must be unique across all warnings globally
+  warn_id String @unique @db.VarChar(50)
+
+  /// Discord user ID of the warned user
+  /// @constraint Must be a valid Discord snowflake ID
+  /// @businessRule User may no longer be in the server but warning persists
+  user_id String @db.VarChar(20)
+
+  /// Discord guild ID where the warning was issued
+  /// @constraint Must be a valid Discord snowflake ID
+  /// @businessRule Links warning to specific server context
+  guild_id String @db.VarChar(20)
+
+  /// Discord user ID of the moderator who issued the warning
+  /// @constraint Must be a valid Discord snowflake ID
+  /// @audit Critical for moderator accountability and appeal processes
+  moderator_id String @db.VarChar(20)
+
+  /// Detailed reason for the warning
+  /// @businessRule Should include specific rule violations and evidence
+  /// @validation Cannot be empty, max 2000 characters
+  /// @audit Immutable once created for integrity
+  reason String @db.Text
+
+  /// When this warning was issued
+  /// @technical Automatically set on creation
+  /// @businessRule Used for warning expiration and statistics
+  timestamp DateTime @default(now())
+
+  /// Whether this warning is currently active/valid
+  /// @default true - New warnings are active by default
+  /// @businessRule Can be set to false to expire/invalidate warnings
+  /// @audit Changes should be logged separately
+  is_active Boolean @default(true)
+
+  // Performance indexes for common access patterns
+  @@index([user_id, guild_id], name: "user_guild_warnings") // User's warnings in specific guild
+  @@index([moderator_id], name: "moderator_warnings") // Warnings issued by specific moderator  
+  @@index([timestamp], name: "warning_timeline") // Temporal analysis and cleanup
+  @@index([guild_id, is_active], name: "guild_active_warnings") // Active warnings per guild
   @@map("warnings")
 }
 
+/// Comprehensive log of all moderation actions taken in guilds
+/// 
+/// Provides complete audit trail for moderation decisions and actions.
+/// Essential for compliance, appeals, pattern analysis, and moderator accountability.
+/// Immutable once created to ensure data integrity for legal/compliance purposes.
+/// 
+/// @businessLogic All moderation actions must create a log entry - no exceptions
+/// @compliance Retention: Minimum 2 years for audit and appeal purposes
+/// @performance Very high write volume - optimize for append-only operations
+/// @security Contains sensitive moderation data - restrict access appropriately
 model ModerationLog {
-  id             String         @id @default(cuid())
-  log_id         String         @unique
-  type           ModerationType
-  target_user_id String
-  moderator_id   String
-  guild_id       String
-  reason         String         @db.Text
-  timestamp      DateTime       @default(now())
-  metadata       Json?
-  expires_at     DateTime?
+  /// Internal unique identifier for this log entry
+  /// @technical Uses CUID for collision-free distributed generation
+  id String @id @default(cuid())
 
-  @@index([target_user_id, guild_id])
-  @@index([moderator_id])
-  @@index([type])
-  @@index([timestamp])
+  /// Human-readable log identifier for reference and linking
+  /// @format ML-{timestamp}-{short-id} for easy reference in reports
+  /// @businessRule Must be unique across all moderation logs globally
+  log_id String @unique @db.VarChar(50)
+
+  /// Type of moderation action that was performed
+  /// @businessRule Must match one of the defined ModerationType enum values
+  /// @audit Critical for filtering and categorizing moderation activity
+  type ModerationType
+
+  /// Discord user ID of the user who was targeted by this action
+  /// @constraint Must be a valid Discord snowflake ID
+  /// @businessRule User may no longer be in server but log persists
+  /// @privacy May contain user data subject to privacy regulations
+  target_user_id String @db.VarChar(20)
+
+  /// Discord user ID of the moderator who performed the action
+  /// @constraint Must be a valid Discord snowflake ID  
+  /// @audit Essential for accountability and quality assurance
+  /// @businessRule Cannot be the same as target_user_id (self-moderation prevention)
+  moderator_id String @db.VarChar(20)
+
+  /// Discord guild ID where the moderation action occurred
+  /// @constraint Must be a valid Discord snowflake ID
+  /// @businessRule Links action to specific server context
+  guild_id String @db.VarChar(20)
+
+  /// Detailed explanation of why this action was taken
+  /// @businessRule Should include specific rule violations, evidence, context
+  /// @validation Cannot be empty for most action types
+  /// @compliance Critical for appeals and compliance reviews
+  reason String @db.Text
+
+  /// When this moderation action was performed
+  /// @technical Automatically set when log entry is created
+  /// @audit Immutable timestamp for chronological ordering
+  /// @businessRule Must match actual time of action for accuracy
+  timestamp DateTime @default(now())
+
+  /// Additional structured data related to this moderation action
+  /// @format JSON object with action-specific fields
+  /// @examples Ban: {duration, appeal_url}, Timeout: {duration_seconds}
+  /// @businessRule Schema should be documented per action type
+  metadata Json?
+
+  /// When this moderation action expires (if applicable)
+  /// @businessRule Required for temporary actions (timeouts, temp bans)
+  /// @technical Used by cleanup jobs to remove expired actions
+  /// @businessLogic Must be null for permanent actions
+  expires_at DateTime?
+
+  // High-performance indexes for common query patterns
+  @@index([target_user_id, guild_id], name: "user_guild_modlogs") // User's mod history in specific guild
+  @@index([moderator_id], name: "moderator_actions") // Actions by specific moderator
+  @@index([type], name: "action_type_filter") // Filter by action type for reports
+  @@index([timestamp], name: "modlog_timeline") // Chronological ordering and pagination
+  @@index([guild_id, timestamp], name: "guild_modlog_timeline") // Guild-specific chronological view
+  @@index([expires_at], name: "expiring_actions") // Cleanup job optimization
   @@map("moderation_logs")
 }
 
@@ -3107,4 +3365,84 @@ model LogSession {
   @@index([session_id])
   @@index([started_at])
   @@map("log_sessions")
+}
+
+// ============================================================================
+// ENTERPRISE AUDIT & COMPLIANCE MODELS
+// ============================================================================
+
+/// Configuration change audit trail for compliance and accountability
+/// 
+/// Tracks all modifications to guild configurations with full before/after
+/// state capture. Essential for compliance, debugging, and rollback capabilities.
+/// Immutable once created to ensure audit integrity.
+/// 
+/// @compliance Required for SOX/GDPR compliance in enterprise deployments
+/// @retention Minimum 7 years for financial compliance, 3 years for general audit
+/// @security Contains sensitive configuration data - implement proper access controls
+/// @performance Append-only design for optimal write performance
+model ConfigurationAudit {
+  /// Internal unique identifier for this audit record
+  id String @id @default(cuid())
+
+  /// Discord guild ID where the configuration change occurred
+  /// @constraint Must be a valid Discord snowflake ID
+  guild_id String @db.VarChar(20)
+
+  /// Discord user ID of the person who made the change
+  /// @constraint Must be a valid Discord snowflake ID
+  /// @businessRule Required for accountability - cannot be null
+  changed_by String @db.VarChar(20)
+
+  /// Name of the configuration field that was modified
+  /// @examples "moderation_enabled", "daily_reward_amount", "welcome_message"
+  /// @businessRule Must match actual GuildConfig field names
+  field_name String @db.VarChar(100)
+
+  /// Previous value before the change (JSON serialized)
+  /// @format JSON string representation of the old value
+  /// @businessRule Null only for initial configuration creation
+  old_value String? @db.Text
+
+  /// New value after the change (JSON serialized)
+  /// @format JSON string representation of the new value
+  /// @businessRule Cannot be null - all changes must have a target value
+  new_value String @db.Text
+
+  /// Optional reason provided for this configuration change
+  /// @businessRule Highly recommended for compliance and clarity
+  /// @examples "Requested by admin", "Security incident response", "Feature rollout"
+  change_reason String? @db.Text
+
+  /// System/application that initiated this change
+  /// @examples "web_dashboard", "discord_bot", "api", "migration_script"
+  /// @businessRule Helps track change sources for security analysis
+  change_source String @default("unknown") @db.VarChar(50)
+
+  /// IP address of the user who made the change (if available)
+  /// @privacy May contain PII - handle according to data protection regulations
+  /// @security Used for security analysis and suspicious activity detection
+  ip_address String? @db.VarChar(45) // IPv6 compatible
+
+  /// User agent string of the client that made the change (if web-based)
+  /// @technical Useful for debugging and security analysis
+  user_agent String? @db.Text
+
+  /// When this configuration change was made
+  /// @technical Immutable timestamp for audit chronology
+  /// @businessRule Must be accurate to the second for compliance
+  timestamp DateTime @default(now())
+
+  /// Additional metadata related to this change
+  /// @format JSON object with change-specific context
+  /// @examples {"rollback_id": "xyz", "batch_operation": true}
+  metadata Json?
+
+  // High-performance indexes for audit queries
+  @@index([guild_id, timestamp], name: "guild_audit_timeline") // Guild audit history
+  @@index([changed_by], name: "user_change_history") // Changes by specific user
+  @@index([field_name], name: "field_change_tracking") // Track changes to specific fields
+  @@index([timestamp], name: "audit_chronological") // System-wide audit timeline
+  @@index([change_source], name: "source_tracking") // Changes by source system
+  @@map("configuration_audit")
 }

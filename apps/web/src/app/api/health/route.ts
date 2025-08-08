@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { env } from "@/env";
 import { prisma } from "@/lib/db";
-import { logger } from "@/lib/logger";
 
 /**
  * Health check status levels
@@ -179,8 +178,6 @@ function getOverallStatus(checks: HealthCheck[]): HealthStatus {
  * GET /api/health - Application health check endpoint
  */
 export async function GET() {
-  const startTime = Date.now();
-
   try {
     // Run all health checks in parallel
     const [databaseCheck, discordCheck, memoryCheck] = await Promise.all([
@@ -191,7 +188,6 @@ export async function GET() {
 
     const checks = [databaseCheck, discordCheck, memoryCheck];
     const overallStatus = getOverallStatus(checks);
-    const totalDuration = Date.now() - startTime;
 
     const response: HealthResponse = {
       status: overallStatus,
@@ -201,17 +197,6 @@ export async function GET() {
       version: process.env.npm_package_version || "unknown",
       checks,
     };
-
-    // Log health check results
-    logger.info("Health check completed", {
-      status: overallStatus,
-      duration: totalDuration,
-      checks: checks.map((check) => ({
-        name: check.name,
-        status: check.status,
-        duration: check.duration,
-      })),
-    });
 
     // Return appropriate HTTP status code based on health
     const statusCode =
@@ -228,12 +213,7 @@ export async function GET() {
         "Content-Type": "application/json",
       },
     });
-  } catch (error) {
-    logger.error("Health check failed", {
-      error: error instanceof Error ? error : String(error),
-      duration: Date.now() - startTime,
-    });
-
+  } catch (_error) {
     return NextResponse.json(
       {
         status: "unhealthy",

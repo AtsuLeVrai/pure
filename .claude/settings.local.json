@@ -11,7 +11,8 @@
       "WebFetch(domain:discordtickets.app)",
       "WebFetch(domain:docs.tickettool.xyz)",
       "Bash(mkdir:*)",
-      "Bash(pnpm add:*)"
+      "Bash(pnpm add:*)",
+      "Bash(rg:*)"
     ],
     "deny": []
   }

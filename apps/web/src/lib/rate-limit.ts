@@ -1,4 +1,4 @@
-import { logger } from "@/lib/logger";
+import type { NextRequest } from "next/server";
 
 /**
  * Rate limiting configuration
@@ -104,16 +104,6 @@ export class RateLimiter {
     const allowed = count <= this.config.maxRequests;
     const remaining = Math.max(0, this.config.maxRequests - count);
 
-    if (!allowed) {
-      logger.security("rate_limit", {
-        ip: this.#getClientIP(request),
-        userAgent: request.headers.get("user-agent") || undefined,
-        key,
-        count,
-        limit: this.config.maxRequests,
-      });
-    }
-
     return {
       allowed,
       remaining,
@@ -188,9 +178,9 @@ export const rateLimiters = {
  */
 export function withRateLimit(
   limiter: RateLimiter,
-  handler: (request: Request) => Promise<Response> | Response,
+  handler: (request: NextRequest) => Promise<Response> | Response,
 ) {
-  return async (request: Request): Promise<Response> => {
+  return async (request: NextRequest): Promise<Response> => {
     const { allowed, remaining, resetTime } = await limiter.check(request);
 
     if (!allowed) {

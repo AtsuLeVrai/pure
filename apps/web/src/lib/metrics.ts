@@ -1,6 +1,3 @@
-import { env } from "@/env";
-import { logger } from "@/lib/logger";
-
 const counters = new Map<string, number>();
 const histograms = new Map<string, number[]>();
 
@@ -64,15 +61,6 @@ export const MetricsStore = {
       increment: (value = 1) => {
         const current = counters.get(key) || 0;
         counters.set(key, current + value);
-
-        // Log metric update in development
-        if (env.NODE_ENV === "development") {
-          logger.debug("Counter incremented", {
-            metric: name,
-            value: current + value,
-            labels,
-          });
-        }
       },
       get: () => counters.get(key) || 0,
     };
@@ -88,15 +76,6 @@ export const MetricsStore = {
         const current = histograms.get(key) || [];
         current.push(value);
         histograms.set(key, current);
-
-        // Log metric update in development
-        if (env.NODE_ENV === "development") {
-          logger.debug("Histogram observed", {
-            metric: name,
-            value,
-            labels,
-          });
-        }
       },
       summary: () => {
         const values = histograms.get(key) || [];
@@ -193,14 +172,7 @@ export const MetricsUtils = {
   /**
    * Record HTTP request metrics
    */
-  recordHttpRequest(
-    method: string,
-    path: string,
-    statusCode: number,
-    duration: number,
-  ): void {
-    const _labels = { method, path, status: statusCode.toString() };
-
+  recordHttpRequest(statusCode: number, duration: number): void {
     metrics.httpRequests.increment();
     metrics.httpDuration.observe(duration);
 
@@ -212,9 +184,7 @@ export const MetricsUtils = {
   /**
    * Record authentication attempt
    */
-  recordAuthAttempt(success: boolean, method = "discord"): void {
-    const _labels = { method };
-
+  recordAuthAttempt(success: boolean): void {
     metrics.authAttempts.increment();
 
     if (success) {
@@ -227,13 +197,7 @@ export const MetricsUtils = {
   /**
    * Record Discord API call
    */
-  recordDiscordApiCall(
-    endpoint: string,
-    success: boolean,
-    duration: number,
-  ): void {
-    const _labels = { endpoint, success: success.toString() };
-
+  recordDiscordApiCall(success: boolean, duration: number): void {
     metrics.discordApiRequests.increment();
     metrics.discordApiDuration.observe(duration);
 
@@ -245,9 +209,7 @@ export const MetricsUtils = {
   /**
    * Record rate limit event
    */
-  recordRateLimit(endpoint: string, blocked: boolean): void {
-    const _labels = { endpoint };
-
+  recordRateLimit(blocked: boolean): void {
     metrics.rateLimitHits.increment();
 
     if (blocked) {
@@ -258,9 +220,7 @@ export const MetricsUtils = {
   /**
    * Record security event
    */
-  recordSecurityEvent(type: "csrf" | "invalid_token", endpoint?: string): void {
-    const _labels = endpoint ? { endpoint } : {};
-
+  recordSecurityEvent(type: "csrf" | "invalid_token"): void {
     switch (type) {
       case "csrf":
         metrics.csrfAttempts.increment();
@@ -274,13 +234,7 @@ export const MetricsUtils = {
   /**
    * Record database operation
    */
-  recordDatabaseOperation(
-    operation: string,
-    success: boolean,
-    duration: number,
-  ): void {
-    const _labels = { operation, success: success.toString() };
-
+  recordDatabaseOperation(success: boolean, duration: number): void {
     metrics.dbQueries.increment();
     metrics.dbDuration.observe(duration);
 

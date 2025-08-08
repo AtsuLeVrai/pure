@@ -13,11 +13,6 @@ const rateLimitMap = new Map<
 >();
 const cache = new Map<string, { data: any; expires: number }>();
 
-interface RateLimitData {
-  resetTime: number;
-  remaining: number;
-}
-
 // Check if an endpoint is rate limited
 function isRateLimited(endpoint: string): boolean {
   const rateLimitData = rateLimitMap.get(endpoint);

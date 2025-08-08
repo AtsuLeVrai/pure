@@ -5,7 +5,6 @@ import type {
 import jwt from "jsonwebtoken";
 import { type NextRequest, NextResponse } from "next/server";
 import { env } from "@/env";
-import { logger } from "@/lib/logger";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -96,25 +95,8 @@ export async function GET(request: NextRequest) {
       path: "/",
     });
 
-    logger.auth("login", {
-      userId: userData.id,
-      userAgent: request.headers.get("user-agent") || undefined,
-      ip:
-        request.headers.get("x-forwarded-for") ||
-        request.headers.get("x-real-ip") ||
-        undefined,
-    });
-
     return response;
-  } catch (error) {
-    logger.auth("failed", {
-      error: error instanceof Error ? error : String(error),
-      userAgent: request.headers.get("user-agent") || undefined,
-      ip:
-        request.headers.get("x-forwarded-for") ||
-        request.headers.get("x-real-ip") ||
-        undefined,
-    });
+  } catch (_error) {
     return NextResponse.redirect(
       new URL("/?error=authentication_failed", request.url),
     );

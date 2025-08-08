@@ -1,6 +1,5 @@
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { env } from "@/env";
-import { logger } from "@/lib/logger";
 
 const TOKEN_LENGTH = 32;
 
@@ -113,11 +112,6 @@ export const CSRFProtection = {
     if (origin) {
       const allowedOrigins = getAllowedOrigins();
       if (!allowedOrigins.includes(origin)) {
-        logger.security("csrf_attempt", {
-          origin,
-          method,
-          userAgent: request.headers.get("user-agent") || undefined,
-        });
         return {
           valid: false,
           error: "Invalid origin",
@@ -129,11 +123,6 @@ export const CSRFProtection = {
       const allowedOrigins = getAllowedOrigins();
 
       if (!allowedOrigins.includes(refererUrl.origin)) {
-        logger.security("csrf_attempt", {
-          referer,
-          method,
-          userAgent: request.headers.get("user-agent") || undefined,
-        });
         return {
           valid: false,
           error: "Invalid referer",
@@ -147,11 +136,6 @@ export const CSRFProtection = {
       const token = this.getTokenFromRequest(request);
 
       if (!token) {
-        logger.security("csrf_attempt", {
-          error: "Missing CSRF token",
-          method,
-          userAgent: request.headers.get("user-agent") || undefined,
-        });
         return {
           valid: false,
           error: "Missing CSRF token",
@@ -159,11 +143,6 @@ export const CSRFProtection = {
       }
 
       if (!this.verifyToken(token)) {
-        logger.security("csrf_attempt", {
-          error: "Invalid CSRF token",
-          method,
-          userAgent: request.headers.get("user-agent") || undefined,
-        });
         return {
           valid: false,
           error: "Invalid CSRF token",

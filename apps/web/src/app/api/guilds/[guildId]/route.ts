@@ -4,7 +4,6 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { env } from "@/env";
 import { DiscordUtils } from "@/lib/discord-api";
-import { logger } from "@/lib/logger";
 
 interface RouteParams {
   params: { guildId: string };
@@ -42,55 +41,26 @@ export async function GET(_request: Request, { params }: RouteParams) {
 
     // Check if token is expired
     if (token_expires_at && Date.now() / 1000 > token_expires_at) {
-      logger.security("invalid_token", {
-        userId: user.id,
-        guildId,
-        error: "Discord access token expired",
-      });
       return NextResponse.json({ error: "Token expired" }, { status: 401 });
     }
 
     // Fetch guild details
-    const startTime = Date.now();
+    const _startTime = Date.now();
     const guild = await DiscordUtils.getEnhancedGuild(
       guildId,
       user.id,
       access_token,
     );
-    const duration = Date.now() - startTime;
 
     if (!guild) {
-      logger.security("unauthorized_access", {
-        userId: user.id,
-        guildId,
-        action: "access_guild",
-      });
       return NextResponse.json(
         { error: "Guild not found or access denied" },
         { status: 403 },
       );
     }
 
-    logger.discordAPI("fetch_guild_details", true, {
-      userId: user.id,
-      guildId,
-      duration,
-    });
-
-    logger.performance("fetch_guild_details", duration, {
-      userId: user.id,
-      guildId,
-    });
-
     return NextResponse.json(guild);
   } catch (error) {
-    const { guildId } = params;
-
-    logger.error("Failed to fetch guild details", {
-      error: error instanceof Error ? error : String(error),
-      guildId,
-    });
-
     if (error instanceof jwt.JsonWebTokenError) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
