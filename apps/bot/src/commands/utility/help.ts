@@ -512,7 +512,7 @@ async function handleMainMenu(
           disabledActionButtons.toJSON(),
         ],
       });
-    } catch (_error) {
+    } catch {
       // Ignore errors when editing expired interactions
     }
   });

@@ -1,21 +1,3 @@
-// ============================================================================
-// PURE DISCORD BOT - ENTERPRISE DATABASE SCHEMA
-// ============================================================================
-// 
-// This schema defines the complete data model for the Pure Discord Bot
-// platform, supporting advanced Discord server management, moderation,
-// economy systems, gaming features, and comprehensive analytics.
-//
-// Architecture:
-// - Guild-centric design with GuildConfig as the central hub
-// - Modular feature organization (moderation, economy, tickets, etc.)
-// - Comprehensive audit trails and analytics
-// - Enterprise-grade security and compliance features
-//
-// Database: PostgreSQL (production-ready with ACID compliance)
-// ID Strategy: CUID for all primary keys (collision-resistant, sortable)
-// ============================================================================
-
 generator client {
   provider = "prisma-client-js"
   output   = "../dist"
@@ -26,63 +8,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============================================================================
-// ENUMERATION TYPES
-// ============================================================================
-// These enums define the valid values for various fields throughout the schema
-// and provide type safety at the database and application level.
-// ============================================================================
-
-/// Defines the types of moderation actions that can be performed
-/// Used in moderation logs, auto-moderation rules, and punishment systems
+// ENUMS - Essential only
 enum ModerationType {
-  BAN // Permanently ban a user from the server
-  KICK // Remove a user from the server (can rejoin)
-  TIMEOUT // Temporarily restrict a user's ability to interact
-  WARN // Issue a formal warning to a user
-  UNBAN // Remove a permanent ban
-  PURGE // Bulk delete messages
-  LOCK // Lock a channel to prevent new messages
-  UNLOCK // Unlock a previously locked channel
-  SLOWMODE // Enable/modify channel slowmode settings
-  MUTE // Mute a user in voice channels
-  UNMUTE // Unmute a previously muted user
-  CLEAR_WARNINGS // Remove all warnings from a user
-  MASSBAN // Ban multiple users simultaneously
-  NICKNAME // Change or reset a user's nickname
-  ANTIRAID // Activate anti-raid protection measures
+  BAN
+  KICK
+  TIMEOUT
+  WARN
+  UNBAN
+  PURGE
+  LOCK
+  UNLOCK
+  SLOWMODE
+  MUTE
+  UNMUTE
+  CLEAR_WARNINGS
+  MASSBAN
+  NICKNAME
+  ANTIRAID
 }
 
-/// Lifecycle status of support tickets
-/// Controls workflow and permissions for ticket management
 enum TicketStatus {
-  OPEN // Ticket is active and awaiting response
-  PENDING // Ticket is waiting for user response
-  RESOLVED // Issue has been resolved, awaiting confirmation
-  CLOSED // Ticket is permanently closed
+  OPEN
+  PENDING
+  RESOLVED
+  CLOSED
 }
 
-/// Priority levels for support tickets
-/// Determines response time expectations and queue ordering
 enum TicketPriority {
-  LOW // Response within 24-48 hours
-  MEDIUM // Response within 8-24 hours  
-  HIGH // Response within 2-8 hours
-  URGENT // Immediate response required
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
 }
 
-/// Types of economy transactions for comprehensive tracking
-/// Used for analytics, balancing, and audit trails
 enum EconomyTransactionType {
-  EARN // User earned currency through activities
-  SPEND // User spent currency on items/services
-  TRANSFER // Currency transferred between users
-  DAILY_REWARD // Automated daily bonus distribution
-  WEEKLY_REWARD // Automated weekly bonus distribution
-  GAME_WIN // Currency won through gaming activities
-  GAME_LOSS // Currency lost through gaming activities
-  SHOP_PURCHASE // Purchase from the server shop
-  ADMIN_ADJUSTMENT // Manual adjustment by administrators
+  EARN
+  SPEND
+  TRANSFER
+  DAILY_REWARD
+  WEEKLY_REWARD
+  GAME_WIN
+  GAME_LOSS
+  SHOP_PURCHASE
+  ADMIN_ADJUSTMENT
 }
 
 enum GiveawayStatus {
@@ -131,366 +99,6 @@ enum PollType {
   YES_NO
 }
 
-enum FormFieldType {
-  TEXT
-  TEXTAREA
-  NUMBER
-  SELECT
-  CHECKBOX
-  EMAIL
-}
-
-enum ApplicationStatus {
-  PENDING
-  APPROVED
-  DENIED
-  WITHDRAWN
-}
-
-enum InviteType {
-  PERMANENT
-  TEMPORARY
-  VANITY
-}
-
-enum GamePlatform {
-  STEAM
-  XBOX
-  PLAYSTATION
-  NINTENDO
-  EPIC_GAMES
-  BATTLE_NET
-  RIOT_GAMES
-  ORIGIN
-}
-
-enum StreamPlatform {
-  TWITCH
-  YOUTUBE
-  KICK
-  TIKTOK
-  FACEBOOK
-}
-
-enum TournamentStatus {
-  UPCOMING
-  REGISTRATION_OPEN
-  REGISTRATION_CLOSED
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
-}
-
-enum TournamentType {
-  SINGLE_ELIMINATION
-  DOUBLE_ELIMINATION
-  ROUND_ROBIN
-  SWISS
-}
-
-enum SecurityLevel {
-  LOW
-  MEDIUM
-  HIGH
-  MAXIMUM
-}
-
-enum BehaviorPattern {
-  SPAM_PATTERN
-  RAID_PATTERN
-  ALT_PATTERN
-  SUSPICIOUS_ACTIVITY
-  NORMAL_ACTIVITY
-}
-
-enum AnalyticsType {
-  MEMBER_GROWTH
-  MESSAGE_ACTIVITY
-  VOICE_ACTIVITY
-  COMMAND_USAGE
-  ENGAGEMENT_RATE
-  RETENTION_RATE
-}
-
-enum CasinoGameType {
-  BLACKJACK
-  SLOTS
-  ROULETTE
-  COINFLIP
-  DICE
-  POKER
-  BACCARAT
-  CRASH
-}
-
-enum GameResult {
-  WIN
-  LOSS
-  DRAW
-  JACKPOT
-}
-
-enum MiniGameType {
-  ROCK_PAPER_SCISSORS
-  TRIVIA
-  EIGHT_BALL
-  GUESS_NUMBER
-  WORD_SCRAMBLE
-  QUIZ
-  MEMORY_GAME
-}
-
-enum AchievementCategory {
-  ECONOMY
-  GAMING
-  SOCIAL
-  MODERATION
-  VOICE
-  MESSAGING
-  SPECIAL
-  SEASONAL
-}
-
-enum AchievementRarity {
-  COMMON
-  UNCOMMON
-  RARE
-  EPIC
-  LEGENDARY
-  MYTHIC
-}
-
-enum MarriageStatus {
-  SINGLE
-  ENGAGED
-  MARRIED
-  DIVORCED
-}
-
-enum TicketTagType {
-  PRIORITY
-  CATEGORY
-  STATUS
-  DEPARTMENT
-  CUSTOM
-}
-
-enum CaptchaType {
-  IMAGE
-  TEXT
-  MATH
-  EMOJI
-  SLIDER
-}
-
-enum JoinType {
-  ORGANIC
-  INVITE
-  VANITY_URL
-  BOT_INVITE
-  WIDGET
-  UNKNOWN
-}
-
-enum BackupType {
-  FULL
-  CHANNELS
-  ROLES
-  SETTINGS
-  MESSAGES
-  EMOJIS
-}
-
-enum BackupScheduleFrequency {
-  HOURLY
-  DAILY
-  WEEKLY
-  MONTHLY
-  CUSTOM
-}
-
-enum SocialPlatform {
-  TWITTER
-  YOUTUBE
-  INSTAGRAM
-  TIKTOK
-  REDDIT
-  RSS
-  GITHUB
-}
-
-enum NotificationTrigger {
-  NEW_POST
-  LIVE_STREAM
-  VIDEO_UPLOAD
-  TWEET
-  COMMIT
-  RELEASE
-}
-
-enum CryptoAlertType {
-  PRICE_ABOVE
-  PRICE_BELOW
-  PERCENT_CHANGE
-  VOLUME_SPIKE
-  NEWS
-}
-
-enum WeatherAlertType {
-  TEMPERATURE
-  PRECIPITATION
-  STORM
-  AIR_QUALITY
-  UV_INDEX
-}
-
-enum TranslationProvider {
-  GOOGLE
-  DEEPL
-  MICROSOFT
-  AMAZON
-}
-
-enum LogCategory {
-  MODERATION
-  MEMBER_MANAGEMENT
-  CHANNEL_MANAGEMENT
-  ROLE_MANAGEMENT
-  MESSAGE_MANAGEMENT
-  VOICE_ACTIVITY
-  SERVER_MANAGEMENT
-  SECURITY
-  AUTOMOD
-  SOCIAL
-  ECONOMY
-  TICKETS
-  GAMING
-  BACKUP
-  CUSTOM
-  SYSTEM
-}
-
-enum LogEventType {
-  // Moderation Events
-  BAN_ADD
-  BAN_REMOVE
-  TIMEOUT_ADD
-  TIMEOUT_REMOVE
-  KICK
-  WARN
-  MUTE
-  UNMUTE
-  PURGE
-  MASS_BAN
-  MASS_KICK
-
-  // Member Management
-  MEMBER_JOIN
-  MEMBER_LEAVE
-  MEMBER_UPDATE
-  MEMBER_ROLE_ADD
-  MEMBER_ROLE_REMOVE
-  MEMBER_NICKNAME_CHANGE
-
-  // Channel Management
-  CHANNEL_CREATE
-  CHANNEL_DELETE
-  CHANNEL_UPDATE
-  CHANNEL_PINS_UPDATE
-  THREAD_CREATE
-  THREAD_DELETE
-  THREAD_UPDATE
-
-  // Role Management  
-  ROLE_CREATE
-  ROLE_DELETE
-  ROLE_UPDATE
-  ROLE_ASSIGN
-  ROLE_REMOVE
-
-  // Message Management
-  MESSAGE_DELETE
-  MESSAGE_EDIT
-  MESSAGE_BULK_DELETE
-  MESSAGE_PIN
-  MESSAGE_UNPIN
-
-  // Voice Activity
-  VOICE_JOIN
-  VOICE_LEAVE
-  VOICE_MOVE
-  VOICE_MUTE
-  VOICE_UNMUTE
-  VOICE_DEAFEN
-  VOICE_UNDEAFEN
-  VOICE_STREAM_START
-  VOICE_STREAM_END
-
-  // Server Management
-  GUILD_UPDATE
-  EMOJI_CREATE
-  EMOJI_DELETE
-  EMOJI_UPDATE
-  INVITE_CREATE
-  INVITE_DELETE
-  INTEGRATION_UPDATE
-
-  // Security
-  SUSPICIOUS_JOIN
-  RAID_DETECTED
-  CAPTCHA_FAILED
-  IP_BLOCKED
-  SECURITY_VIOLATION
-  AUTH_FAILURE
-
-  // AutoMod
-  AUTOMOD_TRIGGER
-  SPAM_DETECTED
-  LINK_FILTERED
-  WORD_FILTERED
-  MENTION_SPAM
-
-  // Social
-  REACTION_ADD
-  REACTION_REMOVE
-  STARBOARD_ADD
-  STARBOARD_REMOVE
-
-  // Economy
-  ECONOMY_TRANSACTION
-  CASINO_WIN
-  CASINO_LOSS
-  SHOP_PURCHASE
-  DAILY_CLAIM
-
-  // Tickets
-  TICKET_CREATE
-  TICKET_CLOSE
-  TICKET_ASSIGN
-  TICKET_ESCALATE
-
-  // Gaming
-  TOURNAMENT_START
-  TOURNAMENT_END
-  GAME_WIN
-  GAME_LOSS
-
-  // Backup
-  BACKUP_CREATED
-  BACKUP_RESTORED
-  TEMPLATE_USED
-
-  // Custom
-  CUSTOM_COMMAND_USED
-  AUTOMATION_TRIGGERED
-
-  // System
-  BOT_START
-  BOT_RESTART
-  ERROR_OCCURRED
-  PERFORMANCE_ALERT
-}
-
 enum LogLevel {
   DEBUG
   INFO
@@ -499,506 +107,261 @@ enum LogLevel {
   CRITICAL
 }
 
-enum LogRetention {
-  ONE_WEEK
-  ONE_MONTH
-  THREE_MONTHS
-  SIX_MONTHS
-  ONE_YEAR
-  PERMANENT
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  MODERATION
+  COMMAND
+  MESSAGE
+  VOICE_JOIN
+  VOICE_LEAVE
+  GUILD_JOIN
+  GUILD_LEAVE
 }
 
-// ============================================================================
-// CORE CONFIGURATION MODEL
-// ============================================================================
+// CORE MODELS
 
-/// Central configuration hub for Discord guild (server) settings
-/// 
-/// This model serves as the primary configuration store for all bot features
-/// within a Discord server. It follows a guild-centric architecture where
-/// each Discord server has exactly one configuration record that controls
-/// all bot behavior and feature enablement.
-/// 
-/// @businessLogic One configuration per Discord guild - enforced by unique constraint
-/// @performance Heavily cached due to frequent reads across all bot operations  
-/// @security Contains no sensitive user data, only server configuration
-/// @audit Changes to this model should be tracked via ConfigurationAudit
 model GuildConfig {
-  /// Internal unique identifier for this configuration record
-  /// @technical Uses CUID for collision-free distributed generation
-  id String @id @default(cuid())
-
-  /// Discord guild (server) ID - unique across all Discord servers
-  /// @constraint Must be a valid Discord snowflake ID (max 20 characters)
-  /// @businessRule One configuration per guild enforced by unique constraint
+  id       String @id @default(cuid())
   guild_id String @unique @db.VarChar(20)
+  prefix   String @default("!")
 
-  // ========================================================================
-  // MODERATION SYSTEM CONFIGURATION
-  // ========================================================================
-
-  /// Enable/disable all moderation features for this guild
-  /// @default true - Most guilds require basic moderation capabilities
-  /// @impact Disabling this affects warnings, bans, kicks, and auto-moderation
-  moderation_enabled Boolean @default(true)
-
-  /// Discord channel ID where moderation actions are logged
-  /// @businessRule Optional - if not set, moderation logs are not sent
-  /// @validation Must be a valid Discord channel ID if provided
+  // Moderation settings
   moderation_log_channel_id String? @db.VarChar(20)
+  auto_role_id              String? @db.VarChar(20)
+  mute_role_id              String? @db.VarChar(20)
 
-  /// Enable automated moderation based on predefined rules
-  /// @default false - Requires manual configuration of AutoModerationRule records
-  /// @performance Can impact message processing latency when enabled
-  auto_moderation_enabled Boolean @default(false)
+  // Level system settings
+  level_system_enabled Boolean @default(false)
+  level_up_channel_id  String? @db.VarChar(20)
+  level_up_message     String?
+  xp_rate              Float   @default(1.0)
 
-  /// Enable anti-raid protection measures
-  /// @default false - Activates enhanced monitoring for suspicious join patterns
-  /// @businessLogic Works in conjunction with SecurityAnalysis for pattern detection
-  anti_raid_enabled Boolean @default(false)
+  // Economy settings
+  economy_enabled Boolean @default(false)
+  daily_reward    BigInt  @default(100)
+  work_reward_min BigInt  @default(50)
+  work_reward_max BigInt  @default(200)
 
-  // ========================================================================
-  // LEVELING & XP SYSTEM CONFIGURATION
-  // ========================================================================
+  // Ticket system settings
+  ticket_category_id     String? @db.VarChar(20)
+  ticket_support_role_id String? @db.VarChar(20)
 
-  /// Enable/disable the XP and leveling system
-  /// @default true - Popular feature for member engagement
-  /// @performance Adds database writes on every qualifying message
-  leveling_enabled Boolean @default(true)
-
-  /// Discord channel ID where level-up announcements are sent
-  /// @businessRule Optional - if not set, level-ups are sent to current channel
-  leveling_channel_id String? @db.VarChar(20)
-
-  /// Multiplier applied to base XP gains (0.1 to 5.0 recommended range)
-  /// @default 1.0 - Standard XP rate
-  /// @businessRule Values below 0.1 or above 10.0 may cause poor user experience
-  /// @validation Should be between 0.1 and 10.0
-  xp_rate_multiplier Float @default(1.0)
-
-  /// Whether to send a message when users level up
-  /// @default true - Provides positive feedback for engagement
-  /// @performance Disabled reduces message posting overhead
-  level_up_message_enabled Boolean @default(true)
-
-  // ========================================================================
-  // ECONOMY SYSTEM CONFIGURATION  
-  // ========================================================================
-
-  /// Enable/disable the virtual economy system
-  /// @default true - Core engagement feature for most communities
-  /// @impact Affects daily rewards, shop, gambling, and transactions
-  economy_enabled Boolean @default(true)
-
-  /// Display name for the server's virtual currency
-  /// @default "coins" - Should be themed to server context
-  /// @validation Max 50 characters, no special characters except spaces
-  economy_currency_name String @default("coins") @db.VarChar(50)
-
-  /// Emoji symbol representing the currency in messages
-  /// @default "🪙" - Should be a single Unicode emoji or custom Discord emoji
-  /// @businessRule Custom emojis should use <:name:id> format
-  economy_currency_symbol String @default("🪙") @db.VarChar(100)
-
-  /// Amount awarded for daily reward claims
-  /// @default 100 - Should be balanced with shop item prices
-  /// @businessRule Recommend 1-10% of cheapest shop items
-  /// @validation Must be positive integer
-  daily_reward_amount Int @default(100) @db.Integer
-
-  /// Amount awarded for weekly reward claims  
-  /// @default 700 - Should be 7x daily amount for consistency
-  /// @businessRule Typically 5-10x daily reward amount
-  /// @validation Must be positive integer
-  weekly_reward_amount Int @default(700) @db.Integer
-
-  // ========================================================================
-  // SUPPORT TICKET SYSTEM CONFIGURATION
-  // ========================================================================
-
-  /// Enable/disable the support ticket system
-  /// @default false - Requires setup of ticket category and permissions
-  /// @businessRule Should only be enabled if staff can handle tickets
-  tickets_enabled Boolean @default(false)
-
-  /// Discord category ID where ticket channels are created
-  /// @businessRule Required if tickets_enabled is true
-  /// @technical Category should have appropriate permissions configured
-  tickets_category_id String? @db.VarChar(20)
-
-  /// Discord channel ID where ticket events are logged
-  /// @businessRule Optional - useful for staff coordination and metrics
-  tickets_log_channel_id String? @db.VarChar(20)
-
-  // ========================================================================
-  // WELCOME & FAREWELL SYSTEM CONFIGURATION
-  // ========================================================================
-
-  /// Enable welcome messages for new members
-  /// @default false - Requires configuration of channel and message
-  /// @performance Adds processing overhead on member joins
-  welcome_enabled Boolean @default(false)
-
-  /// Discord channel ID where welcome messages are sent
-  /// @businessRule Required if welcome_enabled is true
+  // Welcome/Leave settings
+  welcome_enabled    Boolean @default(false)
   welcome_channel_id String? @db.VarChar(20)
+  welcome_message    String?
+  leave_enabled      Boolean @default(false)
+  leave_channel_id   String? @db.VarChar(20)
+  leave_message      String?
 
-  /// Template message for welcoming new members
-  /// @businessRule Supports Discord markdown and mentions
-  /// @variables {user} - mentions the new user, {server} - server name
-  welcome_message String? @db.Text
+  // General settings
+  language                String @default("en")
+  timezone                String @default("UTC")
+  voice_channel_templates Json? // Simplified voice channel templates as JSON
 
-  /// Enable farewell messages when members leave
-  /// @default false - Less commonly used than welcome messages
-  leave_enabled Boolean @default(false)
-
-  /// Discord channel ID where farewell messages are sent
-  /// @businessRule Required if leave_enabled is true
-  leave_channel_id String? @db.VarChar(20)
-
-  /// Template message for member departures
-  /// @businessRule Cannot mention the user (they've left the server)
-  /// @variables {username} - user's name, {server} - server name
-  leave_message String? @db.Text
-
-  // Music Configuration
-  music_enabled        Boolean @default(true)
-  music_default_volume Int     @default(50)
-  music_max_queue_size Int     @default(100)
-
-  // Starboard Configuration
-  starboard_enabled    Boolean @default(false)
-  starboard_channel_id String?
-  starboard_threshold  Int     @default(5)
-  starboard_emoji      String  @default("⭐")
-
-  // Suggestions Configuration
-  suggestions_enabled           Boolean @default(false)
-  suggestions_channel_id        String?
-  suggestions_review_channel_id String?
-
-  // Forms Configuration
-  forms_enabled Boolean @default(false)
-
-  // Invite Tracking Configuration
-  invite_tracking_enabled Boolean @default(false)
-  invite_log_channel_id   String?
-
-  // Member Verification Configuration
-  verification_enabled    Boolean @default(false)
-  verification_role_id    String?
-  verification_channel_id String?
-
-  // Gaming Configuration
-  gaming_enabled               Boolean @default(false)
-  gaming_role_assignment       Boolean @default(false)
-  stream_notifications_enabled Boolean @default(false)
-  tournaments_enabled          Boolean @default(false)
-
-  // Security Configuration
-  two_factor_required       Boolean       @default(false)
-  ip_tracking_enabled       Boolean       @default(false)
-  alt_detection_enabled     Boolean       @default(true)
-  behavior_analysis_enabled Boolean       @default(true)
-  security_level            SecurityLevel @default(MEDIUM)
-
-  // Analytics Configuration
-  advanced_analytics_enabled   Boolean @default(true)
-  predictive_analytics_enabled Boolean @default(false)
-  ab_testing_enabled           Boolean @default(false)
+  // GDPR compliance
+  data_retention_days  Int?    @default(365)
+  gdpr_contact_email   String?
+  privacy_policy_url   String?
+  terms_of_service_url String?
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   // Relations
-  auto_moderation_rules AutoModerationRule[]
-  level_roles           LevelRole[]
-  custom_commands       CustomCommand[]
-  reaction_roles        ReactionRole[]
-  shop_items            ShopItem[]
-  giveaways             Giveaway[]
-  tickets               Ticket[]
-  suggestions           Suggestion[]
-  polls                 Poll[]
-  forms                 Form[]
-  starboard_messages    StarboardMessage[]
-  scheduled_messages    ScheduledMessage[]
-  guild_backups         GuildBackup[]
-  tournaments           Tournament[]
-  stream_notifications  StreamNotification[]
-  ab_tests              ABTest[]
-  log_configurations    LogConfiguration[]
+  warnings                  Warning[]
+  moderation_logs           ModerationLog[]
+  auto_moderation_rules     AutoModerationRule[]
+  auto_moderation_whitelist AutoModerationWhitelist[]
+  tickets                   Ticket[]
+  level_roles               LevelRole[]
+  user_metrics              UserMetrics[]
+  user_economy              UserEconomy[]
+  economy_transactions      EconomyTransaction[]
+  shop_items                ShopItem[]
+  shop_purchases            ShopPurchase[]
+  giveaways                 Giveaway[]
+  giveaway_winners          GiveawayWinner[]
+  reaction_roles            ReactionRole[]
+  custom_commands           CustomCommand[]
+  reminders                 Reminder[]
+  suggestions               Suggestion[]
+  polls                     Poll[]
+  forms                     Form[]
+  starboard_messages        StarboardMessage[]
+  scheduled_messages        ScheduledMessage[]
+  temp_voice_channels       TempVoiceChannel[]
+  auto_roles                AutoRole[]
+  voice_activities          VoiceActivity[]
+  message_templates         MessageTemplate[]
+  afk_system                AFKSystem[]
+  bump_reminder             BumpReminder?
+  server_stats              ServerStats[]
+  audit_logs                AuditLog[]
+  analytics                 Analytics[]
 
-  // Performance indexes for common query patterns
-  @@index([guild_id]) // Primary lookup by Discord guild
-  @@index([created_at]) // Temporal queries for analytics
-  @@index([updated_at]) // Recently modified configurations
+  @@index([guild_id])
   @@map("guild_configs")
 }
 
-// ============================================================================
-// MODERATION SYSTEM MODELS
-// ============================================================================
-
-/// User warnings issued by moderators
-/// 
-/// Tracks disciplinary warnings given to users with full audit trail.
-/// Supports warning expiration, bulk operations, and moderator accountability.
-/// Used for escalation policies and user behavior pattern analysis.
-/// 
-/// @businessLogic Warnings can be deactivated but never deleted for audit compliance
-/// @performance Heavily queried for user lookup and moderator dashboard
-/// @retention Warnings should be retained indefinitely for pattern analysis
-model Warning {
-  /// Internal unique identifier for this warning record
-  /// @technical Uses CUID for collision-free distributed generation
-  id String @id @default(cuid())
-
-  /// Human-readable warning identifier (auto-generated)
-  /// @format W-{timestamp}-{short-id} for easy reference in moderation discussions
-  /// @businessRule Must be unique across all warnings globally
-  warn_id String @unique @db.VarChar(50)
-
-  /// Discord user ID of the warned user
-  /// @constraint Must be a valid Discord snowflake ID
-  /// @businessRule User may no longer be in the server but warning persists
-  user_id String @db.VarChar(20)
-
-  /// Discord guild ID where the warning was issued
-  /// @constraint Must be a valid Discord snowflake ID
-  /// @businessRule Links warning to specific server context
+// CONSOLIDATED USER METRICS (replaces UserLevel, UserStats, UserEngagementScore)
+model UserMetrics {
+  id       String @id @default(cuid())
+  user_id  String @db.VarChar(20)
   guild_id String @db.VarChar(20)
 
-  /// Discord user ID of the moderator who issued the warning
-  /// @constraint Must be a valid Discord snowflake ID
-  /// @audit Critical for moderator accountability and appeal processes
-  moderator_id String @db.VarChar(20)
+  // Level system
+  xp            BigInt   @default(0)
+  level         Int      @default(0)
+  messages_sent Int      @default(0)
+  voice_time    BigInt   @default(0)
+  last_xp_at    DateTime @default(now())
 
-  /// Detailed reason for the warning
-  /// @businessRule Should include specific rule violations and evidence
-  /// @validation Cannot be empty, max 2000 characters
-  /// @audit Immutable once created for integrity
-  reason String @db.Text
+  // Engagement metrics
+  commands_used      Int @default(0)
+  reactions_given    Int @default(0)
+  reactions_received Int @default(0)
 
-  /// When this warning was issued
-  /// @technical Automatically set on creation
-  /// @businessRule Used for warning expiration and statistics
-  timestamp DateTime @default(now())
+  // Casino stats (simplified)
+  casino_wins   Int    @default(0)
+  casino_losses Int    @default(0)
+  money_won     BigInt @default(0)
+  money_lost    BigInt @default(0)
 
-  /// Whether this warning is currently active/valid
-  /// @default true - New warnings are active by default
-  /// @businessRule Can be set to false to expire/invalidate warnings
-  /// @audit Changes should be logged separately
-  is_active Boolean @default(true)
-
-  // Performance indexes for common access patterns
-  @@index([user_id, guild_id], name: "user_guild_warnings") // User's warnings in specific guild
-  @@index([moderator_id], name: "moderator_warnings") // Warnings issued by specific moderator  
-  @@index([timestamp], name: "warning_timeline") // Temporal analysis and cleanup
-  @@index([guild_id, is_active], name: "guild_active_warnings") // Active warnings per guild
-  @@map("warnings")
-}
-
-/// Comprehensive log of all moderation actions taken in guilds
-/// 
-/// Provides complete audit trail for moderation decisions and actions.
-/// Essential for compliance, appeals, pattern analysis, and moderator accountability.
-/// Immutable once created to ensure data integrity for legal/compliance purposes.
-/// 
-/// @businessLogic All moderation actions must create a log entry - no exceptions
-/// @compliance Retention: Minimum 2 years for audit and appeal purposes
-/// @performance Very high write volume - optimize for append-only operations
-/// @security Contains sensitive moderation data - restrict access appropriately
-model ModerationLog {
-  /// Internal unique identifier for this log entry
-  /// @technical Uses CUID for collision-free distributed generation
-  id String @id @default(cuid())
-
-  /// Human-readable log identifier for reference and linking
-  /// @format ML-{timestamp}-{short-id} for easy reference in reports
-  /// @businessRule Must be unique across all moderation logs globally
-  log_id String @unique @db.VarChar(50)
-
-  /// Type of moderation action that was performed
-  /// @businessRule Must match one of the defined ModerationType enum values
-  /// @audit Critical for filtering and categorizing moderation activity
-  type ModerationType
-
-  /// Discord user ID of the user who was targeted by this action
-  /// @constraint Must be a valid Discord snowflake ID
-  /// @businessRule User may no longer be in server but log persists
-  /// @privacy May contain user data subject to privacy regulations
-  target_user_id String @db.VarChar(20)
-
-  /// Discord user ID of the moderator who performed the action
-  /// @constraint Must be a valid Discord snowflake ID  
-  /// @audit Essential for accountability and quality assurance
-  /// @businessRule Cannot be the same as target_user_id (self-moderation prevention)
-  moderator_id String @db.VarChar(20)
-
-  /// Discord guild ID where the moderation action occurred
-  /// @constraint Must be a valid Discord snowflake ID
-  /// @businessRule Links action to specific server context
-  guild_id String @db.VarChar(20)
-
-  /// Detailed explanation of why this action was taken
-  /// @businessRule Should include specific rule violations, evidence, context
-  /// @validation Cannot be empty for most action types
-  /// @compliance Critical for appeals and compliance reviews
-  reason String @db.Text
-
-  /// When this moderation action was performed
-  /// @technical Automatically set when log entry is created
-  /// @audit Immutable timestamp for chronological ordering
-  /// @businessRule Must match actual time of action for accuracy
-  timestamp DateTime @default(now())
-
-  /// Additional structured data related to this moderation action
-  /// @format JSON object with action-specific fields
-  /// @examples Ban: {duration, appeal_url}, Timeout: {duration_seconds}
-  /// @businessRule Schema should be documented per action type
-  metadata Json?
-
-  /// When this moderation action expires (if applicable)
-  /// @businessRule Required for temporary actions (timeouts, temp bans)
-  /// @technical Used by cleanup jobs to remove expired actions
-  /// @businessLogic Must be null for permanent actions
-  expires_at DateTime?
-
-  // High-performance indexes for common query patterns
-  @@index([target_user_id, guild_id], name: "user_guild_modlogs") // User's mod history in specific guild
-  @@index([moderator_id], name: "moderator_actions") // Actions by specific moderator
-  @@index([type], name: "action_type_filter") // Filter by action type for reports
-  @@index([timestamp], name: "modlog_timeline") // Chronological ordering and pagination
-  @@index([guild_id, timestamp], name: "guild_modlog_timeline") // Guild-specific chronological view
-  @@index([expires_at], name: "expiring_actions") // Cleanup job optimization
-  @@map("moderation_logs")
-}
-
-model AutoModerationRule {
-  id                 String                @id @default(cuid())
-  guild_id           String
-  name               String
-  trigger            AutoModerationTrigger
-  action             AutoModerationAction
-  enabled            Boolean               @default(true)
-  threshold          Int?
-  duration           Int?
-  whitelist_roles    String[]
-  whitelist_channels String[]
-  metadata           Json?
-  created_at         DateTime              @default(now())
-  updated_at         DateTime              @updatedAt
-
-  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
-
-  @@index([guild_id])
-  @@map("auto_moderation_rules")
-}
-
-model Ticket {
-  id                String         @id @default(cuid())
-  ticket_id         String         @unique
-  guild_id          String
-  channel_id        String         @unique
-  creator_id        String
-  assigned_to_id    String?
-  category          String?
-  subject           String
-  description       String         @db.Text
-  status            TicketStatus   @default(OPEN)
-  priority          TicketPriority @default(MEDIUM)
-  created_at        DateTime       @default(now())
-  updated_at        DateTime       @updatedAt
-  closed_at         DateTime?
-  closed_by_id      String?
-  close_reason      String?
-  transcript_url    String?
-  first_response_at DateTime?
-  last_activity_at  DateTime       @default(now())
-
-  guild_config    GuildConfig           @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
-  template_data   TicketFromTemplate?
-  tag_assignments TicketTagAssignment[]
-  notes           TicketNote[]
-  sla_violations  TicketSLAViolation[]
-  rating          TicketRating?
-
-  @@index([guild_id])
-  @@index([creator_id])
-  @@index([status])
-  @@index([assigned_to_id])
-  @@index([first_response_at])
-  @@index([last_activity_at])
-  @@map("tickets")
-}
-
-model UserLevel {
-  id         String   @id @default(cuid())
-  user_id    String
-  guild_id   String
-  xp         BigInt   @default(0)
-  level      Int      @default(0)
-  messages   Int      @default(0)
-  voice_time BigInt   @default(0)
-  last_xp_at DateTime @default(now())
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
 
   @@unique([user_id, guild_id])
   @@index([guild_id, level])
   @@index([guild_id, xp])
   @@index([user_id])
-  @@map("user_levels")
+  @@map("user_metrics")
 }
 
-model LevelRole {
-  id         String   @id @default(cuid())
-  guild_id   String
-  role_id    String
-  level      Int
-  created_at DateTime @default(now())
+model Warning {
+  id           String    @id @default(cuid())
+  user_id      String    @db.VarChar(20)
+  moderator_id String    @db.VarChar(20)
+  guild_id     String    @db.VarChar(20)
+  reason       String    @db.Text
+  active       Boolean   @default(true)
+  expires_at   DateTime?
+  created_at   DateTime  @default(now())
 
   guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
 
-  @@unique([guild_id, level])
+  @@index([user_id, guild_id])
   @@index([guild_id])
-  @@map("level_roles")
+  @@map("warnings")
+}
+
+model ModerationLog {
+  id             String         @id @default(cuid())
+  log_id         String         @unique @db.VarChar(50)
+  type           ModerationType
+  target_user_id String         @db.VarChar(20)
+  moderator_id   String         @db.VarChar(20)
+  guild_id       String         @db.VarChar(20)
+  reason         String         @db.Text
+  timestamp      DateTime       @default(now())
+  metadata       Json?
+  expires_at     DateTime?
+
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+
+  @@index([target_user_id, guild_id])
+  @@index([moderator_id])
+  @@index([type])
+  @@index([timestamp])
+  @@index([guild_id, timestamp])
+  @@map("moderation_logs")
+}
+
+model AutoModerationRule {
+  id          String                @id @default(cuid())
+  guild_id    String                @db.VarChar(20)
+  name        String
+  description String?
+  enabled     Boolean               @default(true)
+  trigger     AutoModerationTrigger
+  action      AutoModerationAction
+  threshold   Int?
+  duration    Int?
+  channels    String[]
+  roles       String[]
+  keywords    String[]
+  whitelist   String[]
+  created_at  DateTime              @default(now())
+
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+
+  @@index([guild_id])
+  @@index([enabled])
+  @@map("auto_moderation_rules")
+}
+
+model Ticket {
+  id            String         @id @default(cuid())
+  guild_id      String         @db.VarChar(20)
+  channel_id    String         @unique @db.VarChar(20)
+  user_id       String         @db.VarChar(20)
+  assigned_to   String?        @db.VarChar(20)
+  category      String
+  status        TicketStatus   @default(OPEN)
+  priority      TicketPriority @default(LOW)
+  subject       String
+  closed_reason String?
+  closed_by     String?        @db.VarChar(20)
+  created_at    DateTime       @default(now())
+  closed_at     DateTime?
+  deleted_at    DateTime?
+  deleted_by    String?        @db.VarChar(20)
+
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+
+  @@index([guild_id])
+  @@index([user_id])
+  @@index([status])
+  @@map("tickets")
 }
 
 model UserEconomy {
-  id             String    @id @default(cuid())
-  user_id        String
-  guild_id       String
-  balance        BigInt    @default(0)
-  bank_balance   BigInt    @default(0)
-  daily_streak   Int       @default(0)
-  weekly_streak  Int       @default(0)
-  last_daily_at  DateTime?
-  last_weekly_at DateTime?
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
+  id           String    @id @default(cuid())
+  user_id      String    @db.VarChar(20)
+  guild_id     String    @db.VarChar(20)
+  balance      BigInt    @default(0)
+  bank         BigInt    @default(0)
+  last_daily   DateTime?
+  last_weekly  DateTime?
+  last_work    DateTime?
+  daily_streak Int       @default(0)
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
 
+  guild_config GuildConfig          @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
   transactions EconomyTransaction[]
 
   @@unique([user_id, guild_id])
-  @@index([guild_id, balance])
-  @@index([user_id])
+  @@index([guild_id])
   @@map("user_economy")
 }
 
 model EconomyTransaction {
-  id             String                 @id @default(cuid())
-  user_id        String
-  guild_id       String
-  type           EconomyTransactionType
-  amount         BigInt
-  balance_before BigInt
-  balance_after  BigInt
-  description    String
-  metadata       Json?
-  created_at     DateTime               @default(now())
+  id          String                 @id @default(cuid())
+  user_id     String                 @db.VarChar(20)
+  guild_id    String                 @db.VarChar(20)
+  type        EconomyTransactionType
+  amount      BigInt
+  description String
+  created_at  DateTime               @default(now())
 
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
   user_economy UserEconomy @relation(fields: [user_id, guild_id], references: [user_id, guild_id], onDelete: Cascade)
 
   @@index([user_id, guild_id])
@@ -1009,62 +372,40 @@ model EconomyTransaction {
 }
 
 model ShopItem {
-  id           String   @id @default(cuid())
-  guild_id     String
-  name         String
-  description  String   @db.Text
-  price        BigInt
-  role_id      String?
-  stock        Int?
-  max_per_user Int?
-  enabled      Boolean  @default(true)
-  metadata     Json?
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  id          String    @id @default(cuid())
+  guild_id    String    @db.VarChar(20)
+  name        String
+  description String?
+  price       BigInt
+  role_id     String?   @db.VarChar(20)
+  stock       Int?
+  enabled     Boolean   @default(true)
+  created_at  DateTime  @default(now())
+  deleted_at  DateTime?
+  deleted_by  String?   @db.VarChar(20)
 
-  guild_config GuildConfig    @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
-  purchases    ShopPurchase[]
+  guild_config   GuildConfig    @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+  shop_purchases ShopPurchase[]
 
   @@index([guild_id])
   @@index([enabled])
   @@map("shop_items")
 }
 
-model ShopPurchase {
-  id         String   @id @default(cuid())
-  user_id    String
-  guild_id   String
-  item_id    String
-  price_paid BigInt
-  quantity   Int      @default(1)
-  created_at DateTime @default(now())
-
-  shop_item ShopItem @relation(fields: [item_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id, guild_id])
-  @@index([item_id])
-  @@index([created_at])
-  @@map("shop_purchases")
-}
-
 model Giveaway {
-  id                String         @id @default(cuid())
-  guild_id          String
-  channel_id        String
-  message_id        String         @unique
-  title             String
-  description       String         @db.Text
-  prize             String
-  winner_count      Int            @default(1)
-  requirements      Json?
-  required_roles    String[]
-  blacklisted_roles String[]
-  status            GiveawayStatus @default(ACTIVE)
-  starts_at         DateTime       @default(now())
-  ends_at           DateTime
-  ended_at          DateTime?
-  created_by_id     String
-  created_at        DateTime       @default(now())
+  id           String         @id @default(cuid())
+  guild_id     String         @db.VarChar(20)
+  channel_id   String         @db.VarChar(20)
+  message_id   String         @unique @db.VarChar(20)
+  host_id      String         @db.VarChar(20)
+  title        String
+  description  String?
+  prize        String
+  requirements Json?
+  status       GiveawayStatus @default(ACTIVE)
+  ends_at      DateTime
+  ended_at     DateTime?
+  created_at   DateTime       @default(now())
 
   guild_config GuildConfig      @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
   entries      GiveawayEntry[]
@@ -1079,62 +420,46 @@ model Giveaway {
 model GiveawayEntry {
   id          String   @id @default(cuid())
   giveaway_id String
-  user_id     String
-  guild_id    String
-  entered_at  DateTime @default(now())
+  user_id     String   @db.VarChar(20)
+  entries     Int      @default(1)
+  created_at  DateTime @default(now())
 
   giveaway Giveaway @relation(fields: [giveaway_id], references: [id], onDelete: Cascade)
 
   @@unique([giveaway_id, user_id])
-  @@index([user_id])
+  @@index([giveaway_id])
   @@map("giveaway_entries")
 }
 
-model GiveawayWinner {
-  id          String   @id @default(cuid())
-  giveaway_id String
-  user_id     String
-  guild_id    String
-  won_at      DateTime @default(now())
-
-  giveaway Giveaway @relation(fields: [giveaway_id], references: [id], onDelete: Cascade)
-
-  @@unique([giveaway_id, user_id])
-  @@index([user_id])
-  @@map("giveaway_winners")
-}
-
 model ReactionRole {
-  id          String           @id @default(cuid())
-  guild_id    String
-  channel_id  String
-  message_id  String
-  emoji       String
-  role_id     String
-  type        ReactionRoleType @default(NORMAL)
-  description String?
-  created_at  DateTime         @default(now())
+  id         String           @id @default(cuid())
+  guild_id   String           @db.VarChar(20)
+  channel_id String           @db.VarChar(20)
+  message_id String           @db.VarChar(20)
+  emoji      String
+  role_id    String           @db.VarChar(20)
+  type       ReactionRoleType @default(NORMAL)
+  created_at DateTime         @default(now())
 
   guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
 
   @@unique([message_id, emoji])
   @@index([guild_id])
-  @@index([message_id])
   @@map("reaction_roles")
 }
 
 model CustomCommand {
-  id            String   @id @default(cuid())
-  guild_id      String
-  name          String
-  aliases       String[]
-  content       String   @db.Text
-  embed_data    Json?
-  uses          Int      @default(0)
-  enabled       Boolean  @default(true)
-  created_by_id String
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  id          String    @id @default(cuid())
+  guild_id    String    @db.VarChar(20)
+  name        String
+  description String?
+  response    String    @db.Text
+  uses        Int       @default(0)
+  enabled     Boolean   @default(true)
+  created_by  String    @db.VarChar(20)
+  created_at  DateTime  @default(now())
+  deleted_at  DateTime?
+  deleted_by  String?   @db.VarChar(20)
 
   guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
 
@@ -1145,13 +470,15 @@ model CustomCommand {
 
 model Reminder {
   id         String   @id @default(cuid())
-  user_id    String
-  guild_id   String?
-  channel_id String
-  content    String   @db.Text
+  user_id    String   @db.VarChar(20)
+  guild_id   String?  @db.VarChar(20)
+  channel_id String   @db.VarChar(20)
+  message    String
   remind_at  DateTime
   created_at DateTime @default(now())
   completed  Boolean  @default(false)
+
+  guild_config GuildConfig? @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
 
   @@index([user_id])
   @@index([remind_at])
@@ -1159,1873 +486,320 @@ model Reminder {
   @@map("reminders")
 }
 
-model MusicPlaylist {
-  id            String   @id @default(cuid())
-  guild_id      String
-  name          String
-  description   String?
-  created_by_id String
-  is_public     Boolean  @default(false)
-  play_count    Int      @default(0)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-
-  tracks MusicPlaylistTrack[]
-
-  @@unique([guild_id, name])
-  @@index([guild_id])
-  @@index([created_by_id])
-  @@map("music_playlists")
-}
-
-model MusicPlaylistTrack {
-  id          String   @id @default(cuid())
-  playlist_id String
-  title       String
-  artist      String
-  url         String
-  duration    Int
-  added_by_id String
-  position    Int
-  added_at    DateTime @default(now())
-
-  playlist MusicPlaylist @relation(fields: [playlist_id], references: [id], onDelete: Cascade)
-
-  @@unique([playlist_id, position])
-  @@index([playlist_id])
-  @@map("music_playlist_tracks")
-}
-
-model GuildAnalytics {
-  id            String   @id @default(cuid())
-  guild_id      String
-  date          DateTime @db.Date
-  member_count  Int      @default(0)
-  message_count Int      @default(0)
-  voice_minutes Int      @default(0)
-  joins         Int      @default(0)
-  leaves        Int      @default(0)
-  commands_used Int      @default(0)
-  created_at    DateTime @default(now())
-
-  @@unique([guild_id, date])
-  @@index([guild_id])
-  @@index([date])
-  @@map("guild_analytics")
-}
-
-model CommandAnalytics {
-  id            String   @id @default(cuid())
-  guild_id      String
-  command_name  String
-  user_id       String
-  channel_id    String
-  success       Boolean  @default(true)
-  response_time Int?
-  timestamp     DateTime @default(now())
-
-  @@index([guild_id])
-  @@index([command_name])
-  @@index([timestamp])
-  @@map("command_analytics")
-}
-
-model DashboardUser {
-  id            String    @id @default(cuid())
-  user_id       String    @unique
-  access_token  String?
-  refresh_token String?
-  guilds        String[]
-  last_login_at DateTime?
-  preferences   Json      @default("{}")
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-
-  @@index([user_id])
-  @@map("dashboard_users")
-}
-
 model Suggestion {
-  id             String           @id @default(cuid())
-  guild_id       String
-  channel_id     String
-  message_id     String           @unique
-  user_id        String
-  title          String
-  description    String           @db.Text
-  status         SuggestionStatus @default(PENDING)
-  upvotes        Int              @default(0)
-  downvotes      Int              @default(0)
-  reviewed_by_id String?
-  review_reason  String?
-  reviewed_at    DateTime?
-  created_at     DateTime         @default(now())
-  updated_at     DateTime         @updatedAt
+  id         String           @id @default(cuid())
+  guild_id   String           @db.VarChar(20)
+  channel_id String           @db.VarChar(20)
+  message_id String           @unique @db.VarChar(20)
+  user_id    String           @db.VarChar(20)
+  title      String
+  content    String           @db.Text
+  status     SuggestionStatus @default(PENDING)
+  upvotes    Int              @default(0)
+  downvotes  Int              @default(0)
+  reason     String?
+  created_at DateTime         @default(now())
+  updated_at DateTime         @updatedAt
+  deleted_at DateTime?
+  deleted_by String?          @db.VarChar(20)
 
   guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
 
   @@index([guild_id])
   @@index([status])
-  @@index([user_id])
   @@map("suggestions")
 }
 
 model Poll {
-  id             String    @id @default(cuid())
-  guild_id       String
-  channel_id     String
-  message_id     String    @unique
-  created_by_id  String
-  title          String
-  description    String?   @db.Text
-  type           PollType  @default(SINGLE_CHOICE)
-  allow_multiple Boolean   @default(false)
-  anonymous      Boolean   @default(false)
-  ends_at        DateTime?
-  ended_at       DateTime?
-  created_at     DateTime  @default(now())
+  id          String    @id @default(cuid())
+  guild_id    String    @db.VarChar(20)
+  channel_id  String    @db.VarChar(20)
+  message_id  String    @unique @db.VarChar(20)
+  creator_id  String    @db.VarChar(20)
+  title       String
+  description String?
+  type        PollType  @default(SINGLE_CHOICE)
+  ends_at     DateTime?
+  ended       Boolean   @default(false)
+  created_at  DateTime  @default(now())
+  deleted_at  DateTime?
+  deleted_by  String?   @db.VarChar(20)
 
   guild_config GuildConfig  @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
   options      PollOption[]
   votes        PollVote[]
 
   @@index([guild_id])
-  @@index([created_by_id])
-  @@index([ends_at])
+  @@index([ended])
   @@map("polls")
 }
 
 model PollOption {
-  id         String  @id @default(cuid())
-  poll_id    String
-  text       String
-  emoji      String?
-  position   Int
-  vote_count Int     @default(0)
+  id       String @id @default(cuid())
+  poll_id  String
+  text     String
+  position Int
 
-  poll  Poll       @relation(fields: [poll_id], references: [id], onDelete: Cascade)
-  votes PollVote[]
+  poll       Poll       @relation(fields: [poll_id], references: [id], onDelete: Cascade)
+  poll_votes PollVote[]
 
-  @@unique([poll_id, position])
   @@index([poll_id])
   @@map("poll_options")
 }
 
 model PollVote {
-  id        String   @id @default(cuid())
-  poll_id   String
-  option_id String
-  user_id   String
-  voted_at  DateTime @default(now())
+  id         String   @id @default(cuid())
+  poll_id    String
+  option_id  String
+  user_id    String   @db.VarChar(20)
+  created_at DateTime @default(now())
 
   poll   Poll       @relation(fields: [poll_id], references: [id], onDelete: Cascade)
   option PollOption @relation(fields: [option_id], references: [id], onDelete: Cascade)
 
-  @@unique([poll_id, option_id, user_id])
-  @@index([user_id])
+  @@unique([poll_id, user_id])
+  @@index([poll_id])
   @@map("poll_votes")
 }
 
 model Form {
-  id                String   @id @default(cuid())
-  guild_id          String
-  name              String
-  title             String
-  description       String?  @db.Text
-  submit_channel_id String?
-  enabled           Boolean  @default(true)
-  max_submissions   Int?
-  role_required     String?
-  created_by_id     String
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
+  id          String    @id @default(cuid())
+  guild_id    String    @db.VarChar(20)
+  name        String
+  title       String
+  description String?
+  fields_data Json // Simplified - store form structure as JSON
+  enabled     Boolean   @default(true)
+  created_by  String    @db.VarChar(20)
+  created_at  DateTime  @default(now())
+  deleted_at  DateTime?
+  deleted_by  String?   @db.VarChar(20)
 
   guild_config GuildConfig      @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
-  fields       FormField[]
   submissions  FormSubmission[]
 
-  @@unique([guild_id, name])
   @@index([guild_id])
   @@map("forms")
 }
 
-model FormField {
-  id          String        @id @default(cuid())
-  form_id     String
-  name        String
-  label       String
-  type        FormFieldType
-  required    Boolean       @default(true)
-  placeholder String?
-  options     String[]
-  min_length  Int?
-  max_length  Int?
-  position    Int
-  created_at  DateTime      @default(now())
-
-  form Form @relation(fields: [form_id], references: [id], onDelete: Cascade)
-
-  @@unique([form_id, position])
-  @@index([form_id])
-  @@map("form_fields")
-}
-
 model FormSubmission {
-  id             String            @id @default(cuid())
-  form_id        String
-  user_id        String
-  guild_id       String
-  responses      Json
-  status         ApplicationStatus @default(PENDING)
-  reviewed_by_id String?
-  review_notes   String?
-  reviewed_at    DateTime?
-  submitted_at   DateTime          @default(now())
+  id           String   @id @default(cuid())
+  form_id      String
+  user_id      String   @db.VarChar(20)
+  responses    Json
+  submitted_at DateTime @default(now())
 
   form Form @relation(fields: [form_id], references: [id], onDelete: Cascade)
 
   @@index([form_id])
-  @@index([user_id, guild_id])
-  @@index([status])
+  @@index([user_id])
   @@map("form_submissions")
 }
 
 model StarboardMessage {
   id                   String   @id @default(cuid())
-  guild_id             String
-  original_message_id  String   @unique
-  original_channel_id  String
-  starboard_message_id String?  @unique
-  author_id            String
-  content              String?  @db.Text
-  attachments_urls     String[]
+  guild_id             String   @db.VarChar(20)
+  original_message_id  String   @unique @db.VarChar(20)
+  starboard_message_id String?  @db.VarChar(20)
+  channel_id           String   @db.VarChar(20)
+  author_id            String   @db.VarChar(20)
   star_count           Int      @default(0)
   created_at           DateTime @default(now())
-  updated_at           DateTime @updatedAt
 
   guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
 
   @@index([guild_id])
   @@index([star_count])
-  @@index([author_id])
   @@map("starboard_messages")
 }
 
 model ScheduledMessage {
-  id              String    @id @default(cuid())
-  guild_id        String
-  channel_id      String
-  user_id         String
-  content         String    @db.Text
-  embed_data      Json?
-  scheduled_for   DateTime
-  sent_at         DateTime?
-  failed_reason   String?
-  repeat_interval Int?
-  repeat_count    Int?
-  sent_count      Int       @default(0)
-  is_active       Boolean   @default(true)
-  created_at      DateTime  @default(now())
+  id         String   @id @default(cuid())
+  guild_id   String   @db.VarChar(20)
+  channel_id String   @db.VarChar(20)
+  content    String   @db.Text
+  send_at    DateTime
+  sent       Boolean  @default(false)
+  created_by String   @db.VarChar(20)
+  created_at DateTime @default(now())
 
   guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
 
   @@index([guild_id])
-  @@index([scheduled_for])
-  @@index([is_active])
+  @@index([send_at])
+  @@index([sent])
   @@map("scheduled_messages")
 }
 
-model GuildBackup {
-  id            String    @id @default(cuid())
-  guild_id      String
-  backup_id     String    @unique
-  name          String
-  description   String?
-  created_by_id String
-  backup_data   Json
-  file_url      String?
-  size_bytes    BigInt?
-  created_at    DateTime  @default(now())
-  expires_at    DateTime?
-
-  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
-
-  @@index([guild_id])
-  @@index([created_by_id])
-  @@index([created_at])
-  @@map("guild_backups")
-}
-
-model InviteTracker {
-  id         String     @id @default(cuid())
-  guild_id   String
-  code       String
-  inviter_id String
-  channel_id String?
-  type       InviteType
-  uses       Int        @default(0)
-  max_uses   Int?
-  max_age    Int?
-  temporary  Boolean    @default(false)
-  created_at DateTime   @default(now())
-  expires_at DateTime?
-  deleted_at DateTime?
-
-  joins InviteJoin[]
-
-  @@unique([guild_id, code])
-  @@index([guild_id])
-  @@index([inviter_id])
-  @@map("invite_tracker")
-}
-
-model InviteJoin {
-  id          String    @id @default(cuid())
-  guild_id    String
-  user_id     String
-  inviter_id  String
-  invite_code String
-  joined_at   DateTime  @default(now())
-  left_at     DateTime?
-  is_fake     Boolean   @default(false)
-
-  invite InviteTracker @relation(fields: [guild_id, invite_code], references: [guild_id, code], onDelete: Cascade)
-
-  @@index([guild_id])
-  @@index([user_id])
-  @@index([inviter_id])
-  @@map("invite_joins")
-}
-
-model MemberVerification {
-  id                String    @id @default(cuid())
-  guild_id          String
-  user_id           String
-  verification_code String    @unique
-  verified_at       DateTime?
-  expires_at        DateTime
-  attempts          Int       @default(0)
-  created_at        DateTime  @default(now())
-
-  @@unique([guild_id, user_id])
-  @@index([guild_id])
-  @@index([user_id])
-  @@index([expires_at])
-  @@map("member_verification")
-}
-
-model UserGameProfile {
-  id                String       @id @default(cuid())
-  user_id           String
-  guild_id          String
-  platform          GamePlatform
-  platform_user_id  String
-  platform_username String
-  verified          Boolean      @default(false)
-  stats_data        Json?
-  last_sync_at      DateTime?
-  created_at        DateTime     @default(now())
-  updated_at        DateTime     @updatedAt
-
-  @@unique([user_id, guild_id, platform])
-  @@index([user_id])
-  @@index([guild_id])
-  @@index([platform])
-  @@map("user_game_profiles")
-}
-
-model GameRole {
-  id         String       @id @default(cuid())
-  guild_id   String
-  game_name  String
-  role_id    String
-  platform   GamePlatform
-  enabled    Boolean      @default(true)
-  created_at DateTime     @default(now())
-
-  @@unique([guild_id, game_name, platform])
-  @@index([guild_id])
-  @@map("game_roles")
-}
-
-model StreamNotification {
-  id                String         @id @default(cuid())
-  guild_id          String
-  channel_id        String
-  streamer_id       String
-  platform          StreamPlatform
-  platform_user_id  String
-  platform_username String
-  message_template  String         @db.Text
-  role_to_ping      String?
-  enabled           Boolean        @default(true)
-  last_notified_at  DateTime?
-  created_at        DateTime       @default(now())
-
-  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
-
-  @@unique([guild_id, platform, platform_user_id])
-  @@index([guild_id])
-  @@index([platform])
-  @@map("stream_notifications")
-}
-
-model Tournament {
-  id                 String           @id @default(cuid())
-  guild_id           String
-  name               String
-  description        String?          @db.Text
-  game_name          String
-  type               TournamentType
-  status             TournamentStatus @default(UPCOMING)
-  max_participants   Int?
-  prize_pool         String?
-  registration_start DateTime
-  registration_end   DateTime
-  tournament_start   DateTime
-  tournament_end     DateTime?
-  created_by_id      String
-  bracket_data       Json?
-  rules              String?          @db.Text
-  created_at         DateTime         @default(now())
-  updated_at         DateTime         @updatedAt
-
-  guild_config GuildConfig             @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
-  participants TournamentParticipant[]
-  matches      TournamentMatch[]
-
-  @@index([guild_id])
-  @@index([status])
-  @@index([game_name])
-  @@map("tournaments")
-}
-
-model TournamentParticipant {
-  id            String    @id @default(cuid())
-  tournament_id String
-  user_id       String
-  team_name     String?
-  registered_at DateTime  @default(now())
-  checked_in    Boolean   @default(false)
-  checked_in_at DateTime?
-
-  tournament Tournament @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
-
-  @@unique([tournament_id, user_id])
-  @@index([tournament_id])
-  @@index([user_id])
-  @@map("tournament_participants")
-}
-
-model TournamentMatch {
-  id            String    @id @default(cuid())
-  tournament_id String
-  round         Int
-  match_number  Int
-  player1_id    String?
-  player2_id    String?
-  winner_id     String?
-  score         String?
-  scheduled_at  DateTime?
-  played_at     DateTime?
-  created_at    DateTime  @default(now())
-
-  tournament Tournament @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
-
-  @@unique([tournament_id, round, match_number])
-  @@index([tournament_id])
-  @@map("tournament_matches")
-}
-
-model GameClip {
-  id            String   @id @default(cuid())
-  guild_id      String
-  user_id       String
-  title         String
-  description   String?  @db.Text
-  game_name     String
-  file_url      String
-  thumbnail_url String?
-  duration      Int?
-  views         Int      @default(0)
-  likes         Int      @default(0)
-  created_at    DateTime @default(now())
-
-  @@index([guild_id])
-  @@index([user_id])
-  @@index([game_name])
-  @@index([created_at])
-  @@map("game_clips")
-}
-
-model UserSecurity {
-  id                  String        @id @default(cuid())
-  user_id             String        @unique
-  two_factor_enabled  Boolean       @default(false)
-  two_factor_secret   String?
-  backup_codes        String[]
-  last_ip_address     String?
-  ip_whitelist        String[]
-  country_whitelist   String[]
-  suspicious_activity Boolean       @default(false)
-  security_level      SecurityLevel @default(MEDIUM)
-  last_security_check DateTime?
-  created_at          DateTime      @default(now())
-  updated_at          DateTime      @updatedAt
-
-  login_attempts LoginAttempt[]
-  security_logs  SecurityLog[]
-
-  @@index([user_id])
-  @@index([suspicious_activity])
-  @@map("user_security")
-}
-
-model LoginAttempt {
-  id             String   @id @default(cuid())
-  user_id        String
-  guild_id       String?
-  ip_address     String
-  country        String?
-  city           String?
-  user_agent     String?
-  success        Boolean
-  failure_reason String?
-  timestamp      DateTime @default(now())
-
-  user_security UserSecurity @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@index([ip_address])
-  @@index([timestamp])
-  @@index([success])
-  @@map("login_attempts")
-}
-
-model SecurityLog {
-  id         String        @id @default(cuid())
-  user_id    String
-  guild_id   String?
-  action     String
-  ip_address String?
-  details    String?       @db.Text
-  risk_level SecurityLevel
-  timestamp  DateTime      @default(now())
-
-  user_security UserSecurity @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@index([guild_id])
-  @@index([action])
-  @@index([risk_level])
-  @@index([timestamp])
-  @@map("security_logs")
-}
-
-model AltDetection {
-  id                String    @id @default(cuid())
-  primary_user_id   String
-  alt_user_id       String
-  guild_id          String
-  confidence_score  Float
-  detection_reasons String[]
-  ip_address        String?
-  detected_at       DateTime  @default(now())
-  verified          Boolean?
-  verified_by_id    String?
-  verified_at       DateTime?
-
-  @@unique([primary_user_id, alt_user_id, guild_id])
-  @@index([primary_user_id])
-  @@index([alt_user_id])
-  @@index([guild_id])
-  @@index([confidence_score])
-  @@map("alt_detection")
-}
-
-model BehaviorAnalysis {
-  id               String          @id @default(cuid())
-  user_id          String
-  guild_id         String
-  pattern_type     BehaviorPattern
-  confidence_score Float
-  data_points      Json
-  detected_at      DateTime        @default(now())
-  resolved         Boolean         @default(false)
-  resolved_by_id   String?
-  resolved_at      DateTime?
-  action_taken     String?
-
-  @@index([user_id])
-  @@index([guild_id])
-  @@index([pattern_type])
-  @@index([confidence_score])
-  @@index([detected_at])
-  @@index([resolved])
-  @@map("behavior_analysis")
-}
-
-model PredictiveAnalytics {
-  id               String        @id @default(cuid())
-  guild_id         String
-  metric_type      AnalyticsType
-  current_value    Float
-  predicted_value  Float
-  prediction_date  DateTime
-  confidence_level Float
-  factors          Json
-  created_at       DateTime      @default(now())
-
-  @@index([guild_id])
-  @@index([metric_type])
-  @@index([prediction_date])
-  @@map("predictive_analytics")
-}
-
-model ABTest {
-  id               String    @id @default(cuid())
-  guild_id         String
-  name             String
-  description      String?   @db.Text
-  variant_a_config Json
-  variant_b_config Json
-  traffic_split    Float     @default(0.5)
-  start_date       DateTime
-  end_date         DateTime?
-  is_active        Boolean   @default(true)
-  created_by_id    String
-  created_at       DateTime  @default(now())
-
-  guild_config GuildConfig    @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
-  results      ABTestResult[]
-
-  @@index([guild_id])
-  @@index([is_active])
-  @@map("ab_tests")
-}
-
-model ABTestResult {
-  id           String   @id @default(cuid())
-  test_id      String
-  user_id      String
-  variant      String
-  metric_name  String
-  metric_value Float
-  timestamp    DateTime @default(now())
-
-  ab_test ABTest @relation(fields: [test_id], references: [id], onDelete: Cascade)
-
-  @@index([test_id])
-  @@index([variant])
-  @@index([metric_name])
-  @@map("ab_test_results")
-}
-
-model AdvancedAnalytics {
-  id          String        @id @default(cuid())
-  guild_id    String
-  metric_type AnalyticsType
-  date        DateTime      @db.Date
-  hour        Int?
-  value       Float
-  metadata    Json?
-  created_at  DateTime      @default(now())
-
-  @@unique([guild_id, metric_type, date, hour])
-  @@index([guild_id])
-  @@index([metric_type])
-  @@index([date])
-  @@map("advanced_analytics")
-}
-
-model UserEngagementScore {
-  id              String   @id @default(cuid())
-  user_id         String
-  guild_id        String
-  score           Float
-  message_score   Float
-  voice_score     Float
-  reaction_score  Float
-  command_score   Float
-  last_calculated DateTime @default(now())
-  created_at      DateTime @default(now())
-
-  @@unique([user_id, guild_id])
-  @@index([guild_id, score])
-  @@index([user_id])
-  @@map("user_engagement_scores")
-}
-
-model RetentionAnalytics {
-  id             String   @id @default(cuid())
-  guild_id       String
-  cohort_month   DateTime @db.Date
-  period         Int
-  users_count    Int
-  retained_count Int
-  retention_rate Float
-  created_at     DateTime @default(now())
-
-  @@unique([guild_id, cohort_month, period])
-  @@index([guild_id])
-  @@index([cohort_month])
-  @@map("retention_analytics")
-}
-
-model HeatMapData {
-  id            String   @id @default(cuid())
-  guild_id      String
-  channel_id    String
-  hour          Int
-  day_of_week   Int
-  message_count Int
-  voice_minutes Int
-  date          DateTime @db.Date
-  created_at    DateTime @default(now())
-
-  @@unique([guild_id, channel_id, date, hour])
-  @@index([guild_id])
-  @@index([channel_id])
-  @@index([date])
-  @@map("heat_map_data")
-}
-
-model GuildLog {
-  id         String   @id @default(cuid())
-  guild_id   String
-  channel_id String?
-  user_id    String?
-  action     String
-  target     String?
-  reason     String?
-  metadata   Json?
-  timestamp  DateTime @default(now())
-
-  @@index([guild_id])
-  @@index([action])
-  @@index([timestamp])
-  @@map("guild_logs")
-}
-
-model CasinoGame {
-  id            String         @id @default(cuid())
-  user_id       String
-  guild_id      String
-  game_type     CasinoGameType
-  bet_amount    BigInt
-  payout_amount BigInt         @default(0)
-  result        GameResult
-  multiplier    Float?
-  game_data     Json?
-  house_edge    Float          @default(0.02)
-  session_id    String?
-  created_at    DateTime       @default(now())
-
-  @@index([user_id, guild_id])
-  @@index([game_type])
-  @@index([created_at])
-  @@index([session_id])
-  @@map("casino_games")
-}
-
-model CasinoSession {
-  id               String    @id @default(cuid())
-  session_id       String    @unique
-  user_id          String
-  guild_id         String
-  starting_balance BigInt
-  ending_balance   BigInt?
-  total_bet        BigInt    @default(0)
-  total_won        BigInt    @default(0)
-  games_played     Int       @default(0)
-  session_duration Int? // in seconds
-  is_active        Boolean   @default(true)
-  started_at       DateTime  @default(now())
-  ended_at         DateTime?
-
-  @@index([user_id, guild_id])
-  @@index([session_id])
-  @@index([is_active])
-  @@map("casino_sessions")
-}
-
-model MiniGame {
-  id           String       @id @default(cuid())
-  user_id      String
-  guild_id     String
-  opponent_id  String?
-  game_type    MiniGameType
-  bet_amount   BigInt       @default(0)
-  winner_id    String?
-  game_data    Json
-  completed    Boolean      @default(false)
-  expires_at   DateTime?
-  created_at   DateTime     @default(now())
-  completed_at DateTime?
-
-  @@index([user_id, guild_id])
-  @@index([opponent_id])
-  @@index([game_type])
-  @@index([completed])
-  @@index([expires_at])
-  @@map("mini_games")
-}
-
-model UserAchievement {
-  id             String    @id @default(cuid())
-  user_id        String
-  guild_id       String
-  achievement_id String
-  progress       Float     @default(0)
-  max_progress   Float
-  unlocked       Boolean   @default(false)
-  unlocked_at    DateTime?
-  created_at     DateTime  @default(now())
-
-  achievement Achievement @relation(fields: [achievement_id], references: [id], onDelete: Cascade)
-
-  @@unique([user_id, guild_id, achievement_id])
-  @@index([user_id, guild_id])
-  @@index([achievement_id])
-  @@index([unlocked])
-  @@map("user_achievements")
-}
-
-model Achievement {
-  id           String              @id @default(cuid())
-  name         String
-  description  String              @db.Text
-  category     AchievementCategory
-  rarity       AchievementRarity
-  icon_url     String?
-  requirements Json
-  rewards      Json?
-  points       Int                 @default(0)
-  hidden       Boolean             @default(false)
-  seasonal     Boolean             @default(false)
-  start_date   DateTime?
-  end_date     DateTime?
-  created_at   DateTime            @default(now())
-
-  user_achievements UserAchievement[]
-
-  @@index([category])
-  @@index([rarity])
-  @@index([seasonal])
-  @@map("achievements")
-}
-
-model UserBadge {
-  id        String   @id @default(cuid())
-  user_id   String
-  guild_id  String
-  badge_id  String
-  equipped  Boolean  @default(false)
-  earned_at DateTime @default(now())
-
-  badge Badge @relation(fields: [badge_id], references: [id], onDelete: Cascade)
-
-  @@unique([user_id, guild_id, badge_id])
-  @@index([user_id, guild_id])
-  @@index([badge_id])
-  @@index([equipped])
-  @@map("user_badges")
-}
-
-model Badge {
-  id          String            @id @default(cuid())
-  name        String
-  description String            @db.Text
-  icon_url    String
-  color       String            @default("#000000")
-  rarity      AchievementRarity
-  obtainable  Boolean           @default(true)
-  created_at  DateTime          @default(now())
-
-  user_badges UserBadge[]
-
-  @@index([rarity])
-  @@index([obtainable])
-  @@map("badges")
-}
-
-model Marriage {
-  id            String         @id @default(cuid())
-  user_id       String
-  partner_id    String
-  guild_id      String
-  status        MarriageStatus @default(SINGLE)
-  married_at    DateTime?
-  divorced_at   DateTime?
-  proposal_date DateTime?
-  love_points   Int            @default(0)
-  anniversary   DateTime?
-  created_at    DateTime       @default(now())
-
-  @@unique([user_id, guild_id])
-  @@index([partner_id])
-  @@index([status])
-  @@index([anniversary])
-  @@map("marriages")
-}
-
-model UserStats {
-  id                       String   @id @default(cuid())
-  user_id                  String
-  guild_id                 String
-  total_commands_used      Int      @default(0)
-  total_messages_sent      Int      @default(0)
-  total_voice_time         BigInt   @default(0)
-  total_reactions_given    Int      @default(0)
-  total_reactions_received Int      @default(0)
-  total_casino_wins        Int      @default(0)
-  total_casino_losses      Int      @default(0)
-  total_money_won          BigInt   @default(0)
-  total_money_lost         BigInt   @default(0)
-  biggest_win              BigInt   @default(0)
-  biggest_loss             BigInt   @default(0)
-  win_streak               Int      @default(0)
-  loss_streak              Int      @default(0)
-  reputation_points        Int      @default(0)
-  created_at               DateTime @default(now())
-  updated_at               DateTime @updatedAt
-
-  @@unique([user_id, guild_id])
-  @@index([guild_id])
-  @@index([reputation_points])
-  @@map("user_stats")
-}
-
-model GlobalLeaderboard {
-  id         String   @id @default(cuid())
-  user_id    String
-  metric     String
-  value      BigInt
-  rank       Int
-  updated_at DateTime @updatedAt
-  created_at DateTime @default(now())
-
-  @@unique([user_id, metric])
-  @@index([metric, rank])
-  @@index([updated_at])
-  @@map("global_leaderboards")
-}
-
-model TicketTemplate {
-  id                   String   @id @default(cuid())
-  guild_id             String
-  name                 String
-  title                String
-  description          String   @db.Text
-  color                String   @default("#5865f2")
-  emoji                String?
-  category_id          String?
-  auto_assign_role     String?
-  welcome_message      String?  @db.Text
-  required_fields      Json?
-  custom_fields        Json?
-  ping_roles           String[]
-  max_tickets_per_user Int?     @default(1)
-  cooldown_minutes     Int?     @default(0)
-  enabled              Boolean  @default(true)
-  position             Int      @default(0)
-  created_by_id        String
-  created_at           DateTime @default(now())
-  updated_at           DateTime @updatedAt
-
-  tickets TicketFromTemplate[]
-
-  @@unique([guild_id, name])
-  @@index([guild_id])
-  @@index([enabled])
-  @@index([position])
-  @@map("ticket_templates")
-}
-
-model TicketFromTemplate {
-  id          String   @id @default(cuid())
-  ticket_id   String   @unique
-  template_id String
-  field_data  Json?
-  created_at  DateTime @default(now())
-
-  ticket   Ticket         @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
-  template TicketTemplate @relation(fields: [template_id], references: [id], onDelete: Cascade)
-
-  @@index([template_id])
-  @@map("ticket_from_template")
-}
-
-model TicketTag {
-  id       String        @id @default(cuid())
-  guild_id String
-  name     String
-  color    String        @default("#5865f2")
-  type     TicketTagType @default(CUSTOM)
-  emoji    String?
-  enabled  Boolean       @default(true)
-
-  ticket_assignments TicketTagAssignment[]
-
-  @@unique([guild_id, name])
-  @@index([guild_id])
-  @@index([type])
-  @@map("ticket_tags")
-}
-
-model TicketTagAssignment {
-  id        String   @id @default(cuid())
-  ticket_id String
-  tag_id    String
-  added_by  String
-  added_at  DateTime @default(now())
-
-  ticket Ticket    @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
-  tag    TicketTag @relation(fields: [tag_id], references: [id], onDelete: Cascade)
-
-  @@unique([ticket_id, tag_id])
-  @@index([ticket_id])
-  @@index([tag_id])
-  @@map("ticket_tag_assignments")
-}
-
-model TicketNote {
-  id         String   @id @default(cuid())
-  ticket_id  String
-  author_id  String
-  content    String   @db.Text
-  internal   Boolean  @default(false)
-  created_at DateTime @default(now())
-
-  ticket Ticket @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
-
-  @@index([ticket_id])
-  @@index([author_id])
-  @@index([internal])
-  @@map("ticket_notes")
-}
-
-model TicketSLA {
-  id                  String         @id @default(cuid())
-  guild_id            String
-  name                String
-  priority_level      TicketPriority
-  first_response_time Int // minutes
-  resolution_time     Int // minutes
-  business_hours_only Boolean        @default(false)
-  escalation_enabled  Boolean        @default(false)
-  escalation_role_id  String?
-  escalation_delay    Int? // minutes
-  enabled             Boolean        @default(true)
-  created_at          DateTime       @default(now())
-
-  sla_violations TicketSLAViolation[]
-
-  @@unique([guild_id, name])
-  @@index([guild_id])
-  @@index([priority_level])
-  @@map("ticket_sla")
-}
-
-model TicketSLAViolation {
-  id             String    @id @default(cuid())
-  ticket_id      String
-  sla_id         String
-  violation_type String // "first_response" or "resolution"
-  expected_time  DateTime
-  actual_time    DateTime?
-  escalated      Boolean   @default(false)
-  escalated_at   DateTime?
-  resolved       Boolean   @default(false)
-  created_at     DateTime  @default(now())
-
-  ticket Ticket    @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
-  sla    TicketSLA @relation(fields: [sla_id], references: [id], onDelete: Cascade)
-
-  @@unique([ticket_id, sla_id, violation_type])
-  @@index([ticket_id])
-  @@index([sla_id])
-  @@index([escalated])
-  @@map("ticket_sla_violations")
-}
-
-model KnowledgeBase {
-  id          String   @id @default(cuid())
-  guild_id    String
-  title       String
-  content     String   @db.Text
-  category    String
-  tags        String[]
-  views       Int      @default(0)
-  helpful     Int      @default(0)
-  not_helpful Int      @default(0)
-  searchable  Boolean  @default(true)
-  public      Boolean  @default(true)
-  author_id   String
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  feedback KnowledgeBaseFeedback[]
-
-  @@index([guild_id])
-  @@index([category])
-  @@index([public])
-  @@index([searchable])
-  @@index([title])
-  @@map("knowledge_base")
-}
-
-model KnowledgeBaseFeedback {
-  id         String   @id @default(cuid())
-  kb_id      String
-  user_id    String
-  helpful    Boolean
-  comment    String?  @db.Text
-  created_at DateTime @default(now())
-
-  knowledge_base KnowledgeBase @relation(fields: [kb_id], references: [id], onDelete: Cascade)
-
-  @@unique([kb_id, user_id])
-  @@index([kb_id])
-  @@index([helpful])
-  @@map("knowledge_base_feedback")
-}
-
-model TicketRating {
-  id        String   @id @default(cuid())
-  ticket_id String   @unique
-  rating    Int // 1-5 stars
-  feedback  String?  @db.Text
-  rated_by  String
-  rated_at  DateTime @default(now())
-
-  ticket Ticket @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
-
-  @@index([rating])
-  @@index([rated_at])
-  @@map("ticket_ratings")
-}
-
-model CaptchaChallenge {
+// CONSOLIDATED AUDIT LOGGING (replaces GuildLog, EventLog, SecurityLog, CommandAnalytics)
+model AuditLog {
   id             String      @id @default(cuid())
-  user_id        String
-  guild_id       String
-  challenge_type CaptchaType
-  challenge_data Json
-  solution       String?
-  attempts       Int         @default(0)
-  max_attempts   Int         @default(3)
-  completed      Boolean     @default(false)
-  failed         Boolean     @default(false)
-  expires_at     DateTime
-  completed_at   DateTime?
-  created_at     DateTime    @default(now())
+  guild_id       String      @db.VarChar(20)
+  action         AuditAction
+  level          LogLevel    @default(INFO)
+  user_id        String?     @db.VarChar(20)
+  target_user_id String?     @db.VarChar(20)
+  moderator_id   String?     @db.VarChar(20)
+  channel_id     String?     @db.VarChar(20)
+  message_id     String?     @db.VarChar(20)
+  title          String
+  description    String?     @db.Text
+  metadata       Json?
+  success        Boolean     @default(true)
+  response_time  Int?
+  timestamp      DateTime    @default(now())
 
-  @@unique([user_id, guild_id])
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+
   @@index([guild_id])
-  @@index([expires_at])
-  @@index([completed])
-  @@index([failed])
-  @@map("captcha_challenges")
-}
-
-model JoinLog {
-  id               String    @id @default(cuid())
-  user_id          String
-  guild_id         String
-  username         String
-  discriminator    String
-  avatar_url       String?
-  account_age_days Int
-  join_type        JoinType
-  invite_code      String?
-  inviter_id       String?
-  ip_address       String?
-  country          String?
-  device_info      String?
-  suspicious_flags String[]
-  risk_score       Float     @default(0.0)
-  action_taken     String?
-  joined_at        DateTime  @default(now())
-  left_at          DateTime?
-
+  @@index([action])
+  @@index([level])
   @@index([user_id])
-  @@index([guild_id])
-  @@index([join_type])
-  @@index([risk_score])
-  @@index([joined_at])
-  @@map("join_logs")
-}
-
-model CustomAutoModRule {
-  id                  String               @id @default(cuid())
-  guild_id            String
-  name                String
-  description         String?              @db.Text
-  regex_pattern       String               @db.Text
-  case_sensitive      Boolean              @default(false)
-  whole_word          Boolean              @default(false)
-  enabled             Boolean              @default(true)
-  trigger_count       Int                  @default(1)
-  time_window         Int                  @default(60) // seconds
-  action              AutoModerationAction
-  punishment_duration Int? // minutes for timeout/ban
-  delete_message      Boolean              @default(true)
-  send_warning        Boolean              @default(false)
-  log_violation       Boolean              @default(true)
-  exempt_roles        String[]
-  exempt_channels     String[]
-  exempt_permissions  String[]
-  whitelist_urls      String[]
-  created_by_id       String
-  created_at          DateTime             @default(now())
-  updated_at          DateTime             @updatedAt
-
-  violations CustomAutoModViolation[]
-
-  @@unique([guild_id, name])
-  @@index([guild_id])
-  @@index([enabled])
-  @@map("custom_automod_rules")
-}
-
-model CustomAutoModViolation {
-  id           String   @id @default(cuid())
-  rule_id      String
-  user_id      String
-  guild_id     String
-  channel_id   String
-  message_id   String?
-  content      String?  @db.Text
-  matched_text String?
-  action_taken String
-  timestamp    DateTime @default(now())
-
-  rule CustomAutoModRule @relation(fields: [rule_id], references: [id], onDelete: Cascade)
-
-  @@index([rule_id])
-  @@index([user_id, guild_id])
   @@index([timestamp])
-  @@map("custom_automod_violations")
+  @@index([guild_id, timestamp])
+  @@map("audit_logs")
 }
 
-model RaidDetection {
-  id                String    @id @default(cuid())
-  guild_id          String
-  detection_type    String // "mass_join", "mass_mention", "spam_wave", etc.
-  trigger_count     Int
-  time_window       Int // seconds
-  confidence_score  Float
-  affected_users    String[]
-  channels_affected String[]
-  auto_action_taken String?
-  status            String    @default("active") // "active", "resolved", "false_positive"
-  resolved_by_id    String?
-  resolved_at       DateTime?
-  notes             String?   @db.Text
-  detected_at       DateTime  @default(now())
+// CONSOLIDATED ANALYTICS (replaces GuildAnalytics, AdvancedAnalytics, LogMetrics)
+model Analytics {
+  id       String   @id @default(cuid())
+  guild_id String   @db.VarChar(20)
+  date     DateTime @db.Date
+  hour     Int?
 
-  @@index([guild_id])
-  @@index([detection_type])
-  @@index([detected_at])
-  @@index([status])
-  @@map("raid_detection")
-}
+  // Member metrics
+  member_count Int @default(0)
+  joins        Int @default(0)
+  leaves       Int @default(0)
 
-model MassActionLog {
-  id            String    @id @default(cuid())
-  guild_id      String
-  moderator_id  String
-  action_type   String // "mass_ban", "mass_kick", "mass_timeout", "mass_role"
-  target_users  String[]
-  reason        String    @db.Text
-  success_count Int       @default(0)
-  failed_count  Int       @default(0)
-  failed_users  String[]
-  metadata      Json?
-  completed     Boolean   @default(false)
-  started_at    DateTime  @default(now())
-  completed_at  DateTime?
+  // Activity metrics
+  message_count Int @default(0)
+  voice_minutes Int @default(0)
+  commands_used Int @default(0)
 
-  @@index([guild_id])
-  @@index([moderator_id])
-  @@index([action_type])
-  @@index([started_at])
-  @@map("mass_action_logs")
-}
+  // Engagement metrics
+  reactions_count Int @default(0)
+  threads_created Int @default(0)
+  tickets_created Int @default(0)
 
-model QuarantineUser {
-  id             String    @id @default(cuid())
-  user_id        String
-  guild_id       String
-  reason         String    @db.Text
-  quarantined_by String
-  role_backup    String[]
-  channel_backup String[]
-  auto_release   Boolean   @default(false)
-  release_at     DateTime?
-  released       Boolean   @default(false)
-  released_by    String?
-  released_at    DateTime?
-  created_at     DateTime  @default(now())
+  // Error/Warning counts
+  error_count   Int @default(0)
+  warning_count Int @default(0)
 
-  @@unique([user_id, guild_id])
-  @@index([guild_id])
-  @@index([quarantined_by])
-  @@index([auto_release])
-  @@index([released])
-  @@map("quarantine_users")
-}
-
-model IPTracker {
-  id                String   @id @default(cuid())
-  ip_address        String
-  guild_id          String
-  associated_users  String[]
-  country           String?
-  city              String?
-  isp               String?
-  is_vpn            Boolean  @default(false)
-  is_proxy          Boolean  @default(false)
-  risk_score        Float    @default(0.0)
-  blocked           Boolean  @default(false)
-  blocked_reason    String?
-  blocked_by        String?
-  first_seen_at     DateTime @default(now())
-  last_seen_at      DateTime @default(now())
-  total_connections Int      @default(1)
-
-  @@unique([ip_address, guild_id])
-  @@index([guild_id])
-  @@index([risk_score])
-  @@index([blocked])
-  @@index([is_vpn])
-  @@index([last_seen_at])
-  @@map("ip_tracker")
-}
-
-model ServerTemplate {
-  id              String   @id @default(cuid())
-  template_id     String   @unique
-  name            String
-  description     String?  @db.Text
-  icon_url        String?
-  banner_url      String?
-  template_data   Json
-  categories      String[]
-  tags            String[]
-  public          Boolean  @default(false)
-  verified        Boolean  @default(false)
-  featured        Boolean  @default(false)
-  usage_count     Int      @default(0)
-  rating          Float    @default(0.0)
-  rating_count    Int      @default(0)
-  created_by_id   String
-  source_guild_id String
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-
-  uses    ServerTemplateUsage[]
-  ratings ServerTemplateRating[]
-
-  @@index([public])
-  @@index([verified])
-  @@index([featured])
-  @@index([usage_count])
-  @@index([rating])
-  @@index([created_by_id])
-  @@index([name])
-  @@map("server_templates")
-}
-
-model ServerTemplateUsage {
-  id          String   @id @default(cuid())
-  template_id String
-  user_id     String
-  guild_id    String
-  used_at     DateTime @default(now())
-
-  template ServerTemplate @relation(fields: [template_id], references: [id], onDelete: Cascade)
-
-  @@index([template_id])
-  @@index([user_id])
-  @@index([guild_id])
-  @@map("server_template_usage")
-}
-
-model ServerTemplateRating {
-  id          String   @id @default(cuid())
-  template_id String
-  user_id     String
-  rating      Int // 1-5 stars
-  review      String?  @db.Text
-  created_at  DateTime @default(now())
-
-  template ServerTemplate @relation(fields: [template_id], references: [id], onDelete: Cascade)
-
-  @@unique([template_id, user_id])
-  @@index([template_id])
-  @@index([rating])
-  @@map("server_template_ratings")
-}
-
-model BackupSchedule {
-  id               String                  @id @default(cuid())
-  guild_id         String
-  name             String
-  backup_type      BackupType
-  frequency        BackupScheduleFrequency
-  custom_cron      String?
-  enabled          Boolean                 @default(true)
-  retain_count     Int                     @default(5)
-  include_messages Boolean                 @default(false)
-  include_files    Boolean                 @default(false)
-  channels         String[]
-  roles            String[]
-  categories       String[]
-  next_run         DateTime?
-  last_run         DateTime?
-  last_success     DateTime?
-  created_by_id    String
-  created_at       DateTime                @default(now())
-  updated_at       DateTime                @updatedAt
-
-  backups BackupExecution[]
-
-  @@unique([guild_id, name])
-  @@index([guild_id])
-  @@index([enabled])
-  @@index([next_run])
-  @@map("backup_schedules")
-}
-
-model BackupExecution {
-  id             String     @id @default(cuid())
-  schedule_id    String?
-  guild_id       String
-  backup_id      String     @unique
-  name           String
-  backup_type    BackupType
-  status         String     @default("in_progress") // "in_progress", "completed", "failed"
-  progress       Int        @default(0)
-  backup_data    Json?
-  file_url       String?
-  size_bytes     BigInt?
-  error_message  String?    @db.Text
-  channels_count Int?
-  roles_count    Int?
-  messages_count Int?
-  files_count    Int?
-  started_by_id  String
-  started_at     DateTime   @default(now())
-  completed_at   DateTime?
-
-  schedule     BackupSchedule?     @relation(fields: [schedule_id], references: [id], onDelete: SetNull)
-  restorations BackupRestoration[]
-
-  @@index([guild_id])
-  @@index([schedule_id])
-  @@index([status])
-  @@index([started_at])
-  @@map("backup_executions")
-}
-
-model BackupRestoration {
-  id               String    @id @default(cuid())
-  backup_id        String
-  guild_id         String
-  target_guild_id  String?
-  restore_type     String // "full", "channels", "roles", "specific"
-  items_to_restore Json
-  status           String    @default("in_progress") // "in_progress", "completed", "failed"
-  progress         Int       @default(0)
-  error_message    String?   @db.Text
-  restored_items   Json?
-  started_by_id    String
-  started_at       DateTime  @default(now())
-  completed_at     DateTime?
-
-  backup BackupExecution @relation(fields: [backup_id], references: [backup_id], onDelete: Cascade)
-
-  @@index([backup_id])
-  @@index([guild_id])
-  @@index([target_guild_id])
-  @@index([status])
-  @@index([started_at])
-  @@map("backup_restorations")
-}
-
-model ClonedServer {
-  id              String   @id @default(cuid())
-  source_guild_id String
-  target_guild_id String
-  clone_type      String // "full", "structure", "partial"
-  cloned_items    Json
-  created_by_id   String
-  created_at      DateTime @default(now())
-
-  @@index([source_guild_id])
-  @@index([target_guild_id])
-  @@index([created_by_id])
-  @@map("cloned_servers")
-}
-
-model SocialNotification {
-  id                    String              @id @default(cuid())
-  guild_id              String
-  channel_id            String
-  platform              SocialPlatform
-  platform_user_id      String
-  platform_username     String
-  platform_display_name String?
-  trigger_type          NotificationTrigger
-  message_template      String              @db.Text
-  embed_template        Json?
-  role_to_ping          String?
-  enabled               Boolean             @default(true)
-  last_post_id          String?
-  last_notification_at  DateTime?
-  check_interval        Int                 @default(300) // seconds
-  custom_webhook_url    String?
-  filter_keywords       String[]
-  exclude_keywords      String[]
-  min_followers         Int?
-  created_by_id         String
-  created_at            DateTime            @default(now())
-  updated_at            DateTime            @updatedAt
-
-  posts SocialPost[]
-
-  @@unique([guild_id, platform, platform_user_id, trigger_type])
-  @@index([guild_id])
-  @@index([platform])
-  @@index([enabled])
-  @@index([last_notification_at])
-  @@map("social_notifications")
-}
-
-model SocialPost {
-  id               String   @id @default(cuid())
-  notification_id  String
-  platform_post_id String
-  content          String?  @db.Text
-  author_name      String
-  author_avatar    String?
-  media_urls       String[]
-  post_url         String
-  published_at     DateTime
-  likes_count      Int?
-  shares_count     Int?
-  comments_count   Int?
-  notified_at      DateTime @default(now())
-
-  notification SocialNotification @relation(fields: [notification_id], references: [id], onDelete: Cascade)
-
-  @@unique([notification_id, platform_post_id])
-  @@index([notification_id])
-  @@index([published_at])
-  @@map("social_posts")
-}
-
-model CryptoAlert {
-  id                String          @id @default(cuid())
-  guild_id          String
-  channel_id        String
-  user_id           String
-  symbol            String          @db.VarChar(20)
-  name              String
-  alert_type        CryptoAlertType
-  target_value      Float
-  current_value     Float?
-  percentage_change Float?
-  triggered         Boolean         @default(false)
-  triggered_at      DateTime?
-  message_template  String?         @db.Text
-  role_to_ping      String?
-  enabled           Boolean         @default(true)
-  created_at        DateTime        @default(now())
-  updated_at        DateTime        @updatedAt
-
-  @@index([guild_id])
-  @@index([user_id])
-  @@index([symbol])
-  @@index([triggered])
-  @@index([enabled])
-  @@map("crypto_alerts")
-}
-
-model CryptoPriceHistory {
-  id          String   @id @default(cuid())
-  symbol      String   @db.VarChar(20)
-  price_usd   Float
-  market_cap  BigInt?
-  volume_24h  BigInt?
-  change_24h  Float?
-  change_7d   Float?
-  recorded_at DateTime @default(now())
-
-  @@unique([symbol, recorded_at])
-  @@index([symbol])
-  @@index([recorded_at])
-  @@map("crypto_price_history")
-}
-
-model WeatherAlert {
-  id               String           @id @default(cuid())
-  guild_id         String
-  channel_id       String
-  user_id          String
-  location         String
-  latitude         Float?
-  longitude        Float?
-  alert_type       WeatherAlertType
-  condition        String // "above", "below", "equals"
-  threshold_value  Float
-  current_value    Float?
-  triggered        Boolean          @default(false)
-  triggered_at     DateTime?
-  message_template String?          @db.Text
-  role_to_ping     String?
-  enabled          Boolean          @default(true)
-  created_at       DateTime         @default(now())
-  updated_at       DateTime         @updatedAt
-
-  @@index([guild_id])
-  @@index([user_id])
-  @@index([location])
-  @@index([triggered])
-  @@index([enabled])
-  @@map("weather_alerts")
-}
-
-model WeatherData {
-  id              String   @id @default(cuid())
-  location        String
-  latitude        Float
-  longitude       Float
-  temperature     Float
-  feels_like      Float
-  humidity        Int
-  pressure        Float
-  visibility      Float?
-  uv_index        Float?
-  wind_speed      Float?
-  wind_direction  Int?
-  condition       String
-  description     String
-  precipitation   Float?
-  air_quality_aqi Int?
-  recorded_at     DateTime @default(now())
-
-  @@unique([location, recorded_at])
-  @@index([location])
-  @@index([recorded_at])
-  @@map("weather_data")
-}
-
-model RSSFeed {
-  id               String    @id @default(cuid())
-  guild_id         String
-  channel_id       String
-  feed_url         String
-  feed_title       String?
-  feed_description String?   @db.Text
-  last_updated     DateTime?
-  last_post_id     String?
-  check_interval   Int       @default(1800) // seconds
-  message_template String?   @db.Text
-  embed_enabled    Boolean   @default(true)
-  role_to_ping     String?
-  enabled          Boolean   @default(true)
-  created_by_id    String
-  created_at       DateTime  @default(now())
-  updated_at       DateTime  @updatedAt
-
-  posts RSSPost[]
-
-  @@unique([guild_id, feed_url])
-  @@index([guild_id])
-  @@index([enabled])
-  @@index([last_updated])
-  @@map("rss_feeds")
-}
-
-model RSSPost {
-  id           String   @id @default(cuid())
-  feed_id      String
-  post_id      String
-  title        String
-  description  String?  @db.Text
-  link         String
-  author       String?
-  published_at DateTime
-  notified_at  DateTime @default(now())
-
-  feed RSSFeed @relation(fields: [feed_id], references: [id], onDelete: Cascade)
-
-  @@unique([feed_id, post_id])
-  @@index([feed_id])
-  @@index([published_at])
-  @@map("rss_posts")
-}
-
-model TranslationCache {
-  id               String              @id @default(cuid())
-  source_text_hash String              @unique
-  source_text      String              @db.Text
-  source_language  String
-  target_language  String
-  translated_text  String              @db.Text
-  provider         TranslationProvider
-  confidence_score Float?
-  character_count  Int
-  created_at       DateTime            @default(now())
-  expires_at       DateTime?
-
-  @@index([source_language, target_language])
-  @@index([provider])
-  @@index([created_at])
-  @@index([expires_at])
-  @@map("translation_cache")
-}
-
-model APIUsage {
-  id         String   @id @default(cuid())
-  guild_id   String
-  user_id    String?
-  service    String // "weather", "crypto", "translate", "social"
-  endpoint   String
-  requests   Int      @default(1)
-  date       DateTime @db.Date
   created_at DateTime @default(now())
 
-  @@unique([guild_id, user_id, service, endpoint, date])
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+
+  @@unique([guild_id, date, hour])
   @@index([guild_id])
-  @@index([service])
   @@index([date])
-  @@map("api_usage")
+  @@map("analytics")
+}
+
+// ADDITIONAL ESSENTIAL MODELS
+
+model LevelRole {
+  id         String   @id @default(cuid())
+  guild_id   String   @db.VarChar(20)
+  role_id    String   @db.VarChar(20)
+  level      Int
+  created_at DateTime @default(now())
+
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+
+  @@unique([guild_id, level])
+  @@index([guild_id])
+  @@map("level_roles")
+}
+
+model ShopPurchase {
+  id         String   @id @default(cuid())
+  user_id    String   @db.VarChar(20)
+  guild_id   String   @db.VarChar(20)
+  item_id    String
+  price_paid BigInt
+  quantity   Int      @default(1)
+  created_at DateTime @default(now())
+
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+  shop_item    ShopItem    @relation(fields: [item_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id, guild_id])
+  @@index([item_id])
+  @@index([created_at])
+  @@map("shop_purchases")
+}
+
+model GiveawayWinner {
+  id          String   @id @default(cuid())
+  giveaway_id String
+  user_id     String   @db.VarChar(20)
+  guild_id    String   @db.VarChar(20)
+  won_at      DateTime @default(now())
+
+  giveaway     Giveaway    @relation(fields: [giveaway_id], references: [id], onDelete: Cascade)
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+
+  @@unique([giveaway_id, user_id])
+  @@index([user_id])
+  @@map("giveaway_winners")
 }
 
 model TempVoiceChannel {
-  id               String    @id @default(cuid())
-  guild_id         String
-  channel_id       String    @unique
-  owner_id         String
-  parent_category  String?
-  channel_name     String
-  user_limit       Int?
-  bitrate          Int?
-  region           String?
-  allowed_users    String[]
-  banned_users     String[]
-  locked           Boolean   @default(false)
-  hidden           Boolean   @default(false)
-  auto_delete      Boolean   @default(true)
-  delete_timeout   Int       @default(300) // seconds after empty
-  activity_timeout Int       @default(600) // seconds of inactivity
-  last_activity    DateTime  @default(now())
-  created_at       DateTime  @default(now())
-  expires_at       DateTime?
+  id              String    @id @default(cuid())
+  guild_id        String    @db.VarChar(20)
+  channel_id      String    @unique @db.VarChar(20)
+  owner_id        String    @db.VarChar(20)
+  parent_category String?   @db.VarChar(20)
+  channel_name    String
+  user_limit      Int?
+  bitrate         Int?
+  region          String?
+  allowed_users   String[]
+  banned_users    String[]
+  locked          Boolean   @default(false)
+  hidden          Boolean   @default(false)
+  auto_delete     Boolean   @default(true)
+  delete_timeout  Int       @default(300)
+  created_at      DateTime  @default(now())
+  expires_at      DateTime?
+
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
 
   @@index([guild_id])
   @@index([owner_id])
-  @@index([auto_delete])
   @@index([expires_at])
-  @@index([last_activity])
   @@map("temp_voice_channels")
-}
-
-model VoiceChannelTemplate {
-  id               String   @id @default(cuid())
-  guild_id         String
-  template_name    String
-  channel_name     String // Can include variables like {user}, {count}
-  category_id      String?
-  user_limit       Int?
-  bitrate          Int?
-  region           String?
-  permissions      Json?
-  auto_role        String?
-  delete_timeout   Int      @default(300)
-  activity_timeout Int      @default(600)
-  enabled          Boolean  @default(true)
-  created_by_id    String
-  created_at       DateTime @default(now())
-
-  @@unique([guild_id, template_name])
-  @@index([guild_id])
-  @@index([enabled])
-  @@map("voice_channel_templates")
-}
-
-model BumpReminder {
-  id               String    @id @default(cuid())
-  guild_id         String    @unique
-  channel_id       String
-  message_template String    @db.Text
-  interval_hours   Int       @default(2)
-  role_to_ping     String?
-  next_bump_at     DateTime
-  last_bump_at     DateTime?
-  auto_bump        Boolean   @default(false)
-  enabled          Boolean   @default(true)
-  created_by_id    String
-  created_at       DateTime  @default(now())
-  updated_at       DateTime  @updatedAt
-
-  logs BumpLog[]
-
-  @@index([guild_id])
-  @@index([next_bump_at])
-  @@index([enabled])
-  @@map("bump_reminders")
-}
-
-model BumpLog {
-  id          String   @id @default(cuid())
-  reminder_id String
-  guild_id    String
-  bumped_by   String
-  bumped_at   DateTime @default(now())
-  auto_bump   Boolean  @default(false)
-
-  reminder BumpReminder @relation(fields: [reminder_id], references: [id], onDelete: Cascade)
-
-  @@index([reminder_id])
-  @@index([guild_id])
-  @@index([bumped_at])
-  @@map("bump_logs")
 }
 
 model AutoRole {
   id            String   @id @default(cuid())
-  guild_id      String
-  role_id       String
-  trigger       String // "join", "boost", "react", "button", "verification"
-  conditions    Json? // Additional conditions for role assignment
-  delay         Int? // Delay in seconds
-  message_id    String? // For reaction/button roles
-  emoji         String? // For reaction roles
-  button_data   Json? // For button roles
+  guild_id      String   @db.VarChar(20)
+  role_id       String   @db.VarChar(20)
+  trigger       String
+  conditions    Json?
+  delay         Int?
+  message_id    String?  @db.VarChar(20)
+  emoji         String?
+  button_data   Json?
   enabled       Boolean  @default(true)
   position      Int      @default(0)
-  created_by_id String
+  created_by_id String   @db.VarChar(20)
   created_at    DateTime @default(now())
 
-  assignments AutoRoleAssignment[]
+  guild_config GuildConfig          @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+  assignments  AutoRoleAssignment[]
 
   @@index([guild_id])
-  @@index([trigger])
   @@index([enabled])
-  @@index([message_id])
   @@map("auto_roles")
 }
 
 model AutoRoleAssignment {
   id           String    @id @default(cuid())
   auto_role_id String
-  user_id      String
-  guild_id     String
+  user_id      String    @db.VarChar(20)
+  guild_id     String    @db.VarChar(20)
   assigned_at  DateTime  @default(now())
   removed_at   DateTime?
 
@@ -3039,9 +813,9 @@ model AutoRoleAssignment {
 
 model VoiceActivity {
   id               String    @id @default(cuid())
-  user_id          String
-  guild_id         String
-  channel_id       String
+  user_id          String    @db.VarChar(20)
+  guild_id         String    @db.VarChar(20)
+  channel_id       String    @db.VarChar(20)
   session_start    DateTime  @default(now())
   session_end      DateTime?
   duration_seconds Int?
@@ -3050,78 +824,47 @@ model VoiceActivity {
   streaming        Boolean   @default(false)
   camera           Boolean   @default(false)
 
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+
   @@index([user_id, guild_id])
   @@index([channel_id])
   @@index([session_start])
   @@index([duration_seconds])
-  @@map("voice_activity")
+  @@map("voice_activities")
 }
 
 model MessageTemplate {
   id            String   @id @default(cuid())
-  guild_id      String
+  guild_id      String   @db.VarChar(20)
   name          String
   description   String?  @db.Text
   content       String   @db.Text
   embed_data    Json?
-  variables     String[] // Available variables like {user}, {server}, etc.
+  variables     String[]
   category      String   @default("general")
   uses          Int      @default(0)
   enabled       Boolean  @default(true)
-  created_by_id String
+  created_by_id String   @db.VarChar(20)
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
+
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
 
   @@unique([guild_id, name])
   @@index([guild_id])
   @@index([category])
-  @@index([enabled])
   @@map("message_templates")
-}
-
-model AutoModerationWhitelist {
-  id            String   @id @default(cuid())
-  guild_id      String
-  type          String // "url", "word", "regex", "user", "role", "channel"
-  value         String
-  description   String?
-  enabled       Boolean  @default(true)
-  created_by_id String
-  created_at    DateTime @default(now())
-
-  @@unique([guild_id, type, value])
-  @@index([guild_id])
-  @@index([type])
-  @@index([enabled])
-  @@map("automod_whitelist")
-}
-
-model ServerStats {
-  id              String    @id @default(cuid())
-  guild_id        String
-  stat_type       String // "members", "bots", "online", "channels", "roles"
-  channel_id      String
-  format_string   String    @default("{stat}")
-  update_interval Int       @default(600) // seconds
-  last_updated    DateTime?
-  enabled         Boolean   @default(true)
-  created_by_id   String
-  created_at      DateTime  @default(now())
-
-  @@unique([guild_id, stat_type, channel_id])
-  @@index([guild_id])
-  @@index([enabled])
-  @@index([last_updated])
-  @@map("server_stats")
 }
 
 model AFKSystem {
   id       String   @id @default(cuid())
-  user_id  String
-  guild_id String
+  user_id  String   @db.VarChar(20)
+  guild_id String   @db.VarChar(20)
   reason   String?  @db.Text
   set_at   DateTime @default(now())
   mentions Int      @default(0)
+
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
 
   @@unique([user_id, guild_id])
   @@index([guild_id])
@@ -3129,320 +872,110 @@ model AFKSystem {
   @@map("afk_system")
 }
 
-model CustomEmoji {
-  id          String   @id @default(cuid())
-  guild_id    String
-  emoji_id    String
-  name        String
-  animated    Boolean  @default(false)
-  url         String
-  uses        Int      @default(0)
-  uploaded_by String
-  uploaded_at DateTime @default(now())
-
-  @@unique([guild_id, emoji_id])
-  @@index([guild_id])
-  @@index([name])
-  @@index([uses])
-  @@map("custom_emojis")
-}
-
-model LogConfiguration {
-  id               String         @id @default(cuid())
-  guild_id         String
-  category         LogCategory
-  enabled          Boolean        @default(true)
-  events           LogEventType[]
-  log_level        LogLevel       @default(INFO)
-  retention_period LogRetention   @default(THREE_MONTHS)
-  include_metadata Boolean        @default(true)
-  include_content  Boolean        @default(false) // For message content
-  rate_limit       Int? // Max logs per minute for this category
-  created_by_id    String
-  created_at       DateTime       @default(now())
-  updated_at       DateTime       @updatedAt
-
-  guild_config GuildConfig        @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
-  channels     LogChannelConfig[]
-  filters      LogFilter[]
-  alerts       LogAlert[]
-
-  @@unique([guild_id, category])
-  @@index([guild_id])
-  @@index([enabled])
-  @@map("log_configurations")
-}
-
-model LogChannelConfig {
-  id               String   @id @default(cuid())
-  configuration_id String
-  channel_id       String
-  webhook_url      String?
-  custom_format    String?  @db.Text
-  embed_enabled    Boolean  @default(true)
-  mention_roles    String[]
-  color_scheme     Json?
-  created_at       DateTime @default(now())
-
-  configuration LogConfiguration @relation(fields: [configuration_id], references: [id], onDelete: Cascade)
-
-  @@unique([configuration_id, channel_id])
-  @@index([configuration_id])
-  @@index([channel_id])
-  @@map("log_channel_configs")
-}
-
-model EventLog {
-  id               String       @id @default(cuid())
-  guild_id         String
-  event_id         String       @unique @default(cuid())
-  category         LogCategory
-  event_type       LogEventType
-  level            LogLevel     @default(INFO)
-  user_id          String?
-  target_user_id   String?
-  moderator_id     String?
-  channel_id       String?
-  message_id       String?
-  title            String
-  description      String?      @db.Text
-  metadata         Json?
-  ip_address       String?
-  user_agent       String?
-  session_id       String?
-  correlation_id   String? // For linking related events
-  error_stack      String?      @db.Text
-  performance_data Json?
-  tags             String[]
-  search_vector    String? // For text search optimization
-  archived         Boolean      @default(false)
-  created_at       DateTime     @default(now())
-
-  related_events   EventLog[]          @relation("RelatedEvents")
-  parent_event     EventLog?           @relation("RelatedEvents", fields: [correlation_id], references: [event_id])
-  alert_executions LogAlertExecution[]
-
-  @@index([guild_id])
-  @@index([category])
-  @@index([event_type])
-  @@index([level])
-  @@index([user_id])
-  @@index([moderator_id])
-  @@index([created_at])
-  @@index([correlation_id])
-  @@index([archived])
-  @@index([guild_id, category, created_at])
-  @@index([guild_id, user_id, created_at])
-  @@map("event_logs")
-}
-
-model LogFilter {
-  id               String   @id @default(cuid())
-  configuration_id String
-  name             String
-  filter_type      String // "include", "exclude", "transform"
-  conditions       Json // Complex filter conditions
-  actions          Json? // Actions to take when filter matches
-  priority         Int      @default(0)
-  enabled          Boolean  @default(true)
-  created_by_id    String
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
-
-  configuration LogConfiguration @relation(fields: [configuration_id], references: [id], onDelete: Cascade)
-
-  @@unique([configuration_id, name])
-  @@index([configuration_id])
-  @@index([enabled])
-  @@index([priority])
-  @@map("log_filters")
-}
-
-model LogAlert {
-  id                    String         @id @default(cuid())
-  configuration_id      String
-  name                  String
-  description           String?        @db.Text
-  trigger_events        LogEventType[]
-  trigger_level         LogLevel       @default(WARN)
-  conditions            Json // Alert conditions (frequency, patterns, etc.)
-  cooldown_minutes      Int            @default(5)
-  notification_channels String[]
-  webhook_urls          String[]
-  mention_roles         String[]
-  custom_message        String?        @db.Text
-  enabled               Boolean        @default(true)
-  last_triggered        DateTime?
-  trigger_count         Int            @default(0)
-  created_by_id         String
-  created_at            DateTime       @default(now())
-  updated_at            DateTime       @updatedAt
-
-  configuration LogConfiguration    @relation(fields: [configuration_id], references: [id], onDelete: Cascade)
-  executions    LogAlertExecution[]
-
-  @@unique([configuration_id, name])
-  @@index([configuration_id])
-  @@index([enabled])
-  @@index([last_triggered])
-  @@map("log_alerts")
-}
-
-model LogAlertExecution {
-  id            String   @id @default(cuid())
-  alert_id      String
-  event_log_id  String
-  triggered_at  DateTime @default(now())
-  success       Boolean  @default(true)
-  error_message String?  @db.Text
-  response_time Int? // milliseconds
-
-  alert     LogAlert @relation(fields: [alert_id], references: [id], onDelete: Cascade)
-  event_log EventLog @relation(fields: [event_log_id], references: [id], onDelete: Cascade)
-
-  @@index([alert_id])
-  @@index([triggered_at])
-  @@index([success])
-  @@map("log_alert_executions")
-}
-
-model LogArchive {
-  id                String       @id @default(cuid())
-  guild_id          String
-  archive_date      DateTime     @db.Date
-  category          LogCategory?
-  total_events      Int          @default(0)
-  file_path         String
-  file_size_bytes   BigInt
-  compression_type  String       @default("gzip")
-  encryption_key_id String?
-  checksum          String
-  created_at        DateTime     @default(now())
-
-  @@unique([guild_id, archive_date, category])
-  @@index([guild_id])
-  @@index([archive_date])
-  @@index([category])
-  @@map("log_archives")
-}
-
-model LogMetrics {
-  id                String       @id @default(cuid())
-  guild_id          String
-  category          LogCategory
-  event_type        LogEventType
-  date              DateTime     @db.Date
-  hour              Int?
-  event_count       Int          @default(0)
-  error_count       Int          @default(0)
-  warning_count     Int          @default(0)
-  avg_response_time Float?
-  created_at        DateTime     @default(now())
-
-  @@unique([guild_id, category, event_type, date, hour])
-  @@index([guild_id])
-  @@index([category])
-  @@index([date])
-  @@map("log_metrics")
-}
-
-model LogSession {
+model BumpReminder {
   id               String    @id @default(cuid())
-  session_id       String    @unique
-  guild_id         String
-  user_id          String?
-  ip_address       String?
-  user_agent       String?
-  started_at       DateTime  @default(now())
-  ended_at         DateTime?
-  event_count      Int       @default(0)
-  last_activity_at DateTime  @default(now())
-  duration_seconds Int?
-  flags            String[]
+  guild_id         String    @unique @db.VarChar(20)
+  channel_id       String    @db.VarChar(20)
+  message_template String    @db.Text
+  interval_hours   Int       @default(2)
+  role_to_ping     String?   @db.VarChar(20)
+  next_bump_at     DateTime
+  last_bump_at     DateTime?
+  auto_bump        Boolean   @default(false)
+  enabled          Boolean   @default(true)
+  created_by_id    String    @db.VarChar(20)
+  created_at       DateTime  @default(now())
 
-  @@index([guild_id])
-  @@index([user_id])
-  @@index([session_id])
-  @@index([started_at])
-  @@map("log_sessions")
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+  bump_logs    BumpLog[]
+
+  @@index([next_bump_at])
+  @@index([enabled])
+  @@map("bump_reminders")
 }
 
-// ============================================================================
-// ENTERPRISE AUDIT & COMPLIANCE MODELS
-// ============================================================================
+model BumpLog {
+  id          String   @id @default(cuid())
+  reminder_id String
+  guild_id    String   @db.VarChar(20)
+  bumped_by   String   @db.VarChar(20)
+  bumped_at   DateTime @default(now())
+  auto_bump   Boolean  @default(false)
 
-/// Configuration change audit trail for compliance and accountability
-/// 
-/// Tracks all modifications to guild configurations with full before/after
-/// state capture. Essential for compliance, debugging, and rollback capabilities.
-/// Immutable once created to ensure audit integrity.
-/// 
-/// @compliance Required for SOX/GDPR compliance in enterprise deployments
-/// @retention Minimum 7 years for financial compliance, 3 years for general audit
-/// @security Contains sensitive configuration data - implement proper access controls
-/// @performance Append-only design for optimal write performance
-model ConfigurationAudit {
-  /// Internal unique identifier for this audit record
-  id String @id @default(cuid())
+  reminder BumpReminder @relation(fields: [reminder_id], references: [id], onDelete: Cascade)
 
-  /// Discord guild ID where the configuration change occurred
-  /// @constraint Must be a valid Discord snowflake ID
-  guild_id String @db.VarChar(20)
+  @@index([reminder_id])
+  @@index([guild_id])
+  @@index([bumped_at])
+  @@map("bump_logs")
+}
 
-  /// Discord user ID of the person who made the change
-  /// @constraint Must be a valid Discord snowflake ID
-  /// @businessRule Required for accountability - cannot be null
-  changed_by String @db.VarChar(20)
+model ServerStats {
+  id              String    @id @default(cuid())
+  guild_id        String    @db.VarChar(20)
+  stat_type       String
+  channel_id      String    @db.VarChar(20)
+  format_string   String    @default("{stat}")
+  update_interval Int       @default(600)
+  last_updated    DateTime?
+  enabled         Boolean   @default(true)
+  created_by_id   String    @db.VarChar(20)
+  created_at      DateTime  @default(now())
 
-  /// Name of the configuration field that was modified
-  /// @examples "moderation_enabled", "daily_reward_amount", "welcome_message"
-  /// @businessRule Must match actual GuildConfig field names
-  field_name String @db.VarChar(100)
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
 
-  /// Previous value before the change (JSON serialized)
-  /// @format JSON string representation of the old value
-  /// @businessRule Null only for initial configuration creation
-  old_value String? @db.Text
+  @@unique([guild_id, stat_type])
+  @@index([guild_id])
+  @@index([enabled])
+  @@map("server_stats")
+}
 
-  /// New value after the change (JSON serialized)
-  /// @format JSON string representation of the new value
-  /// @businessRule Cannot be null - all changes must have a target value
-  new_value String @db.Text
+model AutoModerationWhitelist {
+  id            String   @id @default(cuid())
+  guild_id      String   @db.VarChar(20)
+  type          String
+  value         String
+  description   String?
+  enabled       Boolean  @default(true)
+  created_by_id String   @db.VarChar(20)
+  created_at    DateTime @default(now())
 
-  /// Optional reason provided for this configuration change
-  /// @businessRule Highly recommended for compliance and clarity
-  /// @examples "Requested by admin", "Security incident response", "Feature rollout"
-  change_reason String? @db.Text
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
 
-  /// System/application that initiated this change
-  /// @examples "web_dashboard", "discord_bot", "api", "migration_script"
-  /// @businessRule Helps track change sources for security analysis
-  change_source String @default("unknown") @db.VarChar(50)
+  @@unique([guild_id, type, value])
+  @@index([guild_id])
+  @@index([type])
+  @@map("auto_moderation_whitelist")
+}
 
-  /// IP address of the user who made the change (if available)
-  /// @privacy May contain PII - handle according to data protection regulations
-  /// @security Used for security analysis and suspicious activity detection
-  ip_address String? @db.VarChar(45) // IPv6 compatible
+// WEB DASHBOARD MODELS
 
-  /// User agent string of the client that made the change (if web-based)
-  /// @technical Useful for debugging and security analysis
-  user_agent String? @db.Text
+model User {
+  id           String    @id @db.VarChar(20) // Discord User ID
+  username     String
+  global_name  String?
+  avatar       String?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  
+  session      UserSession?
+  
+  @@map("users")
+}
 
-  /// When this configuration change was made
-  /// @technical Immutable timestamp for audit chronology
-  /// @businessRule Must be accurate to the second for compliance
-  timestamp DateTime @default(now())
-
-  /// Additional metadata related to this change
-  /// @format JSON object with change-specific context
-  /// @examples {"rollback_id": "xyz", "batch_operation": true}
-  metadata Json?
-
-  // High-performance indexes for audit queries
-  @@index([guild_id, timestamp], name: "guild_audit_timeline") // Guild audit history
-  @@index([changed_by], name: "user_change_history") // Changes by specific user
-  @@index([field_name], name: "field_change_tracking") // Track changes to specific fields
-  @@index([timestamp], name: "audit_chronological") // System-wide audit timeline
-  @@index([change_source], name: "source_tracking") // Changes by source system
-  @@map("configuration_audit")
+model UserSession {
+  id                        String    @id @default(cuid())
+  user_id                   String    @unique @db.VarChar(20)
+  discord_access_token      String    // Encrypted
+  discord_refresh_token     String?   // Encrypted  
+  discord_token_expires_at  DateTime
+  session_expires_at        DateTime
+  last_used_at             DateTime  @default(now())
+  created_at               DateTime  @default(now())
+  
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  
+  @@index([user_id])
+  @@index([session_expires_at])
+  @@map("user_sessions")
 }

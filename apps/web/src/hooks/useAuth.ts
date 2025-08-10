@@ -42,7 +42,7 @@ export function useAuth(): AuthState & {
           isAuthenticated: false,
         });
       }
-    } catch (_error) {
+    } catch {
       setState({
         user: null,
         isLoading: false,

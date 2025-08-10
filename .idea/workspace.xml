@@ -4,27 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c8541eee-d01a-435d-9f6f-3028d7e951ee" name="Changes" comment="Add auto-moderation detectors for spam, links, and invites; implement detection logic and statistics tracking">
+    <list default="true" id="c8541eee-d01a-435d-9f6f-3028d7e951ee" name="Changes" comment="Update dependencies and remove unused logger calls; enhance schema documentation and add new configuration options">
       <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/utility/help.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/utility/help.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/.env.example" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/web/src/app/api/auth/callback/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/api/auth/callback/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/app/api/auth/me/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/api/auth/me/route.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/web/src/app/api/guilds/[guildId]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/api/guilds/[guildId]/route.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/web/src/app/api/guilds/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/api/guilds/route.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/web/src/app/api/health/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/api/health/route.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/web/src/app/api/metrics/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/api/metrics/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/lib/csrf.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/lib/csrf.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/lib/db.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/lib/db.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/app/dashboard/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/dashboard/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/app/dashboard/server/[guildId]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/dashboard/server/[guildId]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/env.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/env.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/web/src/hooks/useAuth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/hooks/useAuth.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/web/src/lib/discord-api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/lib/discord-api.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/lib/logger.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/lib/metrics.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/lib/metrics.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/lib/rate-limit.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/lib/rate-limit.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/middleware.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/middleware.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/biome.json" beforeDir="false" afterPath="$PROJECT_DIR$/biome.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/database/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/prisma/schema.prisma" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,12 +55,13 @@
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Node.js.bot > help.ts.executor": "Run",
+    "Node.js.remove-prisma-comments.js.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "code.cleanup.on.save": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/minec/WebstormProjects/pure/apps/bot",
+    "last_opened_file_path": "C:/Users/minec/WebstormProjects/pure/packages/database",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -77,6 +74,11 @@
     "npm.bot > type-check.executor": "Run",
     "npm.database > db:format.executor": "Run",
     "npm.database > db:generate.executor": "Run",
+    "npm.database > db:migrate.executor": "Run",
+    "npm.database > db:push.executor": "Run",
+    "npm.database > db:reset.executor": "Run",
+    "npm.web > type-check.executor": "Run",
+    "npm.web > web:dev.executor": "Run",
     "rearrange.code.on.save": "true",
     "settings.editor.selected.configurable": "Settings.Biome",
     "ts.external.directory.path": "C:\\Users\\minec\\WebstormProjects\\pure\\apps\\bot\\node_modules\\typescript\\lib",
@@ -85,10 +87,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\minec\WebstormProjects\pure\packages\database" />
       <recent name="C:\Users\minec\WebstormProjects\pure\apps\bot" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.biome:check">
+  <component name="RunManager" selected="npm.web &gt; web:dev">
     <configuration name="biome:check" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -99,41 +102,41 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="bot &gt; bot:build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/apps/bot/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="bot:build" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
-    </configuration>
-    <configuration name="bot &gt; bot:start" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/apps/bot/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="bot:start" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
-    </configuration>
-    <configuration name="bot &gt; type-check" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/apps/bot/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="type-check" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
-    </configuration>
-    <configuration name="database &gt; db:format" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+    <configuration name="database &gt; db:migrate" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/packages/database/package.json" />
       <command value="run" />
       <scripts>
-        <script value="db:format" />
+        <script value="db:migrate" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="database &gt; db:push" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/packages/database/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="db:push" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="database &gt; db:reset" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/packages/database/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="db:reset" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="web &gt; web:dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/apps/web/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="web:dev" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
@@ -142,10 +145,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="npm.biome:check" />
-        <item itemvalue="npm.database &gt; db:format" />
-        <item itemvalue="npm.bot &gt; bot:start" />
-        <item itemvalue="npm.bot &gt; bot:build" />
-        <item itemvalue="npm.bot &gt; type-check" />
+        <item itemvalue="npm.web &gt; web:dev" />
+        <item itemvalue="npm.database &gt; db:migrate" />
+        <item itemvalue="npm.database &gt; db:reset" />
+        <item itemvalue="npm.database &gt; db:push" />
       </list>
     </recent_temporary>
   </component>
@@ -166,7 +169,12 @@
       <workItem from="1754574383265" duration="3115000" />
       <workItem from="1754578595142" duration="40000" />
       <workItem from="1754581392415" duration="53000" />
-      <workItem from="1754634341483" duration="1406000" />
+      <workItem from="1754634341483" duration="1432000" />
+      <workItem from="1754741433537" duration="443000" />
+      <workItem from="1754759839983" duration="5000" />
+      <workItem from="1754816748951" duration="211000" />
+      <workItem from="1754816975586" duration="46000" />
+      <workItem from="1754817048601" duration="3143000" />
     </task>
     <task id="LOCAL-00001" summary="Add auto-moderation detectors for spam, links, and invites; implement detection logic and statistics tracking">
       <option name="closed" value="true" />
@@ -176,7 +184,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754577541402</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Update dependencies and remove unused logger calls; enhance schema documentation and add new configuration options">
+      <option name="closed" value="true" />
+      <created>1754635780429</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1754635780429</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -184,6 +200,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Add auto-moderation detectors for spam, links, and invites; implement detection logic and statistics tracking" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add auto-moderation detectors for spam, links, and invites; implement detection logic and statistics tracking" />
+    <MESSAGE value="Update dependencies and remove unused logger calls; enhance schema documentation and add new configuration options" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update dependencies and remove unused logger calls; enhance schema documentation and add new configuration options" />
   </component>
 </project>

@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ANIMATION_VARIANTS } from "@/utils/constants";
 
 interface ServerManagementProps {
@@ -24,46 +24,123 @@ interface ServerManagementProps {
   };
 }
 
-// Mock server data
-const MOCK_SERVER = {
-  id: "123456789",
-  name: "Gaming Central",
-  icon: "https://cdn.discordapp.com/icons/123456789/a_sample_icon.png",
-  memberCount: 1250,
-  config: {
-    prefix: "!",
-    moderation_enabled: true,
-    leveling_enabled: true,
-    economy_enabled: true,
-    tickets_enabled: false,
-    welcome_enabled: true,
-    welcome_message: "Welcome to {guild}, {user}!",
-    xp_rate_multiplier: 1.0,
-    daily_reward_amount: 100,
-  },
-};
+interface GuildConfig {
+  prefix: string;
+  level_system_enabled: boolean;
+  economy_enabled: boolean;
+  welcome_enabled: boolean;
+  welcome_message: string | null;
+  xp_rate: number;
+  daily_reward: string;
+  ticket_category_id: string | null;
+}
 
-export default function ServerManagement({ params }: ServerManagementProps) {
+interface Guild {
+  id: string;
+  name: string;
+  icon: string | null;
+  memberCount?: number;
+  config?: GuildConfig;
+}
+
+export default async function ServerManagement({
+  params,
+}: ServerManagementProps) {
+  const { guildId } = await params;
   const router = useRouter();
   const { fadeInUp, stagger } = ANIMATION_VARIANTS;
-  const [config, setConfig] = useState(MOCK_SERVER.config);
+  const [guild, setGuild] = useState<Guild | null>(null);
+  const [config, setConfig] = useState<GuildConfig | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  // Fetch guild data
+  useEffect(() => {
+    async function fetchGuild() {
+      try {
+        const response = await fetch(`/api/guilds/${guildId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch guild data");
+        }
+        const guildData = await response.json();
+        setGuild(guildData);
+        setConfig(guildData.config);
+        setLoading(false);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load guild");
+        setLoading(false);
+      }
+    }
+
+    fetchGuild();
+  }, [guildId]);
 
   const updateConfig = (key: string, value: any) => {
-    setConfig((prev) => ({ ...prev, [key]: value }));
+    if (!config) return;
+    setConfig((prev) => ({ ...prev!, [key]: value }));
     setHasChanges(true);
   };
 
-  const saveChanges = () => {
-    // Here you would make an API call to save the configuration
-    console.log("Saving configuration:", config);
-    setHasChanges(false);
+  const saveChanges = async () => {
+    if (!config) return;
+
+    setSaving(true);
+    try {
+      const response = await fetch(`/api/guilds/${guildId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(config),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save configuration");
+      }
+
+      setHasChanges(false);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to save configuration",
+      );
+    } finally {
+      setSaving(false);
+    }
   };
 
   const resetChanges = () => {
-    setConfig(MOCK_SERVER.config);
+    if (!guild?.config) return;
+    setConfig(guild.config);
     setHasChanges(false);
   };
+
+  if (loading) {
+    return (
+      <div className="p-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-blue-400">Loading guild configuration...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !guild || !config) {
+    return (
+      <div className="p-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-red-400">
+              {error || "Failed to load guild"}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8">
@@ -85,20 +162,20 @@ export default function ServerManagement({ params }: ServerManagementProps) {
             </button>
 
             <div className="flex items-center gap-4">
-              <Image
-                src={MOCK_SERVER.icon}
-                alt={`${MOCK_SERVER.name} icon`}
-                width={64}
-                height={64}
-                className="rounded-full"
-              />
+              {guild.icon && (
+                <Image
+                  src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`}
+                  alt={`${guild.name} icon`}
+                  width={64}
+                  height={64}
+                  className="rounded-full"
+                />
+              )}
               <div>
-                <h1 className="text-3xl font-bold text-white">
-                  {MOCK_SERVER.name}
-                </h1>
+                <h1 className="text-3xl font-bold text-white">{guild.name}</h1>
                 <p className="text-blue-200">
-                  {MOCK_SERVER.memberCount.toLocaleString()} members • Server
-                  Configuration
+                  {guild.memberCount?.toLocaleString() || "Unknown"} members •
+                  Server Configuration
                 </p>
               </div>
             </div>
@@ -116,10 +193,11 @@ export default function ServerManagement({ params }: ServerManagementProps) {
                 <button
                   type="button"
                   onClick={saveChanges}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                  disabled={saving}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-400 text-white rounded-lg transition-colors"
                 >
                   <Save className="w-4 h-4" />
-                  Save Changes
+                  {saving ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             )}
@@ -164,7 +242,7 @@ export default function ServerManagement({ params }: ServerManagementProps) {
                     </label>
                     <textarea
                       id="welcome-message"
-                      value={config.welcome_message}
+                      value={config.welcome_message || ""}
                       onChange={(e) =>
                         updateConfig("welcome_message", e.target.value)
                       }
@@ -205,10 +283,9 @@ export default function ServerManagement({ params }: ServerManagementProps) {
                       <input
                         id="moderation-enabled"
                         type="checkbox"
-                        checked={config.moderation_enabled}
-                        onChange={(e) =>
-                          updateConfig("moderation_enabled", e.target.checked)
-                        }
+                        checked={true} // Always enabled for now
+                        onChange={() => {}} // Disabled for now
+                        disabled
                         className="sr-only peer"
                       />
                       <div className="w-11 h-6 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
@@ -271,9 +348,9 @@ export default function ServerManagement({ params }: ServerManagementProps) {
                       <input
                         id="leveling-enabled"
                         type="checkbox"
-                        checked={config.leveling_enabled}
+                        checked={config.level_system_enabled}
                         onChange={(e) =>
-                          updateConfig("leveling_enabled", e.target.checked)
+                          updateConfig("level_system_enabled", e.target.checked)
                         }
                         className="sr-only peer"
                       />
@@ -294,12 +371,9 @@ export default function ServerManagement({ params }: ServerManagementProps) {
                       step="0.1"
                       min="0.1"
                       max="5.0"
-                      value={config.xp_rate_multiplier}
+                      value={config.xp_rate}
                       onChange={(e) =>
-                        updateConfig(
-                          "xp_rate_multiplier",
-                          parseFloat(e.target.value),
-                        )
+                        updateConfig("xp_rate", parseFloat(e.target.value))
                       }
                       className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-2 text-white focus:border-blue-500 focus:outline-none"
                     />
@@ -352,12 +426,9 @@ export default function ServerManagement({ params }: ServerManagementProps) {
                       id="daily-reward-amount"
                       type="number"
                       min="1"
-                      value={config.daily_reward_amount}
+                      value={config.daily_reward}
                       onChange={(e) =>
-                        updateConfig(
-                          "daily_reward_amount",
-                          parseInt(e.target.value),
-                        )
+                        updateConfig("daily_reward", e.target.value)
                       }
                       className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-2 text-white focus:border-blue-500 focus:outline-none"
                     />
@@ -377,9 +448,12 @@ export default function ServerManagement({ params }: ServerManagementProps) {
                       <input
                         id="tickets-enabled"
                         type="checkbox"
-                        checked={config.tickets_enabled}
+                        checked={config.ticket_category_id !== null}
                         onChange={(e) =>
-                          updateConfig("tickets_enabled", e.target.checked)
+                          updateConfig(
+                            "ticket_category_id",
+                            e.target.checked ? "placeholder" : null,
+                          )
                         }
                         className="sr-only peer"
                       />

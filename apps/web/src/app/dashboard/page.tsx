@@ -22,6 +22,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { env } from "@/env";
 import { useAuth } from "@/hooks/useAuth";
 import type { EnhancedGuild } from "@/lib/discord-api";
 import { ANIMATION_VARIANTS } from "@/utils/constants";
@@ -32,6 +33,17 @@ interface DashboardStats {
   activeServers: number;
   totalMembers: number;
   recentActivity: number;
+}
+
+interface RecentActivity {
+  id: string;
+  action: string;
+  level: string;
+  title: string;
+  description: string | null;
+  timestamp: string;
+  user_id: string | null;
+  success: boolean;
 }
 
 export default function DashboardPage() {
@@ -46,6 +58,10 @@ export default function DashboardPage() {
   });
   const [isLoadingGuilds, setIsLoadingGuilds] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [recentActivities, setRecentActivities] = useState<RecentActivity[]>(
+    [],
+  );
+  const [isLoadingActivities, setIsLoadingActivities] = useState(true);
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -78,7 +94,7 @@ export default function DashboardPage() {
       // Calculate stats
       const totalMembers = guildsList.reduce(
         (sum: number, guild: EnhancedGuild) =>
-          sum + (guild.approximate_member_count || 0),
+          sum + (guild.memberCount || guild.approximate_member_count || 0),
         0,
       );
 
@@ -97,12 +113,54 @@ export default function DashboardPage() {
     }
   };
 
+  // Fetch recent activities from API
+  const fetchRecentActivities = async () => {
+    if (!guilds.length) return;
+
+    setIsLoadingActivities(true);
+    try {
+      // Get activities from the first guild that has analytics
+      const activeGuild = guilds.find((g) => g.botInGuild);
+      if (!activeGuild) {
+        setRecentActivities([]);
+        return;
+      }
+
+      const response = await fetch(`/api/analytics/${activeGuild.id}?days=7`, {
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch activities: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setRecentActivities(data.recentActivity || []);
+    } catch (err) {
+      console.error("Error fetching activities:", err);
+      setRecentActivities([]);
+    } finally {
+      setIsLoadingActivities(false);
+    }
+  };
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: loop dependency
   useEffect(() => {
     if (isAuthenticated && user) {
       fetchGuilds();
     }
   }, [isAuthenticated, user]);
+
+  // Fetch activities after guilds are loaded
+  // biome-ignore lint/correctness/useExhaustiveDependencies: loop dependency
+  useEffect(() => {
+    if (guilds.length > 0) {
+      fetchRecentActivities();
+    }
+  }, [guilds]);
 
   const getGuildIcon = (guild: EnhancedGuild) => {
     if (guild.icon) {
@@ -120,6 +178,15 @@ export default function DashboardPage() {
       .join("")
       .toUpperCase()
       .slice(0, 2);
+  };
+
+  const handleAddBot = (guildId: string) => {
+    // Discord bot invite URL with proper permissions
+    const clientId = env.NEXT_PUBLIC_DISCORD_CLIENT_ID;
+    const permissions = "8"; // Administrator permission
+    const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&permissions=${permissions}&guild_id=${guildId}&response_type=code&redirect_uri=${encodeURIComponent(`${window.location.origin}/api/auth/callback`)}&scope=bot%20applications.commands`;
+
+    window.open(inviteUrl, "_blank");
   };
 
   if (authLoading) {
@@ -163,17 +230,19 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={fetchGuilds}
-              disabled={isLoadingGuilds}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 disabled:opacity-50"
-            >
-              <RefreshCw
-                className={`w-4 h-4 ${isLoadingGuilds ? "animate-spin" : ""}`}
-              />
-              Refresh
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={fetchGuilds}
+                disabled={isLoadingGuilds}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 disabled:opacity-50"
+              >
+                <RefreshCw
+                  className={`w-4 h-4 ${isLoadingGuilds ? "animate-spin" : ""}`}
+                />
+                Refresh Servers
+              </button>
+            </div>
           </div>
         </motion.div>
 
@@ -314,36 +383,35 @@ export default function DashboardPage() {
                         </h3>
                         <p className="text-sm text-slate-400">
                           {(
-                            guild.approximate_member_count || 0
+                            guild.memberCount ||
+                            guild.approximate_member_count ||
+                            0
                           ).toLocaleString()}{" "}
                           members
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {guild.botInGuild ? (
+                    {guild.botInGuild && (
+                      <div className="flex items-center gap-2">
                         <div className="flex items-center gap-1 text-green-400">
                           <UserCheck className="w-4 h-4" />
                           <span className="text-xs font-medium">Active</span>
                         </div>
-                      ) : (
-                        <div className="flex items-center gap-1 text-orange-400">
-                          <Plus className="w-4 h-4" />
-                          <span className="text-xs font-medium">Add Bot</span>
-                        </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 text-sm text-slate-400">
-                      <div className="flex items-center gap-1">
-                        <MessageSquare className="w-4 h-4" />
-                        <span>{Math.floor(Math.random() * 50)} channels</span>
-                      </div>
+                      {guild.channelCount !== undefined ? (
+                        <div className="flex items-center gap-1">
+                          <MessageSquare className="w-4 h-4" />
+                          <span>{guild.channelCount} channels</span>
+                        </div>
+                      ) : null}
                       <div className="flex items-center gap-1">
                         <Crown className="w-4 h-4" />
-                        <span>Admin</span>
+                        <span>{guild.owner ? "Owner" : "Admin"}</span>
                       </div>
                     </div>
 
@@ -358,7 +426,8 @@ export default function DashboardPage() {
                     ) : (
                       <button
                         type="button"
-                        className="flex items-center gap-1 px-3 py-1.5 bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 rounded-md transition-colors duration-200 text-sm font-medium"
+                        onClick={() => handleAddBot(guild.id)}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 rounded-md transition-colors duration-200 text-sm font-medium hover:bg-orange-600 hover:text-white"
                       >
                         <Plus className="w-4 h-4" />
                         Add Bot
@@ -383,51 +452,92 @@ export default function DashboardPage() {
             Recent Activity
           </h2>
 
-          <div className="space-y-4">
-            {[
-              {
-                action: "Moderation action taken",
-                server: "Gaming Central",
-                time: "2 hours ago",
-                icon: Shield,
-              },
-              {
-                action: "User joined server",
-                server: "Code & Coffee",
-                time: "4 hours ago",
-                icon: UserCheck,
-              },
-              {
-                action: "Channel created",
-                server: "Art Community",
-                time: "1 day ago",
-                icon: MessageSquare,
-              },
-            ].map((activity, index) => {
-              const Icon = activity.icon;
-              return (
-                <div
-                  // biome-ignore lint/suspicious/noArrayIndexKey: No unique ID available
-                  key={index}
-                  className="flex items-center gap-4 p-3 rounded-lg bg-slate-700/30"
-                >
-                  <div className="p-2 bg-slate-600 rounded-lg">
-                    <Icon className="w-4 h-4 text-slate-300" />
+          {isLoadingActivities ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+              <span className="ml-2 text-slate-400">Loading activities...</span>
+            </div>
+          ) : recentActivities.length === 0 ? (
+            <div className="text-center py-8">
+              <Activity className="w-12 h-12 text-slate-500 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-white mb-2">
+                No recent activity
+              </h3>
+              <p className="text-slate-400">
+                Activity will appear here as your bot performs actions in your
+                servers.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {recentActivities.slice(0, 5).map((activity) => {
+                const getActivityIcon = (action: string) => {
+                  switch (action.toLowerCase()) {
+                    case "moderation":
+                      return Shield;
+                    case "login":
+                    case "logout":
+                      return UserCheck;
+                    case "message":
+                      return MessageSquare;
+                    case "command":
+                      return Activity;
+                    default:
+                      return Activity;
+                  }
+                };
+
+                const Icon = getActivityIcon(activity.action);
+
+                const formatTimeAgo = (timestamp: string) => {
+                  const now = new Date();
+                  const activityTime = new Date(timestamp);
+                  const diffInMs = now.getTime() - activityTime.getTime();
+                  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+                  const diffInDays = Math.floor(diffInHours / 24);
+
+                  if (diffInDays > 0) {
+                    return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
+                  }
+                  if (diffInHours > 0) {
+                    return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
+                  }
+                  return "Just now";
+                };
+
+                return (
+                  <div
+                    key={activity.id}
+                    className={`flex items-center gap-4 p-3 rounded-lg ${
+                      activity.success ? "bg-slate-700/30" : "bg-red-900/20"
+                    }`}
+                  >
+                    <div
+                      className={`p-2 rounded-lg ${
+                        activity.success ? "bg-slate-600" : "bg-red-800"
+                      }`}
+                    >
+                      <Icon
+                        className={`w-4 h-4 ${
+                          activity.success ? "text-slate-300" : "text-red-400"
+                        }`}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-white font-medium">{activity.title}</p>
+                      <p className="text-slate-400 text-sm">
+                        {activity.description || `${activity.action} action`}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1 text-slate-400 text-sm">
+                      <Calendar className="w-4 h-4" />
+                      {formatTimeAgo(activity.timestamp)}
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-white font-medium">{activity.action}</p>
-                    <p className="text-slate-400 text-sm">
-                      in {activity.server}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1 text-slate-400 text-sm">
-                    <Calendar className="w-4 h-4" />
-                    {activity.time}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </motion.div>
       </div>
     </div>

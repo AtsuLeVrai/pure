@@ -5,6 +5,7 @@ import type {
   RESTGetAPIGuildMemberResult,
   RESTGetAPIGuildResult,
 } from "discord-api-types/v10";
+import { env } from "@/env";
 
 const baseUrl = "https://discord.com/api/v10";
 const rateLimitMap = new Map<
@@ -165,9 +166,24 @@ async function makeRequest<T>(
 
 // Get bot guilds to check presence
 async function getBotGuilds(): Promise<APIGuild[]> {
-  // This would require the bot token to be available
-  // For now, return empty array - this should be implemented with bot token
-  return [];
+  try {
+    const response = await fetch(`${baseUrl}/users/@me/guilds`, {
+      headers: {
+        Authorization: `Bot ${env.DISCORD_BOT_TOKEN}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error("Failed to fetch bot guilds:", response.statusText);
+      return [];
+    }
+
+    const guilds = await response.json();
+    return Array.isArray(guilds) ? guilds : [];
+  } catch (error) {
+    console.error("Error fetching bot guilds:", error);
+    return [];
+  }
 }
 
 /**
@@ -176,6 +192,7 @@ async function getBotGuilds(): Promise<APIGuild[]> {
 export interface EnhancedGuild extends APIGuild {
   botInGuild: boolean;
   memberCount: number;
+  channelCount?: number;
 }
 
 /**
@@ -192,6 +209,28 @@ export const DiscordUtils = {
   /**
    * Get user's guilds with bot presence information
    */
+  /**
+   * Get channels for a guild (only if bot is present)
+   */
+  async getGuildChannels(guildId: string): Promise<number> {
+    try {
+      const response = await fetch(`${baseUrl}/guilds/${guildId}/channels`, {
+        headers: {
+          Authorization: `Bot ${env.DISCORD_BOT_TOKEN}`,
+        },
+      });
+
+      if (!response.ok) {
+        return 0;
+      }
+
+      const channels = await response.json();
+      return Array.isArray(channels) ? channels.length : 0;
+    } catch {
+      return 0;
+    }
+  },
+
   async getUserGuilds(accessToken: string): Promise<EnhancedGuild[]> {
     const cacheKey = `user-guilds:${accessToken}`;
     const cached = getCachedData<EnhancedGuild[]>(cacheKey);
@@ -208,13 +247,24 @@ export const DiscordUtils = {
     const botGuilds = await getBotGuilds();
     const botGuildIds = new Set(botGuilds.map((g) => g.id));
 
-    const enhancedGuilds = guilds.map(
-      (guild) =>
-        ({
+    // Create enhanced guilds with channel counts for bot guilds
+    const enhancedGuilds = await Promise.all(
+      guilds.map(async (guild) => {
+        const botInGuild = botGuildIds.has(guild.id);
+        let channelCount: number | undefined;
+
+        // Only get channel count if bot is in guild (to avoid unnecessary API calls)
+        if (botInGuild) {
+          channelCount = await this.getGuildChannels(guild.id);
+        }
+
+        return {
           ...guild,
-          botInGuild: botGuildIds.has(guild.id),
+          botInGuild,
           memberCount: guild.approximate_member_count || 0,
-        }) as EnhancedGuild,
+          channelCount,
+        } as EnhancedGuild;
+      }),
     );
 
     // Cache for 60 seconds
@@ -267,7 +317,7 @@ export const DiscordUtils = {
       // If member has roles, we'd need to fetch role permissions
       // For now, this is a simplified check
       return "permissions" in member &&
-        typeof member.permissions === "bigint" &&
+        typeof member.permissions === "number" &&
         member.permissions
         ? (BigInt(member.permissions) & adminPermission) === adminPermission
         : false;

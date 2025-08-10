@@ -54,7 +54,7 @@ export async function GET(request: Request) {
         },
       },
     );
-  } catch (_error) {
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },
@@ -77,7 +77,7 @@ export async function POST(_request: Request) {
     MetricsStore.reset();
 
     return NextResponse.json({ message: "Metrics reset successfully" });
-  } catch (_error) {
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

@@ -213,7 +213,7 @@ export async function GET() {
         "Content-Type": "application/json",
       },
     });
-  } catch (_error) {
+  } catch {
     return NextResponse.json(
       {
         status: "unhealthy",

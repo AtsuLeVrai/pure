@@ -2,9 +2,9 @@ import type {
   APIUser,
   RESTPostOAuth2AccessTokenResult,
 } from "discord-api-types/v10";
-import jwt from "jsonwebtoken";
 import { type NextRequest, NextResponse } from "next/server";
 import { env } from "@/env";
+import { createUserSession } from "@/lib/auth-helpers";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -70,15 +70,12 @@ export async function GET(request: NextRequest) {
 
     const userData = (await userResponse.json()) as APIUser;
 
-    // Create JWT session token with access token
-    const sessionToken = jwt.sign(
-      {
-        ...userData,
-        access_token: tokenData.access_token,
-        token_expires_at: Math.floor(Date.now() / 1000) + tokenData.expires_in,
-        exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60, // 30 days
-      },
-      env.JWT_SECRET,
+    // Create secure session using database storage
+    const sessionToken = await createUserSession(
+      userData,
+      tokenData.access_token,
+      tokenData.refresh_token,
+      tokenData.expires_in,
     );
 
     // Create response with redirect
@@ -96,7 +93,7 @@ export async function GET(request: NextRequest) {
     });
 
     return response;
-  } catch (_error) {
+  } catch {
     return NextResponse.redirect(
       new URL("/?error=authentication_failed", request.url),
     );

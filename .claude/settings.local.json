@@ -12,7 +12,8 @@
       "WebFetch(domain:docs.tickettool.xyz)",
       "Bash(mkdir:*)",
       "Bash(pnpm add:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }
