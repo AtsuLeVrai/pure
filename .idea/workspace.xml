@@ -4,22 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c8541eee-d01a-435d-9f6f-3028d7e951ee" name="Changes" comment="Update dependencies and remove unused logger calls; enhance schema documentation and add new configuration options">
-      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
+    <list default="true" id="c8541eee-d01a-435d-9f6f-3028d7e951ee" name="Changes" comment="Add authentication and guild management features; implement secure session handling, Discord token retrieval, and guild configuration updates">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/utility/help.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/utility/help.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/.env.example" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/app/api/auth/callback/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/api/auth/callback/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/app/api/auth/me/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/api/auth/me/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/app/api/guilds/[guildId]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/api/guilds/[guildId]/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/app/api/guilds/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/api/guilds/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/app/api/health/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/api/health/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/app/api/metrics/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/api/metrics/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/app/dashboard/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/dashboard/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/app/dashboard/server/[guildId]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/app/dashboard/server/[guildId]/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/env.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/env.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/hooks/useAuth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/hooks/useAuth.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/src/lib/discord-api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/src/lib/discord-api.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/database/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/prisma/schema.prisma" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -91,7 +77,7 @@
       <recent name="C:\Users\minec\WebstormProjects\pure\apps\bot" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.web &gt; web:dev">
+  <component name="RunManager" selected="npm.database &gt; db:migrate">
     <configuration name="biome:check" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -144,9 +130,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.database &gt; db:migrate" />
         <item itemvalue="npm.biome:check" />
         <item itemvalue="npm.web &gt; web:dev" />
-        <item itemvalue="npm.database &gt; db:migrate" />
         <item itemvalue="npm.database &gt; db:reset" />
         <item itemvalue="npm.database &gt; db:push" />
       </list>
@@ -174,7 +160,7 @@
       <workItem from="1754759839983" duration="5000" />
       <workItem from="1754816748951" duration="211000" />
       <workItem from="1754816975586" duration="46000" />
-      <workItem from="1754817048601" duration="3143000" />
+      <workItem from="1754817048601" duration="3922000" />
     </task>
     <task id="LOCAL-00001" summary="Add auto-moderation detectors for spam, links, and invites; implement detection logic and statistics tracking">
       <option name="closed" value="true" />
@@ -192,7 +178,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754635780429</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Add authentication and guild management features; implement secure session handling, Discord token retrieval, and guild configuration updates">
+      <option name="closed" value="true" />
+      <created>1754820291046</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1754820291046</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -201,6 +195,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Add auto-moderation detectors for spam, links, and invites; implement detection logic and statistics tracking" />
     <MESSAGE value="Update dependencies and remove unused logger calls; enhance schema documentation and add new configuration options" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update dependencies and remove unused logger calls; enhance schema documentation and add new configuration options" />
+    <MESSAGE value="Add authentication and guild management features; implement secure session handling, Discord token retrieval, and guild configuration updates" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add authentication and guild management features; implement secure session handling, Discord token retrieval, and guild configuration updates" />
   </component>
 </project>

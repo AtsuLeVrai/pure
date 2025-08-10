@@ -127,7 +127,6 @@ enum AuditAction {
 model GuildConfig {
   id       String @id @default(cuid())
   guild_id String @unique @db.VarChar(20)
-  prefix   String @default("!")
 
   // Moderation settings
   moderation_log_channel_id String? @db.VarChar(20)
@@ -951,30 +950,30 @@ model AutoModerationWhitelist {
 // WEB DASHBOARD MODELS
 
 model User {
-  id           String    @id @db.VarChar(20) // Discord User ID
-  username     String
-  global_name  String?
-  avatar       String?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-  
-  session      UserSession?
-  
+  id          String   @id @db.VarChar(20) // Discord User ID
+  username    String
+  global_name String?
+  avatar      String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  session UserSession?
+
   @@map("users")
 }
 
 model UserSession {
-  id                        String    @id @default(cuid())
-  user_id                   String    @unique @db.VarChar(20)
-  discord_access_token      String    // Encrypted
-  discord_refresh_token     String?   // Encrypted  
-  discord_token_expires_at  DateTime
-  session_expires_at        DateTime
-  last_used_at             DateTime  @default(now())
-  created_at               DateTime  @default(now())
-  
+  id                       String   @id @default(cuid())
+  user_id                  String   @unique @db.VarChar(20)
+  discord_access_token     String // Encrypted
+  discord_refresh_token    String? // Encrypted  
+  discord_token_expires_at DateTime
+  session_expires_at       DateTime
+  last_used_at             DateTime @default(now())
+  created_at               DateTime @default(now())
+
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  
+
   @@index([user_id])
   @@index([session_expires_at])
   @@map("user_sessions")
