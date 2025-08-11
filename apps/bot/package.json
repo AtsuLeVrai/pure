@@ -31,16 +31,17 @@
     "@pure/database": "workspace:^",
     "discord.js": "^14.21.0",
     "dotenv": "^17.2.1",
+    "i18next": "^25.3.4",
     "uuid": "^11.1.0",
     "winston": "^3.17.0",
-    "zod": "^4.0.15"
+    "zod": "^4.0.17"
   },
   "devDependencies": {
-    "@types/node": "^24.2.0",
+    "@types/node": "^24.2.1",
     "cross-env": "^10.0.0",
     "discord-api-types": "^0.38.18",
     "rimraf": "^6.0.1",
-    "tsdown": "^0.13.3",
+    "tsdown": "^0.13.5",
     "tsx": "^4.20.3",
     "typescript": "^5.9.2"
   }

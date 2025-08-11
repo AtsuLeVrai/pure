@@ -2,7 +2,12 @@ import { PrismaClient } from "@pure/database";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import { config as dotenv } from "dotenv";
 import { z } from "zod";
-import { isDev, Logger, registerEvents } from "@/utils/index.js";
+import {
+  initializeI18n,
+  isDev,
+  Logger,
+  registerEvents,
+} from "@/utils/index.js";
 
 // Define the schema for environment variables using zod
 const dotenvConfig = z.object({
@@ -28,7 +33,7 @@ function loadConfig(config: unknown): DotenvConfig {
 }
 
 // Load environment variables from .env file
-const config = dotenv({ debug: process.env.NODE_ENV === "development" });
+const config = dotenv({ debug: isDev });
 export const env = loadConfig(config.parsed);
 
 // Initialize the Discord client
@@ -153,6 +158,10 @@ process.on("uncaughtException", (error) => {
 async function main(): Promise<void> {
   try {
     Logger.info("Starting Discord Bot...");
+
+    // Initialize i18n system
+    Logger.info("Initializing i18n system...");
+    await initializeI18n();
 
     // Register events
     registerEvents(client);

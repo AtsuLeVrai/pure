@@ -1,5 +1,6 @@
 "use client";
 
+import type { GuildConfig } from "@pure/database";
 import { motion } from "framer-motion";
 import {
   Activity,
@@ -24,17 +25,6 @@ interface ServerManagementProps {
   };
 }
 
-interface GuildConfig {
-  prefix: string;
-  level_system_enabled: boolean;
-  economy_enabled: boolean;
-  welcome_enabled: boolean;
-  welcome_message: string | null;
-  xp_rate: number;
-  daily_reward: string;
-  ticket_category_id: string | null;
-}
-
 interface Guild {
   id: string;
   name: string;
@@ -43,10 +33,8 @@ interface Guild {
   config?: GuildConfig;
 }
 
-export default async function ServerManagement({
-  params,
-}: ServerManagementProps) {
-  const { guildId } = await params;
+export default function ServerManagement({ params }: ServerManagementProps) {
+  const [guildId, setGuildId] = useState<string>("");
   const router = useRouter();
   const { fadeInUp, stagger } = ANIMATION_VARIANTS;
   const [guild, setGuild] = useState<Guild | null>(null);
@@ -56,8 +44,18 @@ export default async function ServerManagement({
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
+  // Extract guildId from params
+  useEffect(() => {
+    (params as unknown as Promise<ServerManagementProps["params"]>).then(
+      (resolvedParams) => {
+        setGuildId(resolvedParams.guildId);
+      },
+    );
+  }, [params]);
+
   // Fetch guild data
   useEffect(() => {
+    if (!guildId) return;
     async function fetchGuild() {
       try {
         const response = await fetch(`/api/guilds/${guildId}`);
@@ -426,7 +424,7 @@ export default async function ServerManagement({
                       id="daily-reward-amount"
                       type="number"
                       min="1"
-                      value={config.daily_reward}
+                      value={Number(config.daily_reward)}
                       onChange={(e) =>
                         updateConfig("daily_reward", e.target.value)
                       }

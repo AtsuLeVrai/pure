@@ -122,6 +122,21 @@ enum AuditAction {
   GUILD_LEAVE
 }
 
+enum EventLogCategory {
+  CHANNELS
+  MEMBERS
+  MESSAGES
+  MODERATION
+  ROLES
+  VOICE
+  GUILD_SETTINGS
+  EMOJIS_STICKERS
+  INVITES
+  THREADS
+  SCHEDULED_EVENTS
+  INTERACTIONS
+}
+
 // CORE MODELS
 
 model GuildConfig {
@@ -158,18 +173,11 @@ model GuildConfig {
   leave_message      String?
 
   // General settings
-  language                String @default("en")
-  timezone                String @default("UTC")
+  language                String   @default("en")
+  timezone                String   @default("UTC")
   voice_channel_templates Json? // Simplified voice channel templates as JSON
-
-  // GDPR compliance
-  data_retention_days  Int?    @default(365)
-  gdpr_contact_email   String?
-  privacy_policy_url   String?
-  terms_of_service_url String?
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at              DateTime @default(now())
+  updated_at              DateTime @updatedAt
 
   // Relations
   warnings                  Warning[]
@@ -202,6 +210,7 @@ model GuildConfig {
   server_stats              ServerStats[]
   audit_logs                AuditLog[]
   analytics                 Analytics[]
+  event_log_configs         EventLogConfig[]
 
   @@index([guild_id])
   @@map("guild_configs")
@@ -945,6 +954,30 @@ model AutoModerationWhitelist {
   @@index([guild_id])
   @@index([type])
   @@map("auto_moderation_whitelist")
+}
+
+// EVENT LOGGING SYSTEM
+
+model EventLogConfig {
+  id            String           @id @default(cuid())
+  guild_id      String           @db.VarChar(20)
+  category      EventLogCategory
+  enabled       Boolean          @default(false)
+  channel_id    String?          @db.VarChar(20)
+  webhook_url   String?          @db.Text
+  color         String?          @db.VarChar(7) // Hex color
+  include_bots  Boolean          @default(false)
+  template      String?          @db.Text
+  created_by_id String           @db.VarChar(20)
+  created_at    DateTime         @default(now())
+  updated_at    DateTime         @updatedAt
+
+  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
+
+  @@index([guild_id])
+  @@index([enabled])
+  @@index([guild_id, category])
+  @@map("event_log_configs")
 }
 
 // WEB DASHBOARD MODELS

@@ -66,7 +66,7 @@ function createPingComponents(
 
 // Utility function to determine color based on latency
 function getLatencyColor(latency: number): number {
-  if (latency < 100) {
+  if (latency < 150) {
     return Colors.Green;
   }
 
@@ -74,7 +74,7 @@ function getLatencyColor(latency: number): number {
     return Colors.Yellow;
   }
 
-  if (latency < 400) {
+  if (latency < 250) {
     return Colors.Orange;
   }
 
@@ -83,17 +83,17 @@ function getLatencyColor(latency: number): number {
 
 // Utility function to get status emoji based on latency
 function getStatusEmoji(latency: number): string {
-  if (latency < 100) return "🟢";
+  if (latency < 150) return "🟢";
   if (latency < 200) return "🟡";
-  if (latency < 400) return "🟠";
+  if (latency < 250) return "🟠";
   return "🔴";
 }
 
 // Utility function to get status text based on latency
 function getStatusText(latency: number): string {
-  if (latency < 100) return "Excellent";
+  if (latency < 150) return "Excellent";
   if (latency < 200) return "Good";
-  if (latency < 400) return "Fair";
+  if (latency < 250) return "Fair";
   return "Poor";
 }
 

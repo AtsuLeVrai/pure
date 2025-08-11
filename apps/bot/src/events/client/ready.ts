@@ -1,6 +1,11 @@
 import { ActivityType, type Client, PresenceUpdateStatus } from "discord.js";
 import { defineEvent } from "@/types/index.js";
-import { commandRegistry, Logger, registerCommands } from "@/utils/index.js";
+import {
+  commandRegistry,
+  isDev,
+  Logger,
+  registerCommands,
+} from "@/utils/index.js";
 
 // Utility function to get memory usage in MB
 function getMemoryUsage(): {
@@ -112,7 +117,7 @@ export default defineEvent({
         nodeVersion: process.version,
         platform: process.platform,
         arch: process.arch,
-        environment: process.env.NODE_ENV || "development",
+        environment: isDev,
         uptime: formatUptime(process.uptime()),
         pid: process.pid,
       };
@@ -184,7 +189,7 @@ export default defineEvent({
       });
 
       // Development mode logging
-      if (process.env.NODE_ENV === "development") {
+      if (isDev) {
         Logger.info("Development mode active", {
           features: [
             "Hot reload enabled",

@@ -16,8 +16,23 @@ import userinfoCommand from "@/commands/moderation/userinfo.js";
 import warnCommand from "@/commands/moderation/warn.js";
 import helpCommand from "@/commands/utility/help.js";
 import pingCommand from "@/commands/utility/ping.js";
+import applicationCommandPermissionsUpdateEvent from "@/events/client/applicationCommandPermissionsUpdate.js";
+import cacheSweepEvent from "@/events/client/cacheSweep.js";
+import debugEvent from "@/events/client/debug.js";
+import errorEvent from "@/events/client/error.js";
 import interactionCreateEvent from "@/events/client/interactionCreate.js";
+import invalidatedEvent from "@/events/client/invalidated.js";
 import readyEvent from "@/events/client/ready.js";
+import userUpdateEvent from "@/events/client/userUpdate.js";
+import warnEvent from "@/events/client/warn.js";
+import guildAvailableEvent from "@/events/guild/guildAvailable.js";
+import guildCreateEvent from "@/events/guild/guildCreate.js";
+import guildDeleteEvent from "@/events/guild/guildDelete.js";
+import shardDisconnectEvent from "@/events/shard/shardDisconnect.js";
+import shardErrorEvent from "@/events/shard/shardError.js";
+import shardReadyEvent from "@/events/shard/shardReady.js";
+import shardReconnectingEvent from "@/events/shard/shardReconnecting.js";
+import shardResumeEvent from "@/events/shard/shardResume.js";
 import { env } from "@/index.js";
 import type { EventHandler, SlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
@@ -100,8 +115,23 @@ export async function registerCommands(client: Client<true>): Promise<void> {
 
 // Event registry for the bot
 export const eventRegistry: readonly EventHandler<any>[] = [
-  readyEvent,
+  applicationCommandPermissionsUpdateEvent,
+  cacheSweepEvent,
+  debugEvent,
+  errorEvent,
   interactionCreateEvent,
+  invalidatedEvent,
+  readyEvent,
+  userUpdateEvent,
+  warnEvent,
+  guildAvailableEvent,
+  guildCreateEvent,
+  guildDeleteEvent,
+  shardDisconnectEvent,
+  shardErrorEvent,
+  shardReadyEvent,
+  shardReconnectingEvent,
+  shardResumeEvent,
 ] as const;
 
 // Register events with the Discord client

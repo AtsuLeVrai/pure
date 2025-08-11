@@ -34,11 +34,13 @@ CREATE TYPE "public"."LogLevel" AS ENUM ('DEBUG', 'INFO', 'WARN', 'ERROR', 'CRIT
 -- CreateEnum
 CREATE TYPE "public"."AuditAction" AS ENUM ('CREATE', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT', 'MODERATION', 'COMMAND', 'MESSAGE', 'VOICE_JOIN', 'VOICE_LEAVE', 'GUILD_JOIN', 'GUILD_LEAVE');
 
+-- CreateEnum
+CREATE TYPE "public"."EventLogCategory" AS ENUM ('CHANNELS', 'MEMBERS', 'MESSAGES', 'MODERATION', 'ROLES', 'VOICE', 'GUILD_SETTINGS', 'EMOJIS_STICKERS', 'INVITES', 'THREADS', 'SCHEDULED_EVENTS', 'INTERACTIONS');
+
 -- CreateTable
 CREATE TABLE "public"."guild_configs" (
     "id" TEXT NOT NULL,
     "guild_id" VARCHAR(20) NOT NULL,
-    "prefix" TEXT NOT NULL DEFAULT '!',
     "moderation_log_channel_id" VARCHAR(20),
     "auto_role_id" VARCHAR(20),
     "mute_role_id" VARCHAR(20),
@@ -61,10 +63,6 @@ CREATE TABLE "public"."guild_configs" (
     "language" TEXT NOT NULL DEFAULT 'en',
     "timezone" TEXT NOT NULL DEFAULT 'UTC',
     "voice_channel_templates" JSONB,
-    "data_retention_days" INTEGER DEFAULT 365,
-    "gdpr_contact_email" TEXT,
-    "privacy_policy_url" TEXT,
-    "terms_of_service_url" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -645,6 +643,24 @@ CREATE TABLE "public"."auto_moderation_whitelist" (
 );
 
 -- CreateTable
+CREATE TABLE "public"."event_log_configs" (
+    "id" TEXT NOT NULL,
+    "guild_id" VARCHAR(20) NOT NULL,
+    "category" "public"."EventLogCategory" NOT NULL,
+    "enabled" BOOLEAN NOT NULL DEFAULT false,
+    "channel_id" VARCHAR(20),
+    "webhook_url" TEXT,
+    "color" VARCHAR(7),
+    "include_bots" BOOLEAN NOT NULL DEFAULT false,
+    "template" TEXT,
+    "created_by_id" VARCHAR(20) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "event_log_configs_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "public"."users" (
     "id" VARCHAR(20) NOT NULL,
     "username" TEXT NOT NULL,
@@ -989,6 +1005,15 @@ CREATE INDEX "auto_moderation_whitelist_type_idx" ON "public"."auto_moderation_w
 CREATE UNIQUE INDEX "auto_moderation_whitelist_guild_id_type_value_key" ON "public"."auto_moderation_whitelist"("guild_id", "type", "value");
 
 -- CreateIndex
+CREATE INDEX "event_log_configs_guild_id_idx" ON "public"."event_log_configs"("guild_id");
+
+-- CreateIndex
+CREATE INDEX "event_log_configs_enabled_idx" ON "public"."event_log_configs"("enabled");
+
+-- CreateIndex
+CREATE INDEX "event_log_configs_guild_id_category_idx" ON "public"."event_log_configs"("guild_id", "category");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "user_sessions_user_id_key" ON "public"."user_sessions"("user_id");
 
 -- CreateIndex
@@ -1116,6 +1141,9 @@ ALTER TABLE "public"."server_stats" ADD CONSTRAINT "server_stats_guild_id_fkey" 
 
 -- AddForeignKey
 ALTER TABLE "public"."auto_moderation_whitelist" ADD CONSTRAINT "auto_moderation_whitelist_guild_id_fkey" FOREIGN KEY ("guild_id") REFERENCES "public"."guild_configs"("guild_id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."event_log_configs" ADD CONSTRAINT "event_log_configs_guild_id_fkey" FOREIGN KEY ("guild_id") REFERENCES "public"."guild_configs"("guild_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."user_sessions" ADD CONSTRAINT "user_sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

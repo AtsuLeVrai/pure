@@ -41,6 +41,10 @@ export async function GET(_request: Request, { params }: RouteParams) {
     }
 
     // Fetch guild details from Discord
+    console.log(
+      `Attempting to fetch guild ${guildId} for user ${authResult.user.id}`,
+    );
+
     const discordGuild = await DiscordUtils.getEnhancedGuild(
       guildId,
       authResult.user.id,
@@ -48,55 +52,91 @@ export async function GET(_request: Request, { params }: RouteParams) {
     );
 
     if (!discordGuild) {
+      console.log(
+        `Failed to get enhanced guild for ${guildId} - checking permissions manually`,
+      );
+
+      // Debug: Check user's guilds directly
+      try {
+        const userGuilds = await fetch(
+          "https://discord.com/api/v10/users/@me/guilds",
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          },
+        );
+        const guilds = await userGuilds.json();
+
+        if (userGuilds.ok && Array.isArray(guilds)) {
+          console.log(`User has access to ${guilds.length} guilds`);
+          const targetGuild = guilds.find((g: any) => g.id === guildId);
+          if (targetGuild) {
+            console.log(
+              `Found guild ${guildId} with permissions: ${targetGuild.permissions}`,
+            );
+          } else {
+            console.log(`Guild ${guildId} not found in user's guild list`);
+          }
+        } else {
+          console.log(
+            `Discord API error: ${userGuilds.status} ${userGuilds.statusText}`,
+          );
+          console.log("Response body:", guilds);
+        }
+      } catch (debugError) {
+        console.log("Debug check failed:", debugError);
+      }
+
       return NextResponse.json(
         { error: "Guild not found or access denied" },
         { status: 403 },
       );
     }
 
-    // Get guild configuration from database
-    const guildConfig = await prisma.guildConfig.findUnique({
+    // Get or create guild configuration from database
+    let guildConfig = await prisma.guildConfig.findUnique({
       where: { guild_id: guildId },
     });
 
+    console.log(`Guild config for ${guildId} found:`, guildConfig);
+
+    // If config doesn't exist, create it with default values
+    if (!guildConfig) {
+      guildConfig = await prisma.guildConfig.create({
+        data: {
+          guild_id: guildId,
+          moderation_log_channel_id: null,
+          auto_role_id: null,
+          mute_role_id: null,
+          level_system_enabled: false,
+          level_up_channel_id: null,
+          level_up_message: null,
+          xp_rate: 1.0,
+          economy_enabled: false,
+          daily_reward: BigInt(100),
+          work_reward_min: BigInt(50),
+          work_reward_max: BigInt(200),
+          ticket_category_id: null,
+          ticket_support_role_id: null,
+          welcome_enabled: false,
+          welcome_channel_id: null,
+          welcome_message: null,
+          leave_enabled: false,
+          leave_channel_id: null,
+          leave_message: null,
+          language: "en",
+          timezone: "UTC",
+          data_retention_days: 365,
+          gdpr_contact_email: null,
+          privacy_policy_url: null,
+          terms_of_service_url: null,
+        },
+      });
+    }
+
     // Combine Discord guild info with database config
-    const enhancedGuild: APIGuild & { config: Partial<GuildConfig> } = {
+    const enhancedGuild: APIGuild & { config: GuildConfig } = {
       ...discordGuild,
-      // @ts-expect-error
-      config: guildConfig || {
-        // Default configuration if not found
-        id: null,
-        guild_id: guildId,
-        prefix: "!",
-        moderation_log_channel_id: null,
-        auto_role_id: null,
-        mute_role_id: null,
-        level_system_enabled: false,
-        level_up_channel_id: null,
-        level_up_message: null,
-        xp_rate: 1.0,
-        economy_enabled: false,
-        daily_reward: BigInt(100),
-        work_reward_min: BigInt(50),
-        work_reward_max: BigInt(200),
-        ticket_category_id: null,
-        ticket_support_role_id: null,
-        welcome_enabled: false,
-        welcome_channel_id: null,
-        welcome_message: null,
-        leave_enabled: false,
-        leave_channel_id: null,
-        leave_message: null,
-        language: "en",
-        timezone: "UTC",
-        voice_channel_templates: null,
-        data_retention_days: 365,
-        gdpr_contact_email: null,
-        privacy_policy_url: null,
-        terms_of_service_url: null,
-        created_at: new Date(),
-        updated_at: new Date(),
-      },
+      config: guildConfig,
     };
 
     return NextResponse.json(enhancedGuild);

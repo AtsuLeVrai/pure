@@ -305,22 +305,28 @@ export const DiscordUtils = {
    */
   async userHasAdminPermissions(
     guildId: string,
-    userId: string,
     accessToken: string,
   ): Promise<boolean> {
     try {
-      const member = await this.getGuildMember(guildId, userId, accessToken);
+      // Get user's guilds which includes permissions
+      const userGuilds = await makeRequest<RESTGetAPICurrentUserGuildsResult>(
+        "/users/@me/guilds",
+        accessToken,
+      );
 
-      // Check if user has administrator permission (bit 3)
+      // Find the specific guild
+      const guild = userGuilds.find((g) => g.id === guildId);
+      if (!guild || !guild.permissions) return false;
+
+      // Check for admin permissions or manage server permissions
       const adminPermission = BigInt("0x8"); // ADMINISTRATOR
+      const manageGuildPermission = BigInt("0x20"); // MANAGE_GUILD
 
-      // If member has roles, we'd need to fetch role permissions
-      // For now, this is a simplified check
-      return "permissions" in member &&
-        typeof member.permissions === "number" &&
-        member.permissions
-        ? (BigInt(member.permissions) & adminPermission) === adminPermission
-        : false;
+      const permissions = BigInt(guild.permissions);
+      return (
+        (permissions & adminPermission) === adminPermission ||
+        (permissions & manageGuildPermission) === manageGuildPermission
+      );
     } catch {
       return false;
     }
@@ -367,13 +373,13 @@ export const DiscordUtils = {
    */
   async getEnhancedGuild(
     guildId: string,
-    userId: string,
+    _userId: string,
     accessToken: string,
   ): Promise<EnhancedGuild | null> {
     try {
       const [guild, hasPermissions] = await Promise.all([
         this.getGuild(guildId, accessToken),
-        this.userHasAdminPermissions(guildId, userId, accessToken),
+        this.userHasAdminPermissions(guildId, accessToken),
       ]);
 
       if (!hasPermissions) {
