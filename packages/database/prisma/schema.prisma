@@ -8,25 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ENUMS - Essential only
-enum ModerationType {
-  BAN
-  KICK
-  TIMEOUT
-  WARN
-  UNBAN
-  PURGE
-  LOCK
-  UNLOCK
-  SLOWMODE
-  MUTE
-  UNMUTE
-  CLEAR_WARNINGS
-  MASSBAN
-  NICKNAME
-  ANTIRAID
-}
-
 enum TicketStatus {
   OPEN
   PENDING
@@ -99,29 +80,6 @@ enum PollType {
   YES_NO
 }
 
-enum LogLevel {
-  DEBUG
-  INFO
-  WARN
-  ERROR
-  CRITICAL
-}
-
-enum AuditAction {
-  CREATE
-  UPDATE
-  DELETE
-  LOGIN
-  LOGOUT
-  MODERATION
-  COMMAND
-  MESSAGE
-  VOICE_JOIN
-  VOICE_LEAVE
-  GUILD_JOIN
-  GUILD_LEAVE
-}
-
 enum EventLogCategory {
   CHANNELS
   MEMBERS
@@ -181,7 +139,6 @@ model GuildConfig {
 
   // Relations
   warnings                  Warning[]
-  moderation_logs           ModerationLog[]
   auto_moderation_rules     AutoModerationRule[]
   auto_moderation_whitelist AutoModerationWhitelist[]
   tickets                   Ticket[]
@@ -208,7 +165,6 @@ model GuildConfig {
   afk_system                AFKSystem[]
   bump_reminder             BumpReminder?
   server_stats              ServerStats[]
-  audit_logs                AuditLog[]
   analytics                 Analytics[]
   event_log_configs         EventLogConfig[]
 
@@ -267,28 +223,6 @@ model Warning {
   @@index([user_id, guild_id])
   @@index([guild_id])
   @@map("warnings")
-}
-
-model ModerationLog {
-  id             String         @id @default(cuid())
-  log_id         String         @unique @db.VarChar(50)
-  type           ModerationType
-  target_user_id String         @db.VarChar(20)
-  moderator_id   String         @db.VarChar(20)
-  guild_id       String         @db.VarChar(20)
-  reason         String         @db.Text
-  timestamp      DateTime       @default(now())
-  metadata       Json?
-  expires_at     DateTime?
-
-  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
-
-  @@index([target_user_id, guild_id])
-  @@index([moderator_id])
-  @@index([type])
-  @@index([timestamp])
-  @@index([guild_id, timestamp])
-  @@map("moderation_logs")
 }
 
 model AutoModerationRule {
@@ -637,35 +571,6 @@ model ScheduledMessage {
   @@index([send_at])
   @@index([sent])
   @@map("scheduled_messages")
-}
-
-// CONSOLIDATED AUDIT LOGGING (replaces GuildLog, EventLog, SecurityLog, CommandAnalytics)
-model AuditLog {
-  id             String      @id @default(cuid())
-  guild_id       String      @db.VarChar(20)
-  action         AuditAction
-  level          LogLevel    @default(INFO)
-  user_id        String?     @db.VarChar(20)
-  target_user_id String?     @db.VarChar(20)
-  moderator_id   String?     @db.VarChar(20)
-  channel_id     String?     @db.VarChar(20)
-  message_id     String?     @db.VarChar(20)
-  title          String
-  description    String?     @db.Text
-  metadata       Json?
-  success        Boolean     @default(true)
-  response_time  Int?
-  timestamp      DateTime    @default(now())
-
-  guild_config GuildConfig @relation(fields: [guild_id], references: [guild_id], onDelete: Cascade)
-
-  @@index([guild_id])
-  @@index([action])
-  @@index([level])
-  @@index([user_id])
-  @@index([timestamp])
-  @@index([guild_id, timestamp])
-  @@map("audit_logs")
 }
 
 // CONSOLIDATED ANALYTICS (replaces GuildAnalytics, AdvancedAnalytics, LogMetrics)

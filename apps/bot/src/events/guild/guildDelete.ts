@@ -25,7 +25,6 @@ export default defineEvent({
           _count: {
             select: {
               warnings: true,
-              moderation_logs: true,
               user_metrics: true,
               user_economy: true,
               tickets: true,

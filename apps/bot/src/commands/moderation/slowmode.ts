@@ -1,4 +1,3 @@
-import { ModerationType } from "@pure/database";
 import {
   ApplicationCommandOptionType,
   blockQuote,
@@ -11,8 +10,6 @@ import {
   PermissionFlagsBits,
   type TextChannel,
 } from "discord.js";
-import { v7 } from "uuid";
-import { prisma } from "@/index.js";
 import { defineSlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
@@ -82,24 +79,6 @@ async function executeSlowmode(
       newDelay,
       `${reason} | Set by: ${executor.user.tag} (${executor.id})`,
     );
-
-    // Add moderation log
-    await prisma.moderationLog.create({
-      data: {
-        log_id: v7(),
-        type: ModerationType.SLOWMODE,
-        target_user_id: executor.id, // No specific target for slowmode
-        moderator_id: executor.id,
-        guild_id: executor.guild.id,
-        reason,
-        metadata: {
-          channelId: channel.id,
-          channelName: channel.name,
-          previousDelay,
-          newDelay,
-        },
-      },
-    });
 
     Logger.info("Slowmode updated successfully", {
       channelId: channel.id,

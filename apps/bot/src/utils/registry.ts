@@ -3,7 +3,6 @@ import banCommand from "@/commands/moderation/ban.js";
 import kickCommand from "@/commands/moderation/kick.js";
 import lockCommand from "@/commands/moderation/lock.js";
 import massbanCommand from "@/commands/moderation/massban.js";
-import modlogsCommand from "@/commands/moderation/modlogs.js";
 import muteCommand from "@/commands/moderation/mute.js";
 import nicknameCommand from "@/commands/moderation/nickname.js";
 import purgeCommand from "@/commands/moderation/purge.js";
@@ -16,6 +15,7 @@ import userinfoCommand from "@/commands/moderation/userinfo.js";
 import warnCommand from "@/commands/moderation/warn.js";
 import helpCommand from "@/commands/utility/help.js";
 import pingCommand from "@/commands/utility/ping.js";
+import channelCreateEvent from "@/events/channel/channelCreate.js";
 import applicationCommandPermissionsUpdateEvent from "@/events/client/applicationCommandPermissionsUpdate.js";
 import cacheSweepEvent from "@/events/client/cacheSweep.js";
 import debugEvent from "@/events/client/debug.js";
@@ -47,7 +47,6 @@ export const commandRegistry: readonly SlashCommand[] = [
   kickCommand,
   lockCommand,
   massbanCommand,
-  modlogsCommand,
   muteCommand,
   nicknameCommand,
   purgeCommand,
@@ -115,6 +114,7 @@ export async function registerCommands(client: Client<true>): Promise<void> {
 
 // Event registry for the bot
 export const eventRegistry: readonly EventHandler<any>[] = [
+  channelCreateEvent,
   applicationCommandPermissionsUpdateEvent,
   cacheSweepEvent,
   debugEvent,

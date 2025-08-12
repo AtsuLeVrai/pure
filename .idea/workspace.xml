@@ -4,11 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling">
+    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="Update dependencies for Discord.js, bufferutil, and zlib-sync; bump @types/react version">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/web/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/ban.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/ban.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/kick.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/kick.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/modlogs.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/mute.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/mute.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/purge.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/purge.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/slowmode.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/slowmode.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/timeout.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/timeout.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/unban.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/unban.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/unmute.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/unmute.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/warn.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/warn.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/guild/guildDelete.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/guild/guildDelete.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/utils/registry.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/utils/registry.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/prisma/schema.prisma" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,16 +95,6 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="bot &gt; bot:build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/apps/bot/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="bot:build" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
-    </configuration>
     <configuration name="bot &gt; bot:dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/apps/bot/package.json" />
       <command value="run" />
@@ -125,13 +125,23 @@
       <envs />
       <method v="2" />
     </configuration>
+    <configuration name="database &gt; db:generate" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/packages/database/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="db:generate" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="npm.bot &gt; bot:dev" />
         <item itemvalue="npm.biome:check" />
-        <item itemvalue="npm.bot &gt; bot:start" />
-        <item itemvalue="npm.bot &gt; bot:build" />
         <item itemvalue="npm.bot &gt; type-check" />
+        <item itemvalue="npm.database &gt; db:generate" />
+        <item itemvalue="npm.bot &gt; bot:start" />
       </list>
     </recent_temporary>
   </component>
@@ -151,7 +161,7 @@
       <updated>1754938864590</updated>
       <workItem from="1754938866010" duration="29000" />
       <workItem from="1754938909066" duration="3032000" />
-      <workItem from="1754994638684" duration="134000" />
+      <workItem from="1754994638684" duration="2523000" />
     </task>
     <task id="LOCAL-00001" summary="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling">
       <option name="closed" value="true" />
@@ -161,7 +171,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754941980902</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Update dependencies for Discord.js, bufferutil, and zlib-sync; bump @types/react version">
+      <option name="closed" value="true" />
+      <created>1754994882902</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1754994882902</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -169,6 +187,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling" />
+    <MESSAGE value="Update dependencies for Discord.js, bufferutil, and zlib-sync; bump @types/react version" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update dependencies for Discord.js, bufferutil, and zlib-sync; bump @types/react version" />
   </component>
 </project>

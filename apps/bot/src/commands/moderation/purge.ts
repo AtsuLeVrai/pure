@@ -1,4 +1,3 @@
-import { ModerationType } from "@pure/database";
 import {
   ApplicationCommandOptionType,
   blockQuote,
@@ -12,8 +11,6 @@ import {
   type TextChannel,
   type User,
 } from "discord.js";
-import { v7 } from "uuid";
-import { prisma } from "@/index.js";
 import { defineSlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
@@ -130,26 +127,6 @@ async function executePurge(
         });
       }
     }
-
-    // Add moderation log
-    await prisma.moderationLog.create({
-      data: {
-        log_id: v7(),
-        type: ModerationType.PURGE,
-        target_user_id: targetUser?.id || executor.id, // Use executor if no specific target
-        moderator_id: executor.id,
-        guild_id: executor.guild.id,
-        reason: reason || "Message purge",
-        metadata: {
-          deletedCount,
-          requestedCount: amount,
-          channelId: channel.id,
-          channelName: channel.name,
-          containsText,
-          filters,
-        },
-      },
-    });
 
     Logger.info("Messages purged successfully", {
       channelId: channel.id,

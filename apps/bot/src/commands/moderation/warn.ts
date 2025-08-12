@@ -1,4 +1,4 @@
-import { ModerationType, type Warning } from "@pure/database";
+import type { Warning } from "@pure/database";
 import {
   ApplicationCommandOptionType,
   blockQuote,
