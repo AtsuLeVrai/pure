@@ -201,12 +201,12 @@ function createChannelCreateEmbed(
   const specificInfo = getChannelSpecificInfo(channel);
   if (specificInfo.length > 0) {
     const configBlock = [
-      "\`\`\`ini",
+      "```ini",
       "[Channel Configuration]",
       ...specificInfo.map((info) =>
         info.replace(/\*\*/g, "").replace(/:/g, " ="),
       ),
-      "\`\`\`",
+      "```",
     ].join("\n");
 
     embed.addFields({

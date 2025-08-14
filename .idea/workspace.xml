@@ -49,36 +49,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "code.cleanup.on.save": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "pnpm",
-    "npm.biome:check.executor": "Run",
-    "npm.bot > bot:build.executor": "Run",
-    "npm.bot > bot:dev.executor": "Run",
-    "npm.bot > bot:start.executor": "Run",
-    "npm.bot > type-check.executor": "Run",
-    "npm.database > db:format.executor": "Run",
-    "npm.database > db:generate.executor": "Run",
-    "npm.database > db:migrate.executor": "Run",
-    "npm.database > db:reset.executor": "Run",
-    "npm.web > web:dev.executor": "Run",
-    "rearrange.code.on.save": "true",
-    "settings.editor.selected.configurable": "Settings.Biome",
-    "ts.external.directory.path": "C:\\Users\\minec\\WebstormProjects\\pure\\apps\\bot\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;code.cleanup.on.save&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;pnpm&quot;,
+    &quot;npm.biome:check.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; bot:build.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; bot:dev.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; bot:start.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; type-check.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:format.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:generate.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:migrate.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:reset.executor&quot;: &quot;Run&quot;,
+    &quot;npm.web &gt; web:dev.executor&quot;: &quot;Run&quot;,
+    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;Settings.Biome&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\minec\\WebstormProjects\\pure\\apps\\bot\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\minec\WebstormProjects\pure\apps\bot\src\events\channel" />

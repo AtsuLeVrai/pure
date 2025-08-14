@@ -1,18 +1,31 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.1.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
   "vcs": {
+    "enabled": true,
     "clientKind": "git",
     "defaultBranch": "main",
-    "enabled": true,
     "useIgnoreFile": true
   },
   "files": {
     "ignoreUnknown": true,
     "includes": [
       "**",
-      "!**/build/**",
-      "!**/dist/**",
-      "!**/node_modules/**",
+      "!**/build",
+      "!**/dist",
+      "!**/node_modules",
+      "!**/.next",
+      "!**/.nuxt",
+      "!**/.turbo",
+      "!**/dev-dist",
+      "!**/.expo",
+      "!**/.wrangler",
+      "!**/.vscode",
+      "!**/.zed",
+      "!**/routeTree.gen.ts",
+      "!**/src-tauri",
+      "!bts.jsonc",
+      "!**/wrangler.jsonc",
+      "!**/.source",
       "!**/*.d.ts"
     ]
   },
@@ -46,7 +59,9 @@
   "linter": {
     "enabled": true,
     "rules": {
+      "recommended": true,
       "correctness": {
+        "useExhaustiveDependencies": "info",
         "noNodejsModules": "off",
         "noUndeclaredDependencies": "off"
       },
@@ -57,9 +72,24 @@
       "suspicious": {
         "noExplicitAny": "off"
       },
+      "nursery": {
+        "useSortedClasses": {
+          "level": "warn",
+          "fix": "safe",
+          "options": {
+            "functions": ["clsx", "cva", "cn"]
+          }
+        }
+      },
       "style": {
+        "noParameterAssign": "error",
         "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
         "noUnusedTemplateLiteral": "error",
+        "useNumberNamespace": "error",
         "noInferrableTypes": "error",
         "noUselessElse": "error"
       }

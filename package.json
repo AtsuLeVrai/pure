@@ -2,7 +2,6 @@
   "$schema": "https://json.schemastore.org/package",
   "name": "@pure/source",
   "private": true,
-  "description": "The monorepo for the Pure Discord bot, containing the bot, dashboard, and database packages.",
   "author": "AtsuLeVrai",
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.14.0",
@@ -19,12 +18,29 @@
     "url": "https://github.com/AtsuLeVrai/pure/issues"
   },
   "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "check-types": "turbo run check-types",
+    "start": "turbo run start",
+    "db:push": "turbo run db:push",
+    "db:studio": "turbo run db:studio",
+    "db:generate": "turbo run db:generate",
+    "db:migrate": "turbo run db:migrate",
+    "bot:dev": "turbo run bot:dev",
+    "bot:build": "turbo run bot:build",
+    "bot:start": "turbo run bot:start",
     "biome:check": "biome check --write --unsafe",
     "prepare": "husky"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.4",
+    "@biomejs/biome": "^2.2.0",
     "husky": "^9.1.7",
+    "lint-staged": "^16.1.5",
     "turbo": "^2.5.5"
+  },
+  "lint-staged": {
+    "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
+      "biome check --write --unsafe"
+    ]
   }
 }

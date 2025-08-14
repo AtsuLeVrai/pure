@@ -40,7 +40,7 @@ function parseDuration(duration: string): number | null {
   const match = duration.match(/^(\d+)([mhd])$/);
   if (!match) return null;
 
-  const value = parseInt(match[1] as string);
+  const value = Number.parseInt(match[1] as string, 10);
   const unit = match[2];
 
   switch (unit) {

@@ -1,7 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package",
   "name": "@pure/database",
-  "description": "The database package for the Pure Discord bot, providing a Prisma client for database interactions.",
   "type": "module",
   "private": true,
   "version": "1.0.0",
@@ -10,12 +9,12 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "homepage": "https://github.com/AtsuLeVrai/pure#readme",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    },
-    "./package.json": "./package.json"
+    }
   },
   "engines": {
     "node": ">=22.0.0",
@@ -28,19 +27,27 @@
   "bugs": {
     "url": "https://github.com/AtsuLeVrai/pure/issues"
   },
-  "homepage": "https://github.com/AtsuLeVrai/pure#readme",
   "scripts": {
-    "db:generate": "prisma generate",
-    "db:format": "prisma format",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio",
-    "db:reset": "prisma migrate reset"
+    "build": "tsdown",
+    "check-types": "tsc -b",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
-    "@prisma/client": "^6.13.0"
+    "@neondatabase/serverless": "^1.0.1",
+    "drizzle-orm": "^0.44.4",
+    "uuid": "^11.1.0",
+    "ws": "^8.18.3",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
-    "prisma": "^6.13.0"
+    "@types/node": "^24.2.1",
+    "@types/ws": "^8.18.1",
+    "drizzle-kit": "^0.31.4",
+    "tsdown": "^0.14.1",
+    "tsx": "^4.20.4",
+    "typescript": "^5.9.2"
   }
 }

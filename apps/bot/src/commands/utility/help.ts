@@ -648,7 +648,7 @@ async function handleCategoryView(
           client,
           buttonInteraction,
           category as CommandCategory,
-          parseInt(pageStr as string),
+          Number.parseInt(pageStr as string, 10),
         );
       }
     });
