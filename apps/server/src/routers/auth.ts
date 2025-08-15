@@ -1,13 +1,14 @@
+import { ORPCError } from "@orpc/server";
 import { deleteCookie, setCookie } from "hono/cookie";
 import { z } from "zod";
-import { o, protectedProcedure } from "../lib/orpc";
+import { o } from "@/lib/orpc";
 import {
   exchangeCodeForTokens,
   getDiscordOAuthURL,
   getDiscordUser,
   refreshDiscordTokens,
-} from "../utils/discord";
-import { signJWT } from "../utils/jwt";
+} from "@/utils/discord";
+import { signJWT } from "@/utils/jwt";
 
 const authCallbackSchema = z.object({
   code: z.string(),
@@ -43,7 +44,6 @@ export const authRouter = {
         maxAge: 7 * 24 * 60 * 60, // 7 days
       };
 
-      // En développement, on utilise des cookies moins restrictifs
       if (process.env.NODE_ENV === "production") {
         Object.assign(cookieOptions, {
           httpOnly: true,
@@ -52,7 +52,7 @@ export const authRouter = {
         });
       } else {
         Object.assign(cookieOptions, {
-          httpOnly: false, // Permet au JS côté client de lire le cookie en dev
+          httpOnly: false,
           sameSite: "Lax" as const,
           secure: false,
         });
@@ -75,17 +75,37 @@ export const authRouter = {
     }
   }),
 
+  // Check authentication status (lightweight)
+  status: o.input(z.object({})).handler(async ({ context }) => {
+    return {
+      isAuthenticated: !!context.session?.user,
+    };
+  }),
+
   // Get current user from JWT
-  me: protectedProcedure.input(z.object({})).handler(({ context }) => {
+  me: o.input(z.object({})).handler(async ({ context }) => {
     if (!context.session?.user) {
-      throw new Error("No user session");
+      throw new ORPCError("UNAUTHORIZED", {
+        message: "No active session found",
+      });
     }
 
-    return context.session.user;
+    return {
+      id: context.session.user.id,
+      username: context.session.user.username,
+      avatar: context.session.user.avatar,
+      discriminator: context.session.user.discriminator,
+    };
   }),
 
   // Refresh JWT token
-  refresh: protectedProcedure.handler(async ({ context }) => {
+  refresh: o.handler(async ({ context }) => {
+    if (!context.session?.tokens?.refreshToken) {
+      throw new ORPCError("UNAUTHORIZED", {
+        message: "No refresh token available",
+      });
+    }
+
     try {
       // Force refresh Discord tokens
       const refreshedTokens = await refreshDiscordTokens(

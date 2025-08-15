@@ -20,9 +20,10 @@
   },
   "scripts": {
     "build": "tsdown",
-    "check-types": "tsc -b",
+    "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.js"
+    "check-types": "tsc -b",
+    "test": "vitest"
   },
   "dependencies": {
     "@hono/node-server": "^1.18.2",
@@ -38,6 +39,7 @@
     "discord-api-types": "^0.38.20",
     "tsdown": "^0.14.1",
     "tsx": "^4.20.4",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
   }
 }

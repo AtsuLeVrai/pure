@@ -1,11 +1,11 @@
 import { sign, verify } from "hono/jwt";
-import type { DiscordTokens, JWTPayload } from "../types/auth";
+import type { DiscordTokens, JWTPayload } from "@/types/auth";
 import { decrypt, encrypt } from "./encryption";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-super-secret-jwt-key-here";
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = 7 * 24 * 60 * 60; // 7 days in seconds
 
-if (!process.env.JWT_SECRET) {
+if (!JWT_SECRET) {
   console.warn(
     "JWT_SECRET not set. Using default secret for development only!",
   );
@@ -33,25 +33,16 @@ export async function signJWT(payload: {
     exp: now + JWT_EXPIRES_IN,
   };
 
-  return await sign(jwtPayload, JWT_SECRET);
+  return await sign(jwtPayload, JWT_SECRET as string);
 }
 
 export async function verifyJWT(token: string): Promise<JWTPayload | null> {
   try {
-    const decoded = await verify(token, JWT_SECRET);
-
-    // Vérifier que le payload a la structure attendue
-    if (
-      !decoded ||
-      typeof decoded !== "object" ||
-      typeof decoded.userId !== "string" ||
-      typeof decoded.username !== "string" ||
-      !decoded.discordTokens ||
-      typeof decoded.discordTokens !== "object" ||
-      typeof decoded.discordTokens.accessToken !== "string" ||
-      typeof decoded.discordTokens.refreshToken !== "string" ||
-      typeof decoded.discordTokens.expiresAt !== "number"
-    ) {
+    const decoded = (await verify(
+      token,
+      JWT_SECRET as string,
+    )) as JWTPayload | null;
+    if (!decoded) {
       return null;
     }
 

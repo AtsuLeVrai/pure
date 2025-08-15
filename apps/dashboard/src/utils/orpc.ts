@@ -8,7 +8,12 @@ import type { appRouter } from "../../../server/src/routers";
 
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
-    onError: (error) => {
+    onError: (error, query) => {
+      // Don't show toast for auth errors
+      if (query?.queryKey?.[0] === "auth" && query?.queryKey?.[1] === "me") {
+        return;
+      }
+
       toast.error(`Error: ${error.message}`, {
         action: {
           label: "retry",
@@ -24,12 +29,10 @@ export const queryClient = new QueryClient({
 export const link = new RPCLink({
   url: `${process.env.NEXT_PUBLIC_SERVER_URL}/rpc`,
   fetch: async (input, init) => {
-    const response = await fetch(input, {
+    return await fetch(input, {
       ...init,
       credentials: "include",
     });
-
-    return response;
   },
 });
 

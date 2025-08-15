@@ -1,8 +1,8 @@
 import type { Context, Next } from "hono";
 import { getCookie } from "hono/cookie";
-import type { AuthSession } from "../types/auth";
-import { refreshDiscordTokens } from "../utils/discord";
-import { isDiscordTokenExpired, verifyJWT } from "../utils/jwt";
+import type { AuthSession } from "@/types/auth";
+import { refreshDiscordTokens } from "@/utils/discord";
+import { isDiscordTokenExpired, verifyJWT } from "@/utils/jwt";
 
 export async function jwtMiddleware(c: Context, next: Next) {
   const authHeader = c.req.header("Authorization");
@@ -17,6 +17,7 @@ export async function jwtMiddleware(c: Context, next: Next) {
 
   try {
     const payload = await verifyJWT(token);
+
     if (!payload) {
       c.set("session", null);
       await next();

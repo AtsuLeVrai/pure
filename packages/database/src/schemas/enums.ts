@@ -1,17 +1,43 @@
 import { pgEnum } from "drizzle-orm/pg-core";
 
-export const ticketStatusEnum = pgEnum("TicketStatus", [
-  "OPEN",
-  "PENDING",
-  "RESOLVED",
-  "CLOSED",
+// Ticket System - Only essential system enums (non-customizable)
+export const ticketFieldTypeEnum = pgEnum("TicketFieldType", [
+  "TEXT",
+  "TEXTAREA",
+  "NUMBER",
+  "SELECT",
+  "MULTI_SELECT",
+  "CHECKBOX",
+  "DATE",
+  "TIME",
+  "DATETIME",
+  "EMAIL",
+  "URL",
+  "PHONE",
+  "USER_SELECT",
+  "ROLE_SELECT",
+  "CHANNEL_SELECT",
+  "FILE_UPLOAD",
+  "RATING",
+  "COLOR_PICKER",
 ]);
 
-export const ticketPriorityEnum = pgEnum("TicketPriority", [
-  "LOW",
-  "MEDIUM",
-  "HIGH",
-  "URGENT",
+export const ticketAutomationTriggerEnum = pgEnum("TicketAutomationTrigger", [
+  "TICKET_CREATED",
+  "TICKET_UPDATED",
+  "MESSAGE_SENT",
+  "STATUS_CHANGED",
+  "PRIORITY_CHANGED",
+  "ASSIGNED",
+  "UNASSIGNED",
+  "TAG_ADDED",
+  "TAG_REMOVED",
+  "FIELD_UPDATED",
+  "TIME_ELAPSED",
+  "SLA_WARNING",
+  "SLA_BREACH",
+  "USER_JOINED",
+  "USER_LEFT",
 ]);
 
 export const economyTransactionTypeEnum = pgEnum("EconomyTransactionType", [

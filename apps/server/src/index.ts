@@ -10,13 +10,17 @@ import { secureHeaders } from "hono/secure-headers";
 import { trimTrailingSlash } from "hono/trailing-slash";
 import { createContext } from "./lib/context";
 import { jwtMiddleware } from "./middleware/jwt";
-import { appRouter } from "./routers/index";
+import { appRouter } from "./routers";
 
 const app = new Hono<{
   Variables: RequestIdVariables;
 }>();
 const handler = new RPCHandler(appRouter);
 
+// Define allowed origins for CORS
+const origins: string[] = ["http://localhost:3000", "http://localhost:3001"];
+
+// Middleware setup
 app.use(compress());
 app.use(logger());
 app.use(secureHeaders());
@@ -27,7 +31,7 @@ app.use("*", requestId());
 app.use(
   "/*",
   cors({
-    origin: process.env.CORS_ORIGIN || "",
+    origin: origins,
     allowMethods: ["GET", "POST", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -35,9 +39,11 @@ app.use(
 );
 
 // CSRF middleware AFTER CORS - temporarily disabled for debugging
-// app.use(csrf({
-//   origin: ["http://localhost:3000", "http://localhost:3001"],
-// }));
+// app.use(
+//   csrf({
+//     origin: origins,
+//   }),
+// );
 
 // Apply JWT middleware to all routes
 app.use("/*", jwtMiddleware);

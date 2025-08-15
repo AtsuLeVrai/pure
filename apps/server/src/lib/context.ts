@@ -1,5 +1,5 @@
 import type { Context as HonoContext } from "hono";
-import type { AuthSession } from "../types/auth";
+import type { AuthSession } from "@/types/auth";
 
 export type CreateContextOptions = {
   context: HonoContext;

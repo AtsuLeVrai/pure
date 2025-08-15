@@ -1,3 +1,4 @@
+import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { type NextRequest, NextResponse } from "next/server";
 import { orpc } from "@/utils/orpc";
 
@@ -39,7 +40,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const response = NextResponse.redirect(new URL(redirectUrl, request.url));
 
     // Set secure authentication cookie
-    const cookieOptions = {
+    const cookieOptions: Partial<ResponseCookie> = {
       path: "/",
       maxAge: 7 * 24 * 60 * 60, // 7 days
       sameSite: "lax" as const,

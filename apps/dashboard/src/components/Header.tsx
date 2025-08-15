@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   Bot,
@@ -15,21 +15,36 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { NAV_LINKS, SITE_INFO } from "@/utils/constants";
 import { orpc } from "@/utils/orpc";
 
 export default function Header() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
-  // oRPC queries for authentication
+  // Check authentication status first (lightweight)
+  const { data: authStatus } = useQuery({
+    ...orpc.auth.status.queryOptions({ input: {} }),
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
+  // Get user data only if authenticated
   const {
     data: user,
     isLoading,
     error,
-  } = useQuery(orpc.auth.me.queryOptions());
+  } = useQuery({
+    ...orpc.auth.me.queryOptions({ input: {} }),
+    enabled: authStatus?.isAuthenticated === true, // Only run if authenticated
+    retry: false,
+    retryOnMount: false,
+  });
 
   const loginMutation = useMutation(orpc.auth.login.mutationOptions());
   const logoutMutation = useMutation(orpc.auth.logout.mutationOptions());
@@ -50,6 +65,12 @@ export default function Header() {
   const handleLogout = async () => {
     try {
       await logoutMutation.mutateAsync({});
+      // Clear all auth-related queries
+      await queryClient.invalidateQueries();
+      queryClient.clear();
+      // Refresh the page after successful logout
+      router.refresh();
+      window.location.reload();
     } catch (err) {
       console.error("Logout failed:", err);
     }
@@ -64,16 +85,6 @@ export default function Header() {
     return `https://cdn.discordapp.com/avatars/${userId}/${avatar}.${
       avatar.startsWith("a_") ? "gif" : "png"
     }?size=${size}`;
-  };
-
-  const getDisplayName = (user: {
-    username: string;
-    discriminator?: string | null;
-  }) => {
-    if (user.discriminator && user.discriminator !== "0") {
-      return `${user.username}#${user.discriminator}`;
-    }
-    return user.username;
   };
 
   // Close user menu when clicking outside
@@ -189,13 +200,13 @@ export default function Header() {
                 >
                   <Image
                     src={getAvatarUrl(user.id, user.avatar, 32)}
-                    alt={`${getDisplayName(user)}'s avatar`}
+                    alt={`${user.username}'s avatar`}
                     width={32}
                     height={32}
                     className="rounded-full ring-2 ring-blue-400/30 transition-all duration-200 group-hover:ring-blue-400/50"
                   />
                   <span className="max-w-32 truncate font-medium text-white transition-colors duration-200 group-hover:text-blue-100">
-                    {getDisplayName(user)}
+                    {user.username}
                   </span>
                   <svg
                     aria-hidden="true"
@@ -229,14 +240,14 @@ export default function Header() {
                       <div className="flex items-center gap-3">
                         <Image
                           src={getAvatarUrl(user.id, user.avatar, 40)}
-                          alt={`${getDisplayName(user)}'s avatar`}
+                          alt={`${user.username}'s avatar`}
                           width={40}
                           height={40}
                           className="rounded-full"
                         />
                         <div>
                           <div className="font-semibold text-white">
-                            {getDisplayName(user)}
+                            {user.username}
                           </div>
                           <div className="text-blue-200 text-sm">
                             @{user.username}
@@ -382,14 +393,14 @@ export default function Header() {
                     <div className="flex items-center gap-3 rounded-lg bg-slate-800/50 p-3">
                       <Image
                         src={getAvatarUrl(user.id, user.avatar, 32)}
-                        alt={`${getDisplayName(user)}'s avatar`}
+                        alt={`${user.username}'s avatar`}
                         width={32}
                         height={32}
                         className="rounded-full"
                       />
                       <div>
                         <div className="font-medium text-white">
-                          {getDisplayName(user)}
+                          {user.username}
                         </div>
                         <div className="text-blue-200 text-sm">
                           @{user.username}

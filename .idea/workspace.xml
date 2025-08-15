@@ -4,15 +4,27 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="Update dependencies for Discord.js, bufferutil, and zlib-sync; bump @types/react version">
+    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="refactor(auth): update cookie handling for session management and improve error logging">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/dashboard/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/dashboard/next.config.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/dashboard/src/app/api/auth/callback/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/dashboard/src/app/api/auth/callback/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/components/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/dashboard/src/components/Header.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/dashboard/src/utils/orpc.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/dashboard/src/utils/orpc.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/server/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/server/src/lib/context.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/lib/context.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/server/src/lib/orpc.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/lib/orpc.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/server/src/middleware/jwt.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/middleware/jwt.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/server/src/routers/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/routers/auth.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/server/src/routers/discord.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/routers/discord.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/server/src/routers/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/routers/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/server/src/utils/discord.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/utils/discord.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/server/src/utils/encryption.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/utils/encryption.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/server/src/utils/jwt.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/utils/jwt.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/enums.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/src/schemas/enums.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/guild-config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/src/schemas/guild-config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/tickets.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/src/schemas/tickets.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +61,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "Vitest.All Tests in server.executor": "Run",
     "code.cleanup.on.save": "true",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
@@ -67,10 +80,12 @@
     "npm.database > db:generate.executor": "Run",
     "npm.database > db:migrate.executor": "Run",
     "npm.database > db:reset.executor": "Run",
+    "npm.server > build.executor": "Run",
+    "npm.server > test.executor": "Run",
     "npm.web > web:dev.executor": "Run",
     "rearrange.code.on.save": "true",
     "settings.editor.selected.configurable": "Settings.Biome",
-    "ts.external.directory.path": "C:\\Users\\minec\\WebstormProjects\\pure\\packages\\database\\node_modules\\typescript\\lib",
+    "ts.external.directory.path": "C:\\Users\\minec\\WebstormProjects\\pure\\apps\\server\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -79,7 +94,7 @@
       <recent name="C:\Users\minec\WebstormProjects\pure\apps\bot\src\events\channel" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.bot &gt; bot:dev">
+  <component name="RunManager" selected="npm.database &gt; db:generate">
     <configuration name="biome:check" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -90,31 +105,11 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="bot &gt; bot:dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/apps/bot/package.json" />
+    <configuration name="database &gt; build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/packages/database/package.json" />
       <command value="run" />
       <scripts>
-        <script value="bot:dev" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
-    </configuration>
-    <configuration name="bot &gt; bot:start" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/apps/bot/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="bot:start" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
-    </configuration>
-    <configuration name="bot &gt; type-check" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/apps/bot/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="type-check" />
+        <script value="build" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
@@ -130,13 +125,33 @@
       <envs />
       <method v="2" />
     </configuration>
+    <configuration name="server &gt; build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/apps/server/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="build" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="server &gt; test" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/apps/server/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="test" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="npm.bot &gt; bot:dev" />
-        <item itemvalue="npm.biome:check" />
-        <item itemvalue="npm.bot &gt; type-check" />
         <item itemvalue="npm.database &gt; db:generate" />
-        <item itemvalue="npm.bot &gt; bot:start" />
+        <item itemvalue="npm.database &gt; build" />
+        <item itemvalue="npm.biome:check" />
+        <item itemvalue="npm.server &gt; build" />
+        <item itemvalue="npm.server &gt; test" />
       </list>
     </recent_temporary>
   </component>
@@ -158,7 +173,8 @@
       <workItem from="1754938909066" duration="3032000" />
       <workItem from="1754994638684" duration="2523000" />
       <workItem from="1755252297346" duration="45000" />
-      <workItem from="1755252345519" duration="2693000" />
+      <workItem from="1755252345519" duration="2720000" />
+      <workItem from="1755261409961" duration="5196000" />
     </task>
     <task id="LOCAL-00001" summary="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling">
       <option name="closed" value="true" />
@@ -176,7 +192,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754994882902</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="refactor(auth): update cookie handling for session management and improve error logging">
+      <option name="closed" value="true" />
+      <created>1755255285619</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1755255285619</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -196,6 +220,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling" />
     <MESSAGE value="Update dependencies for Discord.js, bufferutil, and zlib-sync; bump @types/react version" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update dependencies for Discord.js, bufferutil, and zlib-sync; bump @types/react version" />
+    <MESSAGE value="refactor(auth): update cookie handling for session management and improve error logging" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor(auth): update cookie handling for session management and improve error logging" />
   </component>
 </project>

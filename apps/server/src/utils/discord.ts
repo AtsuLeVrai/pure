@@ -3,10 +3,9 @@ import type {
   APIUser,
   RESTPostOAuth2AccessTokenResult,
 } from "discord-api-types/v10";
-import type { DiscordTokens } from "../types/auth";
+import type { DiscordTokens } from "@/types/auth";
 
 const DISCORD_API_BASE = "https://discord.com/api/v10";
-
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI;
