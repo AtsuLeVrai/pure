@@ -1,5 +1,14 @@
+import {
+  analytics,
+  guildConfigs,
+  tickets,
+  userEconomy,
+  userMetrics,
+  warnings,
+} from "@pure/database";
 import type { Guild } from "discord.js";
-import { prisma } from "@/index.js";
+import { count, eq, sql } from "drizzle-orm";
+import { db } from "@/index.js";
 import { defineEvent } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
@@ -17,21 +26,15 @@ export default defineEvent({
       });
 
       // Check if guild exists in database
-      const guildConfig = await prisma.guildConfig.findUnique({
-        where: { guild_id: guild.id },
-        select: {
-          id: true,
-          created_at: true,
-          _count: {
-            select: {
-              warnings: true,
-              user_metrics: true,
-              user_economy: true,
-              tickets: true,
-            },
-          },
-        },
-      });
+      const guildConfig = await db
+        .select({
+          id: guildConfigs.id,
+          createdAt: guildConfigs.createdAt,
+        })
+        .from(guildConfigs)
+        .where(eq(guildConfigs.guildId, guild.id))
+        .limit(1)
+        .then((rows) => rows[0] || null);
 
       if (!guildConfig) {
         Logger.warn("Guild left but no configuration found in database", {
@@ -41,12 +44,43 @@ export default defineEvent({
         return;
       }
 
+      // Get counts for related data (equivalent to _count in Prisma)
+      const [warningsCount, userMetricsCount, userEconomyCount, ticketsCount] =
+        await Promise.all([
+          db
+            .select({ count: count() })
+            .from(warnings)
+            .where(eq(warnings.guildId, guild.id)),
+          db
+            .select({ count: count() })
+            .from(userMetrics)
+            .where(eq(userMetrics.guildId, guild.id)),
+          db
+            .select({ count: count() })
+            .from(userEconomy)
+            .where(eq(userEconomy.guildId, guild.id)),
+          db
+            .select({ count: count() })
+            .from(tickets)
+            .where(eq(tickets.guildId, guild.id)),
+        ]);
+
+      const guildConfigWithCounts = {
+        ...guildConfig,
+        _count: {
+          warnings: warningsCount[0]?.count || 0,
+          user_metrics: userMetricsCount[0]?.count || 0,
+          user_economy: userEconomyCount[0]?.count || 0,
+          tickets: ticketsCount[0]?.count || 0,
+        },
+      };
+
       // If guild is unavailable (outage), don't delete data immediately
       if (!guild.available) {
         Logger.warn("Guild became unavailable - preserving data", {
           guildId: guild.id,
           guildName: guild.name,
-          configAge: Date.now() - guildConfig.created_at.getTime(),
+          configAge: Date.now() - guildConfigWithCounts.createdAt.getTime(),
         });
 
         return;
@@ -60,10 +94,16 @@ export default defineEvent({
         guildName: guild.name,
       });
 
-      // Perform cascading cleanup (Prisma will handle foreign key constraints)
-      // This will delete all related data due to onDelete: Cascade
-      await prisma.guildConfig.delete({
-        where: { guild_id: guild.id },
+      // Perform cascading cleanup
+      await db.transaction(async (tx) => {
+        // Delete related data first (if no CASCADE set up in DB)
+        await tx.delete(warnings).where(eq(warnings.guildId, guild.id));
+        await tx.delete(userMetrics).where(eq(userMetrics.guildId, guild.id));
+        await tx.delete(userEconomy).where(eq(userEconomy.guildId, guild.id));
+        await tx.delete(tickets).where(eq(tickets.guildId, guild.id));
+
+        // Delete main guild config
+        await tx.delete(guildConfigs).where(eq(guildConfigs.guildId, guild.id));
       });
 
       Logger.info("Guild data cleanup completed", {
@@ -98,27 +138,30 @@ async function updateGuildAnalytics(guild: Guild, action: "join" | "leave") {
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
 
-    await prisma.analytics.upsert({
-      where: {
-        guild_id_date_hour: {
-          guild_id: guild.id,
-          date: today,
-          hour: -1,
-        },
-      },
-      update: {
-        member_count: guild.memberCount,
-        joins: action === "join" ? { increment: 1 } : undefined,
-        leaves: action === "leave" ? { increment: 1 } : undefined,
-      },
-      create: {
-        guild_id: guild.id,
+    await db
+      .insert(analytics)
+      .values({
+        guildId: guild.id,
         date: today,
-        member_count: guild.memberCount,
+        hour: -1,
+        memberCount: guild.memberCount,
         joins: action === "join" ? 1 : 0,
         leaves: action === "leave" ? 1 : 0,
-      },
-    });
+      })
+      .onConflictDoUpdate({
+        target: [analytics.guildId, analytics.date, analytics.hour],
+        set: {
+          memberCount: guild.memberCount,
+          joins:
+            action === "join"
+              ? sql`${analytics.joins} + 1`
+              : sql`${analytics.joins}`,
+          leaves:
+            action === "leave"
+              ? sql`${analytics.leaves} + 1`
+              : sql`${analytics.leaves}`,
+        },
+      });
   } catch (error) {
     Logger.error("Failed to update guild analytics", {
       guildId: guild.id,

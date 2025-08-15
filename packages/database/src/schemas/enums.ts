@@ -92,12 +92,6 @@ export const suggestionStatusEnum = pgEnum("SuggestionStatus", [
   "IMPLEMENTED",
 ]);
 
-export const pollTypeEnum = pgEnum("PollType", [
-  "SINGLE_CHOICE",
-  "MULTIPLE_CHOICE",
-  "YES_NO",
-]);
-
 export const eventLogCategoryEnum = pgEnum("EventLogCategory", [
   "CHANNELS",
   "MEMBERS",

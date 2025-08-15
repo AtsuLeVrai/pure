@@ -1,8 +1,10 @@
+import { guildConfigs } from "@pure/database";
 import type { Interaction, Locale } from "discord.js";
+import { eq } from "drizzle-orm";
 import i18next, { type TFunction } from "i18next";
-import { prisma } from "@/index.js";
-import { Logger } from "@/utils/logger.js";
-import { isDev } from "@/utils/registry.js";
+import { db } from "@/index.js";
+import { Logger } from "./logger.js";
+import { isDev } from "./registry.js";
 
 // Supported languages configuration - Complete Discord.js Locale mapping
 export const SUPPORTED_LANGUAGES = {
@@ -246,10 +248,12 @@ export async function getGuildLanguage(
   }
 
   try {
-    const guildConfig = await prisma.guildConfig.findUnique({
-      where: { guild_id: guildId },
-      select: { language: true },
-    });
+    const guildConfig = await db
+      .select({ language: guildConfigs.language })
+      .from(guildConfigs)
+      .where(eq(guildConfigs.guildId, guildId))
+      .limit(1)
+      .then((rows) => rows[0] || null);
 
     const language = guildConfig?.language ?? "en-US";
 
@@ -277,14 +281,16 @@ export async function setGuildLanguage(
   language: SupportedLanguage,
 ): Promise<void> {
   try {
-    await prisma.guildConfig.upsert({
-      where: { guild_id: guildId },
-      update: { language },
-      create: {
-        guild_id: guildId,
+    await db
+      .insert(guildConfigs)
+      .values({
+        guildId: guildId,
         language,
-      },
-    });
+      })
+      .onConflictDoUpdate({
+        target: guildConfigs.guildId,
+        set: { language },
+      });
 
     // Update cache
     const cacheKey = `guild:${guildId}`;

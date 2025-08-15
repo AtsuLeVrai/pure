@@ -1,3 +1,4 @@
+import { eventLogConfigs } from "@pure/database";
 import {
   AuditLogEvent,
   blockQuote,
@@ -11,7 +12,8 @@ import {
   type TextChannel,
   type VoiceChannel,
 } from "discord.js";
-import { prisma } from "@/index.js";
+import { and, eq } from "drizzle-orm";
+import { db } from "@/index.js";
 import { defineEvent } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
@@ -36,22 +38,26 @@ export default defineEvent({
       });
 
       // Get event log configuration for CHANNELS category
-      const eventLogConfig = await prisma.eventLogConfig.findFirst({
-        where: {
-          guild_id: channel.guild.id,
-          category: "CHANNELS",
-          enabled: true,
-        },
-        select: {
-          channel_id: true,
-          webhook_url: true,
-          color: true,
-          include_bots: true,
-          template: true,
-        },
-      });
+      const eventLogConfig = await db
+        .select({
+          channelId: eventLogConfigs.channelId,
+          webhookUrl: eventLogConfigs.webhookUrl,
+          color: eventLogConfigs.color,
+          includeBots: eventLogConfigs.includeBots,
+          template: eventLogConfigs.template,
+        })
+        .from(eventLogConfigs)
+        .where(
+          and(
+            eq(eventLogConfigs.guildId, channel.guild.id),
+            eq(eventLogConfigs.category, "CHANNELS"),
+            eq(eventLogConfigs.enabled, true),
+          ),
+        )
+        .limit(1)
+        .then((rows) => rows[0] || null);
 
-      if (!eventLogConfig?.channel_id) {
+      if (!eventLogConfig?.channelId) {
         Logger.debug("No event log channel configured for CHANNELS category", {
           guildId: channel.guild.id,
         });
@@ -89,7 +95,7 @@ export default defineEvent({
       }
 
       // Skip bot actions if configured
-      if (creator?.bot && !eventLogConfig.include_bots) {
+      if (creator?.bot && !eventLogConfig.includeBots) {
         Logger.debug("Skipping bot channel creation event", {
           guildId: channel.guild.id,
           channelId: channel.id,
@@ -100,13 +106,13 @@ export default defineEvent({
 
       // Get log channel
       const logChannel = channel.guild.channels.cache.get(
-        eventLogConfig.channel_id,
+        eventLogConfig.channelId,
       ) as TextChannel;
 
       if (!logChannel) {
         Logger.warn("Event log channel not found or inaccessible", {
           guildId: channel.guild.id,
-          logChannelId: eventLogConfig.channel_id,
+          logChannelId: eventLogConfig.channelId,
         });
         return;
       }
@@ -125,7 +131,7 @@ export default defineEvent({
       Logger.debug("ChannelCreate event processed successfully", {
         guildId: channel.guild.id,
         channelId: channel.id,
-        logChannelId: eventLogConfig.channel_id,
+        logChannelId: eventLogConfig.channelId,
         executionTime: `${executionTime}ms`,
       });
     } catch (error) {

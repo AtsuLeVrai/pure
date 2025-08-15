@@ -4,32 +4,36 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="refactor(auth): update cookie handling for session management and improve error logging">
+    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="refactor: update import paths to use absolute paths and enhance authentication handling">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/dashboard/next.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/app/api/auth/callback/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/dashboard/src/app/api/auth/callback/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/components/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/dashboard/src/components/Header.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/utils/orpc.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/dashboard/src/utils/orpc.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/channel/channelCreate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/channel/channelCreate.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/guild/guildDelete.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/guild/guildDelete.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardDisconnect.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardDisconnect.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/utils/i18n.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/utils/i18n.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/dashboard/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/dashboard/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/lib/context.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/lib/context.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/lib/orpc.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/lib/orpc.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/middleware/jwt.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/middleware/jwt.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/routers/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/routers/auth.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/routers/discord.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/routers/discord.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/routers/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/routers/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/utils/discord.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/utils/discord.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/utils/encryption.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/utils/encryption.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/utils/jwt.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/utils/jwt.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/src/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/enums.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/src/schemas/enums.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/guild-config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/src/schemas/guild-config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/tickets.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/src/schemas/tickets.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/forms.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/src/schemas/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/polls.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -51,6 +55,9 @@
   &quot;associatedIndex&quot;: 3
 }</component>
   <component name="ProjectId" id="319ahiKoiczjjlDi6KaoOZqIvnV" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -65,7 +72,7 @@
     "code.cleanup.on.save": "true",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/minec/WebstormProjects/pure",
+    "last_opened_file_path": "C:/Users/minec/WebstormProjects/pure/apps/bot",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -75,7 +82,9 @@
     "npm.bot > bot:build.executor": "Run",
     "npm.bot > bot:dev.executor": "Run",
     "npm.bot > bot:start.executor": "Run",
+    "npm.bot > check-types.executor": "Run",
     "npm.bot > type-check.executor": "Run",
+    "npm.database > build.executor": "Run",
     "npm.database > db:format.executor": "Run",
     "npm.database > db:generate.executor": "Run",
     "npm.database > db:migrate.executor": "Run",
@@ -90,16 +99,29 @@
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\minec\WebstormProjects\pure\apps\bot" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\minec\WebstormProjects\pure\apps\bot\src\events\channel" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.database &gt; db:generate">
+  <component name="RunManager" selected="npm.biome:check">
     <configuration name="biome:check" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
       <scripts>
         <script value="biome:check" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="bot &gt; check-types" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/apps/bot/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="check-types" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
@@ -135,23 +157,13 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="server &gt; test" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/apps/server/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="test" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.biome:check" />
+        <item itemvalue="npm.bot &gt; check-types" />
         <item itemvalue="npm.database &gt; db:generate" />
         <item itemvalue="npm.database &gt; build" />
-        <item itemvalue="npm.biome:check" />
         <item itemvalue="npm.server &gt; build" />
-        <item itemvalue="npm.server &gt; test" />
       </list>
     </recent_temporary>
   </component>
@@ -174,7 +186,9 @@
       <workItem from="1754994638684" duration="2523000" />
       <workItem from="1755252297346" duration="45000" />
       <workItem from="1755252345519" duration="2720000" />
-      <workItem from="1755261409961" duration="5196000" />
+      <workItem from="1755261409961" duration="5469000" />
+      <workItem from="1755269568108" duration="96000" />
+      <workItem from="1755281444425" duration="2271000" />
     </task>
     <task id="LOCAL-00001" summary="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling">
       <option name="closed" value="true" />
@@ -200,7 +214,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755255285619</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="refactor: update import paths to use absolute paths and enhance authentication handling">
+      <option name="closed" value="true" />
+      <created>1755266950979</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1755266950979</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -221,6 +243,7 @@
     <MESSAGE value="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling" />
     <MESSAGE value="Update dependencies for Discord.js, bufferutil, and zlib-sync; bump @types/react version" />
     <MESSAGE value="refactor(auth): update cookie handling for session management and improve error logging" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor(auth): update cookie handling for session management and improve error logging" />
+    <MESSAGE value="refactor: update import paths to use absolute paths and enhance authentication handling" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor: update import paths to use absolute paths and enhance authentication handling" />
   </component>
 </project>

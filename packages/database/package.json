@@ -29,22 +29,19 @@
   },
   "scripts": {
     "build": "tsdown",
-    "check-types": "tsc -b",
+    "check-types": "tsc --noEmit",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.1",
     "drizzle-orm": "^0.44.4",
     "uuid": "^11.1.0",
-    "ws": "^8.18.3",
     "zod": "^4.0.17"
   },
   "devDependencies": {
-    "@types/node": "^24.2.1",
-    "@types/ws": "^8.18.1",
+    "@types/node": "^24.3.0",
     "drizzle-kit": "^0.31.4",
     "tsdown": "^0.14.1",
     "tsx": "^4.20.4",

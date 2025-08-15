@@ -1,6 +1,8 @@
-import { PrismaClient } from "@pure/database";
+import { neon, neonConfig } from "@neondatabase/serverless";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import { config as dotenv } from "dotenv";
+import { drizzle } from "drizzle-orm/neon-http";
+import ws from "ws";
 import { z } from "zod";
 import {
   initializeI18n,
@@ -77,44 +79,21 @@ const client = new Client<true>({
   },
 });
 
-// Initialize Prisma Client
-export const prisma = new PrismaClient({
-  log: isDev ? ["query", "error", "warn"] : ["error", "warn"],
-});
+// Neon database configuration
+neonConfig.webSocketConstructor = ws;
 
-// Handle Prisma Client errors
-prisma.$on("error", (event) => {
-  Logger.error("Prisma Client Error", {
-    message: event.message,
-    target: event.target,
-  });
-  process.exit(1);
-});
+// To work in edge environments (Cloudflare Workers, Vercel Edge, etc.), enable querying over fetch
+neonConfig.poolQueryViaFetch = true;
 
-// Handle Prisma Client query events
-prisma.$on("query", (event) => {
-  Logger.debug("Prisma Query", {
-    query: event.query,
-    params: event.params,
-    duration: `${event.duration}ms`,
-    target: event.target,
-  });
-});
-
-// Handle Prisma Client warn events
-prisma.$on("warn", (event) => {
-  Logger.warn("Prisma Warning", {
-    message: event.message,
-    target: event.target,
-  });
-});
+// Initialize the database connection using Drizzle ORM
+const sql = neon(env.DATABASE_URL);
+export const db = drizzle(sql);
 
 // Graceful shutdown
 async function gracefulShutdown(signal: string) {
   Logger.info(`Received ${signal}, shutting down gracefully...`);
 
   try {
-    await prisma.$disconnect();
     await client.destroy();
     Logger.info("Discord client destroyed successfully");
   } catch (error) {
