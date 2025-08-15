@@ -4,7 +4,7 @@ import type { RouterClient } from "@orpc/server";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 import { QueryCache, QueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import type { appRouter } from "../../../server/src/routers/index";
+import type { appRouter } from "../../../server/src/routers";
 
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
@@ -23,6 +23,14 @@ export const queryClient = new QueryClient({
 
 export const link = new RPCLink({
   url: `${process.env.NEXT_PUBLIC_SERVER_URL}/rpc`,
+  fetch: async (input, init) => {
+    const response = await fetch(input, {
+      ...init,
+      credentials: "include",
+    });
+
+    return response;
+  },
 });
 
 export const client: RouterClient<typeof appRouter> = createORPCClient(link);

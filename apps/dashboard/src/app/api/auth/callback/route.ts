@@ -1,27 +1,74 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { orpc } from "@/utils/orpc";
 
+/**
+ * Handles Discord OAuth callback and sets authentication cookie
+ */
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const code = request.nextUrl.searchParams.get("code")?.trim();
+  const searchParams = request.nextUrl.searchParams;
+  const code = searchParams.get("code")?.trim();
+  const error = searchParams.get("error");
+
+  // Handle OAuth errors from Discord
+  if (error) {
+    const errorMessage =
+      searchParams.get("error_description") || "OAuth authorization failed";
+    return NextResponse.redirect(
+      new URL(
+        `/?error=OAUTH_ERROR&message=${encodeURIComponent(errorMessage)}`,
+        request.url,
+      ),
+    );
+  }
 
   if (!code) {
-    // Construire une URL absolue à partir de la requête entrante
     return NextResponse.redirect(new URL("/?error=AUTH_NO_CODE", request.url));
   }
 
   try {
-    // Mettre l'appel dans le try pour attraper les exceptions
     const callbackResult = await orpc.auth.callback.call({ code });
 
-    if (!callbackResult) {
+    if (!callbackResult?.token) {
       return NextResponse.redirect(
         new URL("/?error=AUTH_CALLBACK_FAILED", request.url),
       );
     }
 
-    return NextResponse.redirect(new URL("/", request.url));
-  } catch (err) {
-    console.error("auth callback error:", err);
+    // Create redirect response to dashboard for authenticated users
+    const redirectUrl = searchParams.get("state") || "/dashboard";
+    const response = NextResponse.redirect(new URL(redirectUrl, request.url));
+
+    // Set secure authentication cookie
+    const cookieOptions = {
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      sameSite: "lax" as const,
+    };
+
+    // Adjust cookie security based on environment
+    if (process.env.NODE_ENV === "production") {
+      Object.assign(cookieOptions, {
+        httpOnly: true,
+        secure: true,
+      });
+    } else {
+      Object.assign(cookieOptions, {
+        httpOnly: false,
+        secure: false,
+      });
+    }
+
+    response.cookies.set("session", callbackResult.token, cookieOptions);
+
+    return response;
+  } catch (error) {
+    // Log error details for debugging while keeping user-facing message generic
+    console.error("Authentication callback failed:", {
+      error: error instanceof Error ? error.message : error,
+      code: `${code?.substring(0, 10)}...`, // Log partial code for debugging
+      timestamp: new Date().toISOString(),
+    });
+
     return NextResponse.redirect(
       new URL("/?error=AUTH_UNEXPECTED_ERROR", request.url),
     );

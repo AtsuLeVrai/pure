@@ -38,16 +38,32 @@ export async function signJWT(payload: {
 
 export async function verifyJWT(token: string): Promise<JWTPayload | null> {
   try {
-    const decoded = (await verify(token, JWT_SECRET)) as JWTPayload;
+    const decoded = await verify(token, JWT_SECRET);
 
+    // Vérifier que le payload a la structure attendue
+    if (
+      !decoded ||
+      typeof decoded !== "object" ||
+      typeof decoded.userId !== "string" ||
+      typeof decoded.username !== "string" ||
+      !decoded.discordTokens ||
+      typeof decoded.discordTokens !== "object" ||
+      typeof decoded.discordTokens.accessToken !== "string" ||
+      typeof decoded.discordTokens.refreshToken !== "string" ||
+      typeof decoded.discordTokens.expiresAt !== "number"
+    ) {
+      return null;
+    }
+
+    const typedDecoded = decoded as JWTPayload;
     const decryptedTokens = {
-      accessToken: decrypt(decoded.discordTokens.accessToken),
-      refreshToken: decrypt(decoded.discordTokens.refreshToken),
-      expiresAt: decoded.discordTokens.expiresAt,
+      accessToken: decrypt(typedDecoded.discordTokens.accessToken),
+      refreshToken: decrypt(typedDecoded.discordTokens.refreshToken),
+      expiresAt: typedDecoded.discordTokens.expiresAt,
     };
 
     return {
-      ...decoded,
+      ...typedDecoded,
       discordTokens: decryptedTokens,
     };
   } catch (_error) {

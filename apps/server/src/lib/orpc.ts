@@ -7,12 +7,12 @@ export const publicProcedure = o;
 
 export const protectedProcedure = o.use(({ context }) => {
   const session = context.session as AuthSession | null;
+
   if (!session) {
     throw new Error("Unauthorized");
   }
 
   return {
-    output: undefined,
     context: { ...context, session },
   };
 });

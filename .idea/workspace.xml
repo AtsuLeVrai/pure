@@ -6,19 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="Update dependencies for Discord.js, bufferutil, and zlib-sync; bump @types/react version">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/ban.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/ban.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/kick.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/kick.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/modlogs.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/mute.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/mute.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/purge.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/purge.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/slowmode.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/slowmode.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/timeout.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/timeout.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/unban.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/unban.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/unmute.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/unmute.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/warn.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/moderation/warn.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/guild/guildDelete.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/guild/guildDelete.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/utils/registry.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/utils/registry.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/prisma/schema.prisma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/app/api/auth/callback/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/dashboard/src/app/api/auth/callback/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/utils/orpc.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/dashboard/src/utils/orpc.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/server/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/server/src/lib/orpc.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/lib/orpc.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/server/src/middleware/jwt.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/middleware/jwt.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/server/src/routers/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/routers/auth.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/server/src/utils/jwt.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/src/utils/jwt.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,36 +43,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;code.cleanup.on.save&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;pnpm&quot;,
-    &quot;npm.biome:check.executor&quot;: &quot;Run&quot;,
-    &quot;npm.bot &gt; bot:build.executor&quot;: &quot;Run&quot;,
-    &quot;npm.bot &gt; bot:dev.executor&quot;: &quot;Run&quot;,
-    &quot;npm.bot &gt; bot:start.executor&quot;: &quot;Run&quot;,
-    &quot;npm.bot &gt; type-check.executor&quot;: &quot;Run&quot;,
-    &quot;npm.database &gt; db:format.executor&quot;: &quot;Run&quot;,
-    &quot;npm.database &gt; db:generate.executor&quot;: &quot;Run&quot;,
-    &quot;npm.database &gt; db:migrate.executor&quot;: &quot;Run&quot;,
-    &quot;npm.database &gt; db:reset.executor&quot;: &quot;Run&quot;,
-    &quot;npm.web &gt; web:dev.executor&quot;: &quot;Run&quot;,
-    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;Settings.Biome&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\minec\\WebstormProjects\\pure\\apps\\bot\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "code.cleanup.on.save": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/minec/WebstormProjects/pure",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "pnpm",
+    "npm.biome:check.executor": "Run",
+    "npm.bot > bot:build.executor": "Run",
+    "npm.bot > bot:dev.executor": "Run",
+    "npm.bot > bot:start.executor": "Run",
+    "npm.bot > type-check.executor": "Run",
+    "npm.database > db:format.executor": "Run",
+    "npm.database > db:generate.executor": "Run",
+    "npm.database > db:migrate.executor": "Run",
+    "npm.database > db:reset.executor": "Run",
+    "npm.web > web:dev.executor": "Run",
+    "rearrange.code.on.save": "true",
+    "settings.editor.selected.configurable": "Settings.Biome",
+    "ts.external.directory.path": "C:\\Users\\minec\\WebstormProjects\\pure\\packages\\database\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\minec\WebstormProjects\pure\apps\bot\src\events\channel" />
@@ -162,6 +157,8 @@
       <workItem from="1754938866010" duration="29000" />
       <workItem from="1754938909066" duration="3032000" />
       <workItem from="1754994638684" duration="2523000" />
+      <workItem from="1755252297346" duration="45000" />
+      <workItem from="1755252345519" duration="2693000" />
     </task>
     <task id="LOCAL-00001" summary="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling">
       <option name="closed" value="true" />
@@ -184,6 +181,17 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling" />

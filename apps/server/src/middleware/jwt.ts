@@ -5,9 +5,9 @@ import { refreshDiscordTokens } from "../utils/discord";
 import { isDiscordTokenExpired, verifyJWT } from "../utils/jwt";
 
 export async function jwtMiddleware(c: Context, next: Next) {
-  const token =
-    c.req.header("Authorization")?.replace("Bearer ", "") ||
-    getCookie(c, "auth-token");
+  const authHeader = c.req.header("Authorization");
+  const cookieToken = getCookie(c, "session");
+  const token = authHeader?.replace("Bearer ", "") || cookieToken;
 
   if (!token) {
     c.set("session", null);

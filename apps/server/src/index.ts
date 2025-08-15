@@ -4,7 +4,6 @@ import { RPCHandler } from "@orpc/server/fetch";
 import { Hono } from "hono";
 import { compress } from "hono/compress";
 import { cors } from "hono/cors";
-import { csrf } from "hono/csrf";
 import { logger } from "hono/logger";
 import { type RequestIdVariables, requestId } from "hono/request-id";
 import { secureHeaders } from "hono/secure-headers";
@@ -22,16 +21,23 @@ app.use(compress());
 app.use(logger());
 app.use(secureHeaders());
 app.use(trimTrailingSlash());
-app.use(csrf({ origin: ["http://localhost:3000", "http://localhost:3001"] }));
 app.use("*", requestId());
+
+// CORS middleware BEFORE CSRF for cross-origin requests
 app.use(
   "/*",
   cors({
     origin: process.env.CORS_ORIGIN || "",
     allowMethods: ["GET", "POST", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   }),
 );
+
+// CSRF middleware AFTER CORS - temporarily disabled for debugging
+// app.use(csrf({
+//   origin: ["http://localhost:3000", "http://localhost:3001"],
+// }));
 
 // Apply JWT middleware to all routes
 app.use("/*", jwtMiddleware);

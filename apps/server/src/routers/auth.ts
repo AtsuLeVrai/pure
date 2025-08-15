@@ -38,12 +38,27 @@ export const authRouter = {
       });
 
       // Set httpOnly cookie
-      setCookie(context.context, "auth-token", jwtToken, {
-        httpOnly: true,
-        sameSite: "Lax",
+      const cookieOptions = {
         path: "/",
         maxAge: 7 * 24 * 60 * 60, // 7 days
-      });
+      };
+
+      // En développement, on utilise des cookies moins restrictifs
+      if (process.env.NODE_ENV === "production") {
+        Object.assign(cookieOptions, {
+          httpOnly: true,
+          sameSite: "Strict" as const,
+          secure: true,
+        });
+      } else {
+        Object.assign(cookieOptions, {
+          httpOnly: false, // Permet au JS côté client de lire le cookie en dev
+          sameSite: "Lax" as const,
+          secure: false,
+        });
+      }
+
+      setCookie(context.context, "session", jwtToken, cookieOptions);
 
       return {
         token: jwtToken,
@@ -61,22 +76,9 @@ export const authRouter = {
   }),
 
   // Get current user from JWT
-  me: protectedProcedure.handler(async ({ context }) => {
-    // If token was refreshed, set new cookie
-    if (context.context.get("tokenRefreshed")) {
-      const newToken = await signJWT({
-        userId: context.session.user.id,
-        username: context.session.user.username,
-        avatar: context.session.user.avatar || undefined,
-        discordTokens: context.session.tokens,
-      });
-
-      setCookie(context.context, "auth-token", newToken, {
-        httpOnly: true,
-        sameSite: "Lax",
-        path: "/",
-        maxAge: 7 * 24 * 60 * 60, // 7 days
-      });
+  me: protectedProcedure.input(z.object({})).handler(({ context }) => {
+    if (!context.session?.user) {
+      throw new Error("No user session");
     }
 
     return context.session.user;
@@ -99,12 +101,26 @@ export const authRouter = {
       });
 
       // Set new cookie
-      setCookie(context.context, "auth-token", newToken, {
-        httpOnly: true,
-        sameSite: "Lax",
+      const cookieOptions = {
         path: "/",
         maxAge: 7 * 24 * 60 * 60, // 7 days
-      });
+      };
+
+      if (process.env.NODE_ENV === "production") {
+        Object.assign(cookieOptions, {
+          httpOnly: true,
+          sameSite: "Strict" as const,
+          secure: true,
+        });
+      } else {
+        Object.assign(cookieOptions, {
+          httpOnly: false,
+          sameSite: "Lax" as const,
+          secure: false,
+        });
+      }
+
+      setCookie(context.context, "session", newToken, cookieOptions);
 
       return { token: newToken };
     } catch (error) {
@@ -115,7 +131,7 @@ export const authRouter = {
 
   // Logout - clear cookie
   logout: o.handler(async ({ context }) => {
-    deleteCookie(context.context, "auth-token");
+    deleteCookie(context.context, "session");
 
     return { success: true };
   }),
