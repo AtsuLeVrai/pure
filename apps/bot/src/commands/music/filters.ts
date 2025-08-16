@@ -1,10 +1,11 @@
 import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
-import { defineSlashCommand } from "@/types/index.js";
+import type { SlashSubCommand } from "@/types/index.js";
 
-export default defineSlashCommand({
+export const filters: SlashSubCommand = {
   data: {
     name: "filters",
     description: "Apply audio filters and effects (64+ available)",
+    type: ApplicationCommandOptionType.Subcommand,
     options: [
       {
         name: "action",
@@ -70,8 +71,6 @@ export default defineSlashCommand({
       },
     ],
   },
-  category: "music",
-  subcommand: true,
   async execute(_client, interaction) {
     // TODO: Implement audio filters with discord-player (64+ filters available)
     await interaction.reply({
@@ -80,4 +79,4 @@ export default defineSlashCommand({
       flags: MessageFlags.Ephemeral,
     });
   },
-});
+};

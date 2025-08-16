@@ -3,12 +3,13 @@ import {
   ChannelType,
   MessageFlags,
 } from "discord.js";
-import { defineSlashCommand } from "@/types/index.js";
+import type { SlashSubCommand } from "@/types/index.js";
 
-export default defineSlashCommand({
+export const settings: SlashSubCommand = {
   data: {
     name: "settings",
     description: "Configure music bot settings for this server",
+    type: ApplicationCommandOptionType.Subcommand,
     options: [
       {
         name: "action",
@@ -68,8 +69,6 @@ export default defineSlashCommand({
       },
     ],
   },
-  category: "music",
-  subcommand: true,
   async execute(_client, interaction) {
     // TODO: Implement music settings with database integration
     await interaction.reply({
@@ -77,4 +76,4 @@ export default defineSlashCommand({
       flags: MessageFlags.Ephemeral,
     });
   },
-});
+};

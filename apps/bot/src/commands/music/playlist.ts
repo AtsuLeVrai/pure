@@ -1,10 +1,11 @@
 import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
-import { defineSlashCommand } from "@/types/index.js";
+import type { SlashSubCommand } from "@/types/index.js";
 
-export default defineSlashCommand({
+export const playlist: SlashSubCommand = {
   data: {
     name: "playlist",
     description: "Manage personal and server playlists",
+    type: ApplicationCommandOptionType.Subcommand,
     options: [
       {
         name: "action",
@@ -66,8 +67,6 @@ export default defineSlashCommand({
       },
     ],
   },
-  category: "music",
-  subcommand: true,
   async execute(_client, interaction) {
     // TODO: Implement playlist management with database integration
     await interaction.reply({
@@ -76,4 +75,4 @@ export default defineSlashCommand({
       flags: MessageFlags.Ephemeral,
     });
   },
-});
+};

@@ -1,5 +1,4 @@
-import { defineEvent } from "@/types/index.js";
-import { Logger } from "@/utils/index.js";
+import { defineEvent, Logger } from "@/utils/index.js";
 
 export default defineEvent({
   name: "shardDisconnect",

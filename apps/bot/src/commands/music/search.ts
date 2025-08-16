@@ -1,10 +1,11 @@
 import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
-import { defineSlashCommand } from "@/types/index.js";
+import type { SlashSubCommand } from "@/types/index.js";
 
-export default defineSlashCommand({
+export const search: SlashSubCommand = {
   data: {
     name: "search",
     description: "Search for music with interactive selection",
+    type: ApplicationCommandOptionType.Subcommand,
     options: [
       {
         name: "query",
@@ -51,8 +52,6 @@ export default defineSlashCommand({
       },
     ],
   },
-  category: "music",
-  subcommand: true,
   async execute(_client, interaction) {
     // TODO: Implement interactive search with discord-player
     await interaction.reply({
@@ -60,4 +59,4 @@ export default defineSlashCommand({
       flags: MessageFlags.Ephemeral,
     });
   },
-});
+};

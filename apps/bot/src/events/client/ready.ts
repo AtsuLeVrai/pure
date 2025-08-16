@@ -1,7 +1,7 @@
 import { ActivityType, type Client, PresenceUpdateStatus } from "discord.js";
-import { defineEvent } from "@/types/index.js";
 import {
   commandRegistry,
+  defineEvent,
   isDev,
   Logger,
   registerCommands,
@@ -148,7 +148,7 @@ export default defineEvent({
       try {
         await registerCommands(client);
         // Update stats with command count
-        stats.commands = commandRegistry.length;
+        stats.commands = commandRegistry.size;
         Logger.info("Commands registered successfully");
       } catch (error) {
         Logger.error("Failed to register commands", {

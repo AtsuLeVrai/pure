@@ -7,14 +7,15 @@ import {
   type VoiceChannel,
 } from "discord.js";
 import { QueryType, QueueRepeatMode, useMainPlayer } from "discord-player";
-import { defineSlashCommand } from "@/types/index.js";
+import type { SlashSubCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
-export default defineSlashCommand({
+export const play: SlashSubCommand = {
   data: {
     name: "play",
     description:
       "Play music from various sources (YouTube, Spotify, SoundCloud, etc.)",
+    type: ApplicationCommandOptionType.Subcommand,
     options: [
       {
         name: "query",
@@ -56,8 +57,6 @@ export default defineSlashCommand({
       },
     ],
   },
-  category: "music",
-  subcommand: true,
   async execute(_client, interaction) {
     const player = useMainPlayer();
     const member = interaction.member as GuildMember;
@@ -79,10 +78,11 @@ export default defineSlashCommand({
         .setTimestamp()
         .setFooter({ text: "Pure Music System" });
 
-      return interaction.reply({
+      await interaction.reply({
         embeds: [errorEmbed],
         flags: MessageFlags.Ephemeral,
       });
+      return;
     }
 
     if (!voiceChannel.joinable || !voiceChannel.speakable) {
@@ -95,10 +95,11 @@ export default defineSlashCommand({
         .setTimestamp()
         .setFooter({ text: "Pure Music System" });
 
-      return interaction.reply({
+      await interaction.reply({
         embeds: [errorEmbed],
         flags: MessageFlags.Ephemeral,
       });
+      return;
     }
 
     // Validate query length and content
@@ -110,10 +111,11 @@ export default defineSlashCommand({
         .setTimestamp()
         .setFooter({ text: "Pure Music System" });
 
-      return interaction.reply({
+      await interaction.reply({
         embeds: [errorEmbed],
         flags: MessageFlags.Ephemeral,
       });
+      return;
     }
 
     await interaction.deferReply();
@@ -170,7 +172,8 @@ export default defineSlashCommand({
       if (position === "next") insertMode = "next";
       else if (position === "now") insertMode = "now";
 
-      const { track, searchResult: result } = await player.play(
+      const { track } = await player.play(
+        // @ts-expect-error
         voiceChannel,
         query,
         {
@@ -306,7 +309,7 @@ export default defineSlashCommand({
       await interaction.followUp({ embeds: [errorEmbed] });
     }
   },
-});
+};
 
 // Utility functions for display formatting
 function getPositionEmoji(position: string | null): string {

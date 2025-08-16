@@ -1,10 +1,11 @@
 import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
-import { defineSlashCommand } from "@/types/index.js";
+import type { SlashSubCommand } from "@/types/index.js";
 
-export default defineSlashCommand({
+export const queue: SlashSubCommand = {
   data: {
     name: "queue",
     description: "Manage the music queue",
+    type: ApplicationCommandOptionType.Subcommand,
     options: [
       {
         name: "action",
@@ -58,8 +59,6 @@ export default defineSlashCommand({
       },
     ],
   },
-  category: "music",
-  subcommand: true,
   async execute(_client, interaction) {
     // TODO: Implement queue management with discord-player
     await interaction.reply({
@@ -67,4 +66,4 @@ export default defineSlashCommand({
       flags: MessageFlags.Ephemeral,
     });
   },
-});
+};

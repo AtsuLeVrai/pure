@@ -3,12 +3,13 @@ import {
   ChannelType,
   MessageFlags,
 } from "discord.js";
-import { defineSlashCommand } from "@/types/index.js";
+import type { SlashSubCommand } from "@/types/index.js";
 
-export default defineSlashCommand({
+export const voice: SlashSubCommand = {
   data: {
     name: "voice",
     description: "Voice channel controls and management",
+    type: ApplicationCommandOptionType.Subcommand,
     options: [
       {
         name: "action",
@@ -45,8 +46,6 @@ export default defineSlashCommand({
       },
     ],
   },
-  category: "music",
-  subcommand: true,
   async execute(_client, interaction) {
     // TODO: Implement voice channel management with discord-player
     await interaction.reply({
@@ -55,4 +54,4 @@ export default defineSlashCommand({
       flags: MessageFlags.Ephemeral,
     });
   },
-});
+};

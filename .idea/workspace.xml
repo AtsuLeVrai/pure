@@ -4,12 +4,42 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="feat(music): implement music command structure and database integration for user playlists and event logging">
+    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="feat(music): enhance play command with validation, error handling, and multi-source support">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/autoplay.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/autoplay.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/controls.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/controls.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/filters.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/filters.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/game.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/game.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/karaoke.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/karaoke.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/loop.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/loop.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/lyrics.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/lyrics.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/play.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/play.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/playlist.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/playlist.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/queue.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/queue.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/radio.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/radio.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/save.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/save.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/search.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/search.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/settings.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/settings.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/stats.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/stats.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/voice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/voice.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/volume.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/volume.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/applicationCommandPermissionsUpdate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/applicationCommandPermissionsUpdate.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/cacheSweep.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/cacheSweep.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/debug.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/debug.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/error.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/error.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/interactionCreate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/interactionCreate.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/invalidated.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/invalidated.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/ready.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/ready.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/warn.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/warn.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardDisconnect.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardDisconnect.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardError.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardError.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardReady.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardReady.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardReconnecting.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardReconnecting.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardResume.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardResume.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/bot/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/types/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/types/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/utils/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/utils/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/utils/registry.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/utils/registry.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,43 +80,45 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;Vitest.All Tests in server.executor&quot;: &quot;Run&quot;,
-    &quot;code.cleanup.on.save&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/minec/WebstormProjects/pure/apps/bot&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;pnpm&quot;,
-    &quot;npm.biome:check.executor&quot;: &quot;Run&quot;,
-    &quot;npm.bot &gt; bot:build.executor&quot;: &quot;Run&quot;,
-    &quot;npm.bot &gt; bot:dev.executor&quot;: &quot;Run&quot;,
-    &quot;npm.bot &gt; bot:start.executor&quot;: &quot;Run&quot;,
-    &quot;npm.bot &gt; check-types.executor&quot;: &quot;Run&quot;,
-    &quot;npm.bot &gt; type-check.executor&quot;: &quot;Run&quot;,
-    &quot;npm.database &gt; build.executor&quot;: &quot;Run&quot;,
-    &quot;npm.database &gt; db:format.executor&quot;: &quot;Run&quot;,
-    &quot;npm.database &gt; db:generate.executor&quot;: &quot;Run&quot;,
-    &quot;npm.database &gt; db:migrate.executor&quot;: &quot;Run&quot;,
-    &quot;npm.database &gt; db:push.executor&quot;: &quot;Run&quot;,
-    &quot;npm.database &gt; db:reset.executor&quot;: &quot;Run&quot;,
-    &quot;npm.server &gt; build.executor&quot;: &quot;Run&quot;,
-    &quot;npm.server &gt; test.executor&quot;: &quot;Run&quot;,
-    &quot;npm.web &gt; web:dev.executor&quot;: &quot;Run&quot;,
-    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;Settings.Biome&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\minec\\WebstormProjects\\pure\\packages\\database\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Node.js.bot > test.ts.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Vitest.All Tests in server.executor": "Run",
+    "code.cleanup.on.save": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/minec/WebstormProjects/pure/apps/bot",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "pnpm",
+    "npm.biome:check.executor": "Run",
+    "npm.bot > bot:build.executor": "Run",
+    "npm.bot > bot:dev.executor": "Run",
+    "npm.bot > bot:start.executor": "Run",
+    "npm.bot > check-types.executor": "Run",
+    "npm.bot > install.executor": "Run",
+    "npm.bot > type-check.executor": "Run",
+    "npm.database > build.executor": "Run",
+    "npm.database > db:format.executor": "Run",
+    "npm.database > db:generate.executor": "Run",
+    "npm.database > db:migrate.executor": "Run",
+    "npm.database > db:push.executor": "Run",
+    "npm.database > db:reset.executor": "Run",
+    "npm.server > build.executor": "Run",
+    "npm.server > test.executor": "Run",
+    "npm.web > web:dev.executor": "Run",
+    "rearrange.code.on.save": "true",
+    "settings.editor.selected.configurable": "Settings.Biome",
+    "ts.external.directory.path": "C:\\Users\\minec\\WebstormProjects\\pure\\apps\\bot\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\minec\WebstormProjects\pure\apps\bot" />
@@ -95,12 +127,22 @@
       <recent name="C:\Users\minec\WebstormProjects\pure\apps\bot\src\events\channel" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.bot &gt; install">
+  <component name="RunManager" selected="npm.bot &gt; bot:dev">
     <configuration name="biome:check" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
       <scripts>
         <script value="biome:check" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="bot &gt; bot:build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/apps/bot/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="bot:build" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
@@ -116,31 +158,21 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="bot &gt; install" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/apps/bot/node_modules/ffmpeg-static/package.json" />
+    <configuration name="bot &gt; bot:start" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/apps/bot/package.json" />
       <command value="run" />
       <scripts>
-        <script value="install" />
+        <script value="bot:start" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="database &gt; build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/packages/database/package.json" />
+    <configuration name="bot &gt; check-types" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/apps/bot/package.json" />
       <command value="run" />
       <scripts>
-        <script value="build" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
-    </configuration>
-    <configuration name="database &gt; db:push" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/packages/database/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="db:push" />
+        <script value="check-types" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
@@ -149,10 +181,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="npm.bot &gt; bot:dev" />
-        <item itemvalue="npm.bot &gt; install" />
+        <item itemvalue="npm.bot &gt; bot:build" />
+        <item itemvalue="npm.bot &gt; bot:start" />
+        <item itemvalue="npm.bot &gt; check-types" />
         <item itemvalue="npm.biome:check" />
-        <item itemvalue="npm.database &gt; db:push" />
-        <item itemvalue="npm.database &gt; build" />
       </list>
     </recent_temporary>
   </component>
@@ -181,7 +213,9 @@
       <workItem from="1755332481299" duration="5931000" />
       <workItem from="1755338501353" duration="304000" />
       <workItem from="1755338830293" duration="1778000" />
-      <workItem from="1755358003944" duration="425000" />
+      <workItem from="1755358003944" duration="702000" />
+      <workItem from="1755361819220" duration="4515000" />
+      <workItem from="1755366435453" duration="1494000" />
     </task>
     <task id="LOCAL-00001" summary="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling">
       <option name="closed" value="true" />
@@ -231,7 +265,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755341026183</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="feat(music): enhance play command with validation, error handling, and multi-source support">
+      <option name="closed" value="true" />
+      <created>1755358628742</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1755358628742</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -255,6 +297,7 @@
     <MESSAGE value="refactor: update import paths to use absolute paths and enhance authentication handling" />
     <MESSAGE value="refactor(database): migrate from Prisma to Drizzle ORM for improved database handling" />
     <MESSAGE value="feat(music): implement music command structure and database integration for user playlists and event logging" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(music): implement music command structure and database integration for user playlists and event logging" />
+    <MESSAGE value="feat(music): enhance play command with validation, error handling, and multi-source support" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(music): enhance play command with validation, error handling, and multi-source support" />
   </component>
 </project>

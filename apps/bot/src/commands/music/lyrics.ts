@@ -1,10 +1,11 @@
 import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
-import { defineSlashCommand } from "@/types/index.js";
+import type { SlashSubCommand } from "@/types/index.js";
 
-export default defineSlashCommand({
+export const lyrics: SlashSubCommand = {
   data: {
     name: "lyrics",
     description: "Get lyrics for songs",
+    type: ApplicationCommandOptionType.Subcommand,
     options: [
       {
         name: "song",
@@ -34,8 +35,6 @@ export default defineSlashCommand({
       },
     ],
   },
-  category: "music",
-  subcommand: true,
   async execute(_client, interaction) {
     // TODO: Implement lyrics search with discord-player lyrics feature
     await interaction.reply({
@@ -44,4 +43,4 @@ export default defineSlashCommand({
       flags: MessageFlags.Ephemeral,
     });
   },
-});
+};

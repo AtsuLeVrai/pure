@@ -1,6 +1,16 @@
-import { MessageFlags } from "discord.js";
-import { defineEvent } from "@/types/index.js";
-import { commandExecutionMap, Logger } from "@/utils/index.js";
+import {
+  type APIApplicationCommand,
+  chatInputApplicationCommandMention,
+  inlineCode,
+  MessageFlags,
+  Routes,
+} from "discord.js";
+import {
+  commandRegistry,
+  defineEvent,
+  Logger,
+  styledMessage,
+} from "@/utils/index.js";
 
 export default defineEvent({
   name: "interactionCreate",
@@ -8,43 +18,39 @@ export default defineEvent({
     // Only handle slash commands for now
     if (!interaction.isChatInputCommand()) return;
 
-    // Determine the command key for execution map lookup
-    let commandKey: string;
-    if (interaction.options.getSubcommand(false)) {
-      // This is a subcommand: format is "commandName:subcommandName"
-      const subcommandName = interaction.options.getSubcommand();
-      commandKey = `${interaction.commandName}:${subcommandName}`;
-    } else {
-      // This is a standalone command
-      commandKey = interaction.commandName;
-    }
-
-    // Find the command executor in the execution map
-    const commandExecutor = commandExecutionMap.get(commandKey);
-
-    if (!commandExecutor) {
-      Logger.warn(`Unknown command attempted: ${commandKey}`, {
-        commandKey,
+    // Find the command in registry
+    const command = commandRegistry.get(interaction.commandName);
+    if (!command) {
+      Logger.warn(`Unknown command attempted: ${interaction.commandName}`, {
         commandName: interaction.commandName,
-        subcommand: interaction.options.getSubcommand(false),
         interactionId: interaction.id,
         userId: interaction.user.id,
         guildId: interaction.guildId,
       });
 
+      // Fetch the help command to provide a link to available commands
+      const applicationCommands = (await client.rest.get(
+        interaction.guildId
+          ? Routes.applicationGuildCommands(client.user.id, interaction.guildId)
+          : Routes.applicationCommands(client.user.id),
+      )) as APIApplicationCommand[];
+      const helpCommand = applicationCommands.find(
+        (cmd) => cmd.name === "help",
+      );
+
       // Respond to unknown command
       await interaction.reply({
-        content: "❌ Unknown command. Use `/help` to see available commands.",
+        content: styledMessage(
+          `❌ Unknown command. Use ${helpCommand ? chatInputApplicationCommandMention(helpCommand.name, helpCommand.id) : inlineCode("/help")} to see available commands.`,
+        ),
         flags: MessageFlags.Ephemeral,
       });
       return;
     }
 
     // Log command execution for monitoring
-    Logger.info(`Command executed: ${commandKey}`, {
-      commandKey,
+    Logger.info(`Command executed: ${interaction.commandName}`, {
       commandName: interaction.commandName,
-      subcommand: interaction.options.getSubcommand(false),
       userId: interaction.user.id,
       username: interaction.user.username,
       guildId: interaction.guildId,
@@ -53,16 +59,17 @@ export default defineEvent({
 
     try {
       // Execute the command
-      await commandExecutor(client, interaction);
+      await command.execute(client, interaction);
 
       // Log successful execution (optional, for monitoring)
-      Logger.debug(`Command completed successfully: ${commandKey}`, {
-        commandKey,
-        commandName: interaction.commandName,
-        subcommand: interaction.options.getSubcommand(false),
-        userId: interaction.user.id,
-        executionTime: Date.now(), // You could add actual timing
-      });
+      Logger.debug(
+        `Command completed successfully: ${interaction.commandName}`,
+        {
+          commandName: interaction.commandName,
+          userId: interaction.user.id,
+          executionTime: Date.now(), // You could add actual timing
+        },
+      );
     } catch (error) {
       Logger.error(`Error executing command '${interaction.commandName}'`, {
         error:
@@ -80,8 +87,9 @@ export default defineEvent({
       });
 
       // Handle error response safely
-      const errorMessage =
-        "❌ There was an error while executing this command.";
+      const errorMessage = styledMessage(
+        "❌ There was an error while executing this command.",
+      );
 
       try {
         if (interaction.replied || interaction.deferred) {

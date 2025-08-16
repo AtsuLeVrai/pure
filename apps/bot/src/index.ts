@@ -10,6 +10,7 @@ import {
   initializeI18n,
   isDev,
   Logger,
+  loadModules,
   registerEvents,
 } from "@/utils/index.js";
 
@@ -143,6 +144,10 @@ process.on("uncaughtException", (error) => {
 async function main(): Promise<void> {
   try {
     Logger.info("Starting Discord Bot...");
+
+    // Load modules dynamically
+    Logger.info("Loading modules...");
+    await loadModules();
 
     // Initialize i18n system
     Logger.info("Initializing i18n system...");

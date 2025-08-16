@@ -1,10 +1,11 @@
 import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
-import { defineSlashCommand } from "@/types/index.js";
+import type { SlashSubCommand } from "@/types/index.js";
 
-export default defineSlashCommand({
+export const loop: SlashSubCommand = {
   data: {
     name: "loop",
     description: "Control loop and repeat settings",
+    type: ApplicationCommandOptionType.Subcommand,
     options: [
       {
         name: "mode",
@@ -19,8 +20,6 @@ export default defineSlashCommand({
       },
     ],
   },
-  category: "music",
-  subcommand: true,
   async execute(_client, interaction) {
     // TODO: Implement loop controls with discord-player
     await interaction.reply({
@@ -28,4 +27,4 @@ export default defineSlashCommand({
       flags: MessageFlags.Ephemeral,
     });
   },
-});
+};

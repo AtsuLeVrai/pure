@@ -1,4 +1,5 @@
 import type {
+  ApplicationCommandSubCommandData,
   ChatInputApplicationCommandData,
   ChatInputCommandInteraction,
   Client,
@@ -20,16 +21,16 @@ export type CommandCategory =
 export interface SlashCommand {
   data: ChatInputApplicationCommandData;
   category: CommandCategory;
-  subcommand?: boolean; // Optional: If the command is a subcommand
   execute: (
     client: Client<true>,
     interaction: ChatInputCommandInteraction,
   ) => Promise<void>;
 }
 
-// Helper function to define a slash command
-export function defineSlashCommand(command: SlashCommand): SlashCommand {
-  return command;
+// Define the type for slash subcommands in a Discord bot
+export interface SlashSubCommand {
+  data: ApplicationCommandSubCommandData;
+  execute: SlashCommand["execute"];
 }
 
 // Define the type for event entities in a Discord bot
@@ -37,11 +38,4 @@ export interface EventHandler<K extends keyof ClientEvents> {
   name: K;
   once?: boolean;
   execute: (client: Client<true>, ...args: ClientEvents[K]) => Promise<void>;
-}
-
-// Helper function to define an event entity
-export function defineEvent<K extends keyof ClientEvents>(
-  event: EventHandler<K>,
-): EventHandler<K> {
-  return event;
 }

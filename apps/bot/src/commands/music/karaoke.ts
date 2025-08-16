@@ -1,10 +1,11 @@
 import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
-import { defineSlashCommand } from "@/types/index.js";
+import type { SlashSubCommand } from "@/types/index.js";
 
-export default defineSlashCommand({
+export const karaoke: SlashSubCommand = {
   data: {
     name: "karaoke",
     description: "Enable/disable karaoke mode (vocal removal)",
+    type: ApplicationCommandOptionType.Subcommand,
     options: [
       {
         name: "enabled",
@@ -22,8 +23,6 @@ export default defineSlashCommand({
       },
     ],
   },
-  category: "music",
-  subcommand: true,
   async execute(_client, interaction) {
     // TODO: Implement karaoke mode with discord-player filters
     await interaction.reply({
@@ -31,4 +30,4 @@ export default defineSlashCommand({
       flags: MessageFlags.Ephemeral,
     });
   },
-});
+};

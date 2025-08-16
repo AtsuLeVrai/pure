@@ -1,10 +1,11 @@
 import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
-import { defineSlashCommand } from "@/types/index.js";
+import type { SlashSubCommand } from "@/types/index.js";
 
-export default defineSlashCommand({
+export const stats: SlashSubCommand = {
   data: {
     name: "stats",
     description: "View music statistics and analytics",
+    type: ApplicationCommandOptionType.Subcommand,
     options: [
       {
         name: "type",
@@ -64,8 +65,6 @@ export default defineSlashCommand({
       },
     ],
   },
-  category: "music",
-  subcommand: true,
   async execute(_client, interaction) {
     // TODO: Implement music statistics with database analytics
     await interaction.reply({
@@ -74,4 +73,4 @@ export default defineSlashCommand({
       flags: MessageFlags.Ephemeral,
     });
   },
-});
+};
