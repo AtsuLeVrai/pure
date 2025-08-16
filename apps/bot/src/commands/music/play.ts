@@ -1,12 +1,17 @@
 import {
+  ActionRowBuilder,
   ApplicationCommandOptionType,
+  ButtonBuilder,
+  ButtonStyle,
   Colors,
   EmbedBuilder,
   type GuildMember,
   MessageFlags,
+  PermissionFlagsBits,
   type VoiceChannel,
 } from "discord.js";
-import { QueryType, QueueRepeatMode, useMainPlayer } from "discord-player";
+import { QueryType, QueueRepeatMode } from "discord-player";
+import { player } from "@/index.js";
 import type { SlashSubCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
@@ -58,16 +63,31 @@ export const play: SlashSubCommand = {
     ],
   },
   async execute(_client, interaction) {
-    const player = useMainPlayer();
     const member = interaction.member as GuildMember;
     const voiceChannel = member.voice.channel as VoiceChannel;
+    const botMember = interaction.guild?.members.me;
 
     const query = interaction.options.getString("query", true);
     const source = interaction.options.getString("source") || "youtube";
     const position = interaction.options.getString("position") || "queue";
     const playlistName = interaction.options.getString("playlist");
 
-    // Security and validation checks
+    // Enhanced security and validation checks
+    if (!interaction.guild) {
+      const errorEmbed = new EmbedBuilder()
+        .setColor(Colors.Red)
+        .setTitle("❌ Guild Access Required")
+        .setDescription("This command can only be used in a server.")
+        .setTimestamp()
+        .setFooter({ text: "Pure Music System • Security" });
+
+      await interaction.reply({
+        embeds: [errorEmbed],
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+
     if (!voiceChannel) {
       const errorEmbed = new EmbedBuilder()
         .setColor(Colors.Red)
@@ -75,8 +95,13 @@ export const play: SlashSubCommand = {
         .setDescription(
           "You must be connected to a voice channel to use music commands.",
         )
+        .addFields({
+          name: "💡 How to Fix",
+          value: "Join any voice channel in this server and try again.",
+          inline: false,
+        })
         .setTimestamp()
-        .setFooter({ text: "Pure Music System" });
+        .setFooter({ text: "Pure Music System • User Error" });
 
       await interaction.reply({
         embeds: [errorEmbed],
@@ -85,15 +110,14 @@ export const play: SlashSubCommand = {
       return;
     }
 
-    if (!voiceChannel.joinable || !voiceChannel.speakable) {
+    // Check bot permissions
+    if (!botMember) {
       const errorEmbed = new EmbedBuilder()
         .setColor(Colors.Red)
-        .setTitle("❌ Insufficient Permissions")
-        .setDescription(
-          "I don't have permission to join or speak in your voice channel.",
-        )
+        .setTitle("❌ Bot Member Not Found")
+        .setDescription("Unable to verify bot permissions.")
         .setTimestamp()
-        .setFooter({ text: "Pure Music System" });
+        .setFooter({ text: "Pure Music System • System Error" });
 
       await interaction.reply({
         embeds: [errorEmbed],
@@ -102,14 +126,88 @@ export const play: SlashSubCommand = {
       return;
     }
 
-    // Validate query length and content
-    if (query.length > 500) {
+    const requiredPermissions = [
+      PermissionFlagsBits.Connect,
+      PermissionFlagsBits.Speak,
+      PermissionFlagsBits.UseVAD,
+    ];
+
+    const missingPermissions = requiredPermissions.filter(
+      (permission) => !voiceChannel.permissionsFor(botMember)?.has(permission),
+    );
+
+    if (missingPermissions.length > 0) {
+      const permissionNames = {
+        [PermissionFlagsBits.Connect.toString()]: "Connect",
+        [PermissionFlagsBits.Speak.toString()]: "Speak",
+        [PermissionFlagsBits.UseVAD.toString()]: "Use Voice Activity",
+      };
+
+      const missingPermsText = missingPermissions
+        .map((perm) => `• ${permissionNames[perm.toString()] || "Unknown"}`)
+        .join("\n");
+
+      const errorEmbed = new EmbedBuilder()
+        .setColor(Colors.Red)
+        .setTitle("❌ Insufficient Bot Permissions")
+        .setDescription(
+          "I don't have the required permissions for your voice channel.",
+        )
+        .addFields(
+          {
+            name: "🚫 Missing Permissions",
+            value: missingPermsText,
+            inline: false,
+          },
+          {
+            name: "💡 How to Fix",
+            value:
+              "Ask an administrator to grant me the missing permissions for this voice channel.",
+            inline: false,
+          },
+        )
+        .setTimestamp()
+        .setFooter({ text: "Pure Music System • Permission Error" });
+
+      await interaction.reply({
+        embeds: [errorEmbed],
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+
+    // Enhanced query validation
+    const sanitizedQuery = query.trim();
+
+    if (sanitizedQuery.length === 0) {
+      const errorEmbed = new EmbedBuilder()
+        .setColor(Colors.Red)
+        .setTitle("❌ Empty Query")
+        .setDescription("Please provide a valid search query or URL.")
+        .setTimestamp()
+        .setFooter({ text: "Pure Music System • Input Error" });
+
+      await interaction.reply({
+        embeds: [errorEmbed],
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+
+    if (sanitizedQuery.length > 500) {
       const errorEmbed = new EmbedBuilder()
         .setColor(Colors.Red)
         .setTitle("❌ Query Too Long")
-        .setDescription("Search query must be less than 500 characters.")
+        .setDescription(
+          `Search query must be less than 500 characters. Current length: **${sanitizedQuery.length}**`,
+        )
+        .addFields({
+          name: "💡 Suggestion",
+          value: "Try using a shorter search term or a direct URL.",
+          inline: false,
+        })
         .setTimestamp()
-        .setFooter({ text: "Pure Music System" });
+        .setFooter({ text: "Pure Music System • Input Error" });
 
       await interaction.reply({
         embeds: [errorEmbed],
@@ -117,6 +215,93 @@ export const play: SlashSubCommand = {
       });
       return;
     }
+
+    // Validate URL patterns to prevent malicious content
+    const urlPattern = /^https?:\/\//i;
+    if (urlPattern.test(sanitizedQuery)) {
+      const allowedDomains = [
+        "youtube.com",
+        "youtu.be",
+        "music.youtube.com",
+        "spotify.com",
+        "open.spotify.com",
+        "soundcloud.com",
+        "music.apple.com",
+        "bandcamp.com",
+      ];
+
+      try {
+        const url = new URL(sanitizedQuery);
+        const isAllowedDomain = allowedDomains.some((domain) =>
+          url.hostname.includes(domain),
+        );
+
+        if (!isAllowedDomain) {
+          const errorEmbed = new EmbedBuilder()
+            .setColor(Colors.Red)
+            .setTitle("❌ Unsupported URL")
+            .setDescription("This URL is not from a supported music platform.")
+            .addFields({
+              name: "✅ Supported Platforms",
+              value: allowedDomains.map((domain) => `• ${domain}`).join("\n"),
+              inline: false,
+            })
+            .setTimestamp()
+            .setFooter({ text: "Pure Music System • Security" });
+
+          await interaction.reply({
+            embeds: [errorEmbed],
+            flags: MessageFlags.Ephemeral,
+          });
+          return;
+        }
+      } catch {
+        const errorEmbed = new EmbedBuilder()
+          .setColor(Colors.Red)
+          .setTitle("❌ Invalid URL")
+          .setDescription("The provided URL is malformed.")
+          .setTimestamp()
+          .setFooter({ text: "Pure Music System • Input Error" });
+
+        await interaction.reply({
+          embeds: [errorEmbed],
+          flags: MessageFlags.Ephemeral,
+        });
+        return;
+      }
+    }
+
+    // Rate limiting check
+    const userId = interaction.user.id;
+    const rateLimitKey = `music_play_${userId}`;
+    const currentTime = Date.now();
+
+    // Simple in-memory rate limiting (you might want to use Redis in production)
+    if (!global.musicRateLimit) global.musicRateLimit = new Map();
+    const lastUsed = global.musicRateLimit.get(rateLimitKey) || 0;
+
+    if (currentTime - lastUsed < 3000) {
+      // 3 second cooldown
+      const errorEmbed = new EmbedBuilder()
+        .setColor(Colors.Red)
+        .setTitle("❌ Rate Limited")
+        .setDescription("Please wait a moment before using this command again.")
+        .addFields({
+          name: "⏳ Cooldown",
+          value: "3 seconds between commands",
+          inline: false,
+        })
+        .setTimestamp()
+        .setFooter({ text: "Pure Music System • Rate Limit" });
+
+      await interaction.reply({
+        embeds: [errorEmbed],
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+
+    global.musicRateLimit.set(rateLimitKey, currentTime);
 
     await interaction.deferReply();
 
@@ -196,70 +381,145 @@ export const play: SlashSubCommand = {
         });
       }
 
-      // Create rich embed response
+      // Create professional embed with enhanced design
+      const queue = player.nodes.get(interaction.guildId!);
+
       const successEmbed = new EmbedBuilder()
-        .setColor(Colors.Green)
-        .setTitle(`${getPositionEmoji(position)} Track Added Successfully`)
-        .setDescription(`**[${track.title}](${track.url})**`)
+        .setColor(position === "now" ? Colors.Purple : Colors.Green)
+        .setAuthor({
+          name: "Pure Music System",
+          iconURL: interaction.client.user.displayAvatarURL(),
+        })
+        .setTitle(
+          `${getPositionEmoji(position)} Track ${position === "now" ? "Playing" : "Added"} Successfully`,
+        )
+        .setDescription(
+          `### 🎵 [${track.title}](${track.url})\n` +
+            `**Artist:** ${track.author || "Unknown Artist"}\n` +
+            `**Duration:** ${track.duration || "Unknown"} • **Source:** ${getSourceDisplay(track.source)}`,
+        )
         .setThumbnail(track.thumbnail)
         .addFields(
           {
-            name: "👤 Artist",
-            value: track.author || "Unknown Artist",
-            inline: true,
-          },
-          {
-            name: "⏱️ Duration",
-            value: track.duration || "Unknown",
-            inline: true,
-          },
-          {
-            name: "🎵 Source",
-            value: getSourceDisplay(track.source),
-            inline: true,
-          },
-          {
-            name: "📍 Position",
+            name: "📍 Queue Position",
             value: getPositionDisplay(position),
             inline: true,
           },
           {
-            name: "👥 Requested by",
+            name: "👥 Requested By",
             value: `<@${interaction.user.id}>`,
             inline: true,
           },
           {
             name: "🔊 Voice Channel",
-            value: voiceChannel.name,
+            value: `🎧 ${voiceChannel.name}`,
             inline: true,
           },
         )
         .setTimestamp()
         .setFooter({
-          text: "Pure Music System • Enterprise Grade",
-          iconURL: interaction.client.user.displayAvatarURL(),
+          text: "Use the buttons below to control playback",
+          iconURL: interaction.guild?.iconURL() || undefined,
         });
 
       // Add playlist info if specified
       if (playlistName) {
         successEmbed.addFields({
           name: "📋 Playlist",
-          value: `Added to: **${playlistName}**`,
+          value: `✅ Added to: **${playlistName}**`,
           inline: false,
         });
       }
 
-      // Add queue information
-      const queue = player.nodes.get(interaction.guildId!);
-      if (queue && queue.tracks.size > 0) {
-        successEmbed.addFields({
-          name: "📊 Queue Status",
-          value: `${queue.tracks.size} track(s) in queue\nEstimated wait time: ${queue.estimatedDuration}`,
-          inline: false,
-        });
+      // Add enhanced queue information
+      if (queue) {
+        const queueSize = queue.tracks.size;
+        const currentTrack = queue.currentTrack;
+
+        let queueStatus = "";
+
+        if (queueSize > 0) {
+          queueStatus += `📊 **${queueSize}** track(s) in queue\n`;
+          queueStatus += `⏱️ Estimated wait: **${queue.estimatedDuration || "Unknown"}**\n`;
+        }
+
+        if (currentTrack && position !== "now") {
+          queueStatus += `🎵 Currently playing: **${currentTrack.title}**`;
+        }
+
+        if (queueStatus) {
+          successEmbed.addFields({
+            name: "📈 Queue Information",
+            value: queueStatus,
+            inline: false,
+          });
+        }
       }
 
-      await interaction.followUp({ embeds: [successEmbed] });
+      // Create comprehensive control buttons
+      const controlRow1 = new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+          .setCustomId("music_pause")
+          .setLabel("Pause")
+          .setEmoji("⏸️")
+          .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
+          .setCustomId("music_resume")
+          .setLabel("Resume")
+          .setEmoji("▶️")
+          .setStyle(ButtonStyle.Success),
+        new ButtonBuilder()
+          .setCustomId("music_skip")
+          .setLabel("Skip")
+          .setEmoji("⏭️")
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId("music_stop")
+          .setLabel("Stop")
+          .setEmoji("⏹️")
+          .setStyle(ButtonStyle.Danger),
+      );
+
+      const controlRow2 = new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+          .setCustomId("music_shuffle")
+          .setLabel("Shuffle")
+          .setEmoji("🔀")
+          .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
+          .setCustomId("music_loop")
+          .setLabel("Loop")
+          .setEmoji("🔁")
+          .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
+          .setCustomId("music_queue")
+          .setLabel("Queue")
+          .setEmoji("📋")
+          .setStyle(ButtonStyle.Secondary),
+      );
+
+      const volumeRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+          .setCustomId("music_volume_down")
+          .setLabel("Vol -")
+          .setEmoji("🔉")
+          .setStyle(ButtonStyle.Danger),
+        new ButtonBuilder()
+          .setCustomId("music_mute")
+          .setLabel("Mute")
+          .setEmoji("🔇")
+          .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
+          .setCustomId("music_volume_up")
+          .setLabel("Vol +")
+          .setEmoji("🔊")
+          .setStyle(ButtonStyle.Success),
+      );
+
+      await interaction.followUp({
+        embeds: [successEmbed],
+        components: [controlRow1, controlRow2, volumeRow],
+      });
 
       Logger.info("Track successfully added to queue", {
         trackTitle: track.title,
@@ -275,49 +535,97 @@ export const play: SlashSubCommand = {
             ? {
                 message: error.message,
                 stack: error.stack,
+                name: error.name,
               }
             : error,
         userId: interaction.user.id,
         guildId: interaction.guildId,
-        query: query.substring(0, 100),
+        query: sanitizedQuery.substring(0, 100),
+        source,
+        position,
+        timestamp: new Date().toISOString(),
       });
+
+      const errorId = `ERR-${Date.now().toString(36).toUpperCase()}`;
 
       const errorEmbed = new EmbedBuilder()
         .setColor(Colors.Red)
+        .setAuthor({
+          name: "Pure Music System - Error Handler",
+          iconURL: interaction.client.user.displayAvatarURL(),
+        })
         .setTitle("❌ Playback Error")
         .setDescription(
-          "An error occurred while processing your request. Our team has been notified.",
+          "An error occurred while processing your music request. Our development team has been automatically notified.",
         )
-        .addFields({
-          name: "🔧 Troubleshooting",
-          value:
-            "• Check if the URL is valid\n• Try a different search term\n• Ensure the bot has proper permissions\n• Contact support if the issue persists",
-          inline: false,
-        })
+        .addFields(
+          {
+            name: "🔧 Quick Solutions",
+            value:
+              "• **Check URL validity** - Ensure the link is correct and accessible\n" +
+              "• **Try different search terms** - Use more specific keywords\n" +
+              "• **Verify permissions** - Ensure the bot can join your voice channel\n" +
+              "• **Check platform status** - Some services may be temporarily unavailable",
+            inline: false,
+          },
+          {
+            name: "📋 Error Reference",
+            value: `\`${errorId}\``,
+            inline: true,
+          },
+          {
+            name: "🕐 Timestamp",
+            value: `<t:${Math.floor(Date.now() / 1000)}:F>`,
+            inline: true,
+          },
+        )
         .setTimestamp()
-        .setFooter({ text: "Pure Music System • Error Handler" });
+        .setFooter({
+          text: "If this persists, please contact support with the error reference",
+          iconURL: interaction.guild?.iconURL() || undefined,
+        });
 
-      // Include error details in development mode
+      // Enhanced error details for development
       if (process.env.NODE_ENV === "development" && error instanceof Error) {
         errorEmbed.addFields({
-          name: "🐛 Debug Info",
-          value: `\`\`\`${error.message.substring(0, 500)}\`\`\``,
+          name: "🐛 Developer Debug Information",
+          value: `\`\`\`javascript\nError: ${error.name}\nMessage: ${error.message.substring(0, 400)}\nStack: ${error.stack?.substring(0, 300) || "No stack trace"}\`\`\``,
           inline: false,
         });
       }
 
-      await interaction.followUp({ embeds: [errorEmbed] });
+      // Add retry button for certain error types
+      const retryButton = new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+          .setCustomId(`retry_play_${interaction.user.id}`)
+          .setLabel("Retry")
+          .setEmoji("🔄")
+          .setStyle(ButtonStyle.Secondary)
+          .setDisabled(true), // Disabled for now, would need custom implementation
+      );
+
+      const followUpMessage: any = { embeds: [errorEmbed] };
+
+      // Only add retry button for certain error types
+      if (
+        error instanceof Error &&
+        (error.message.includes("timeout") || error.message.includes("network"))
+      ) {
+        followUpMessage.components = [retryButton];
+      }
+
+      await interaction.followUp(followUpMessage);
     }
   },
 };
 
-// Utility functions for display formatting
+// Enhanced utility functions for display formatting
 function getPositionEmoji(position: string | null): string {
   switch (position) {
     case "next":
       return "⏭️";
     case "now":
-      return "▶️";
+      return "🎵";
     default:
       return "📋";
   }
@@ -326,11 +634,11 @@ function getPositionEmoji(position: string | null): string {
 function getPositionDisplay(position: string | null): string {
   switch (position) {
     case "next":
-      return "Play Next";
+      return "🎯 **Next in Queue** - Will play after current track";
     case "now":
-      return "Playing Now";
+      return "🎵 **Playing Now** - Skipped to current track";
     default:
-      return "Added to Queue";
+      return "📋 **Added to Queue** - Will play in order";
   }
 }
 
@@ -341,6 +649,17 @@ function getSourceDisplay(source: string): string {
     soundcloud: "🔊 SoundCloud",
     apple: "🍎 Apple Music",
     bandcamp: "🎪 Bandcamp",
+    "youtube music": "🎵 YouTube Music",
+    deezer: "🎶 Deezer",
+    tidal: "🌊 Tidal",
   };
-  return sourceMap[source.toLowerCase()] || `🎵 ${source}`;
+  return (
+    sourceMap[source.toLowerCase()] ||
+    `🎵 ${source.charAt(0).toUpperCase() + source.slice(1)}`
+  );
+}
+
+// Declare global type for rate limiting
+declare global {
+  var musicRateLimit: Map<string, number> | undefined;
 }

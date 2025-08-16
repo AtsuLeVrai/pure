@@ -1,5 +1,7 @@
 import type {
+  APIButtonComponent,
   ApplicationCommandSubCommandData,
+  ButtonInteraction,
   ChatInputApplicationCommandData,
   ChatInputCommandInteraction,
   Client,
@@ -31,6 +33,15 @@ export interface SlashCommand {
 export interface SlashSubCommand {
   data: ApplicationCommandSubCommandData;
   execute: SlashCommand["execute"];
+}
+
+// Define the type for button components in a Discord bot
+export interface Button {
+  data: APIButtonComponent;
+  execute: (
+    client: Client<true>,
+    interaction: ButtonInteraction,
+  ) => Promise<void>;
 }
 
 // Define the type for event entities in a Discord bot

@@ -4,41 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="feat(music): enhance play command with validation, error handling, and multi-source support">
+    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="refactor(music): consolidate command imports and update command structure for subcommands">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/autoplay.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/autoplay.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/controls.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/controls.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/filters.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/filters.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/game.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/game.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/karaoke.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/karaoke.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/loop.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/loop.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/lyrics.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/lyrics.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/play.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/play.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/playlist.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/playlist.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/queue.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/queue.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/radio.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/radio.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/save.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/save.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/search.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/search.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/settings.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/settings.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/stats.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/stats.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/voice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/voice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/volume.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/volume.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/applicationCommandPermissionsUpdate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/applicationCommandPermissionsUpdate.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/cacheSweep.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/cacheSweep.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/debug.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/debug.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/error.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/error.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/utility/help.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/utility/help.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/interactionCreate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/interactionCreate.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/invalidated.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/invalidated.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/ready.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/ready.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/warn.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/warn.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardDisconnect.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardDisconnect.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardError.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardError.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardReady.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardReady.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardReconnecting.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardReconnecting.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardResume.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardResume.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/bot/src/types/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/types/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/utils/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/utils/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/bot/src/utils/registry.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/utils/registry.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -181,10 +152,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="npm.bot &gt; bot:dev" />
+        <item itemvalue="npm.biome:check" />
         <item itemvalue="npm.bot &gt; bot:build" />
         <item itemvalue="npm.bot &gt; bot:start" />
         <item itemvalue="npm.bot &gt; check-types" />
-        <item itemvalue="npm.biome:check" />
       </list>
     </recent_temporary>
   </component>
@@ -215,7 +186,7 @@
       <workItem from="1755338830293" duration="1778000" />
       <workItem from="1755358003944" duration="702000" />
       <workItem from="1755361819220" duration="4515000" />
-      <workItem from="1755366435453" duration="1494000" />
+      <workItem from="1755366435453" duration="3212000" />
     </task>
     <task id="LOCAL-00001" summary="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling">
       <option name="closed" value="true" />
@@ -273,7 +244,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755358628742</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="refactor(music): consolidate command imports and update command structure for subcommands">
+      <option name="closed" value="true" />
+      <created>1755367965683</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1755367965683</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -298,6 +277,7 @@
     <MESSAGE value="refactor(database): migrate from Prisma to Drizzle ORM for improved database handling" />
     <MESSAGE value="feat(music): implement music command structure and database integration for user playlists and event logging" />
     <MESSAGE value="feat(music): enhance play command with validation, error handling, and multi-source support" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(music): enhance play command with validation, error handling, and multi-source support" />
+    <MESSAGE value="refactor(music): consolidate command imports and update command structure for subcommands" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor(music): consolidate command imports and update command structure for subcommands" />
   </component>
 </project>

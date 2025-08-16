@@ -1,6 +1,12 @@
-import { type Client, type ClientEvents, Events, Routes } from "discord.js";
+import {
+  type APIApplicationCommand,
+  type Client,
+  type ClientEvents,
+  Events,
+  Routes,
+} from "discord.js";
 import { env } from "@/index.js";
-import type { EventHandler, SlashCommand } from "@/types/index.js";
+import type { Button, EventHandler, SlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
 // Environment configuration
@@ -35,6 +41,9 @@ export function defineSlashCommand(command: SlashCommand): SlashCommand {
   return command;
 }
 
+// Map to store command IDs for quick access
+export const commandIds = new Map<string, APIApplicationCommand>();
+
 // Register commands with the Discord API
 export async function registerCommands(client: Client<true>): Promise<void> {
   const commandsData = Array.from(commandRegistry.values()).map(
@@ -50,27 +59,31 @@ export async function registerCommands(client: Client<true>): Promise<void> {
     Logger.info(`Registering ${commandCount} slash commands...`);
 
     const guildId = env?.DISCORD_GUILD_ID;
+    let registeredCommands: APIApplicationCommand[];
+
     if (isDev && guildId) {
-      // Development: Guild-specific deployment (instant updates)
-      await client.rest.put(
+      registeredCommands = (await client.rest.put(
         Routes.applicationGuildCommands(client.user.id, guildId),
         { body: commandsData },
-      );
-
-      Logger.info(`Successfully registered ${commandCount} guild commands`, {
-        guildId,
-        commands: commandsData.map((cmd) => cmd.name),
-      });
+      )) as APIApplicationCommand[];
     } else {
-      // Production: Global deployment (up to 1 hour propagation)
-      await client.rest.put(Routes.applicationCommands(client.user.id), {
-        body: commandsData,
-      });
-
-      Logger.info(`Successfully registered ${commandCount} global commands`, {
-        commands: commandsData.map((cmd) => cmd.name),
-      });
+      registeredCommands = (await client.rest.put(
+        Routes.applicationCommands(client.user.id),
+        { body: commandsData },
+      )) as APIApplicationCommand[];
     }
+
+    // Store command IDs for later use
+    for (const cmd of registeredCommands) {
+      commandIds.set(cmd.name, cmd);
+    }
+
+    Logger.info(`Successfully registered ${commandCount} commands`, {
+      commands: registeredCommands.map((cmd) => ({
+        name: cmd.name,
+        id: cmd.id,
+      })),
+    });
   } catch (error) {
     Logger.error("Failed to register slash commands", {
       error:
@@ -86,6 +99,33 @@ export async function registerCommands(client: Client<true>): Promise<void> {
     // Don't exit process, but log the failure
     throw error;
   }
+}
+
+// Button registry for the bot
+export const buttonRegistry = new Map<string, Button>();
+
+// Helper function to define a button interaction handler
+export function defineButton(button: Button): Button {
+  // Use a more precise type guard
+  const hasCustomId = (btn: any): btn is { custom_id: string } =>
+    "custom_id" in btn && typeof btn.custom_id === "string";
+
+  if (hasCustomId(button.data)) {
+    // Normalize the custom_id
+    button.data.custom_id = button.data.custom_id.toLowerCase().trim();
+
+    // Check for duplicates
+    if (buttonRegistry.has(button.data.custom_id)) {
+      throw new Error(
+        `Button "${button.data.custom_id}" is already registered`,
+      );
+    }
+
+    // Registration
+    buttonRegistry.set(button.data.custom_id, button);
+  }
+
+  return button;
 }
 
 // Event registry for the bot
@@ -177,10 +217,18 @@ export function registerEvents(client: Client<true>): void {
   }
 }
 
-// Function to load all commands and events
+// Function to load all commands, events, and buttons
 export async function loadModules(): Promise<void> {
+  // Load commands
   await import("@/commands/music/index.js");
   await import("@/commands/utility/help.js");
+
+  // Load button handlers
+  await import("@/buttons/music/playback-controls.js");
+  await import("@/buttons/music/queue-controls.js");
+  await import("@/buttons/music/volume-controls.js");
+
+  // Load events
   await import("@/events/client/applicationCommandPermissionsUpdate.js");
   await import("@/events/client/cacheSweep.js");
   await import("@/events/client/debug.js");
