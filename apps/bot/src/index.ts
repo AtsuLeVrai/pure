@@ -1,3 +1,4 @@
+import { DefaultExtractors } from "@discord-player/extractor";
 import { neon, neonConfig } from "@neondatabase/serverless";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import { Player } from "discord-player";
@@ -149,6 +150,9 @@ async function main(): Promise<void> {
 
     // Register events
     registerEvents(client);
+
+    // Initialize the Player instance
+    await player.extractors.loadMulti(DefaultExtractors);
 
     // Login to Discord
     Logger.info("Logging in to Discord...");
