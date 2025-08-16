@@ -4,23 +4,66 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="refactor: update import paths to use absolute paths and enhance authentication handling">
+    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="refactor(database): migrate from Prisma to Drizzle ORM for improved database handling">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/bot/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/channel/channelCreate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/channel/channelCreate.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/guild/guildDelete.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/guild/guildDelete.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/ban.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/kick.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/lock.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/massban.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/mute.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/nickname.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/purge.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/slowmode.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/timeout.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/unban.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/unlock.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/unmute.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/userinfo.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/moderation/warn.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/utility/help.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/utility/ping.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/channel/channelCreate.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/applicationCommandPermissionsUpdate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/applicationCommandPermissionsUpdate.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/cacheSweep.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/cacheSweep.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/debug.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/debug.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/error.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/error.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/interactionCreate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/interactionCreate.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/invalidated.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/invalidated.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/userUpdate.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/warn.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/warn.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/guild/guildAvailable.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/guild/guildCreate.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/guild/guildDelete.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardDisconnect.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardDisconnect.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardError.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardError.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardReady.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardReady.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardReconnecting.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardReconnecting.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardResume.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/shard/shardResume.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/bot/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/utils/i18n.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/utils/i18n.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/dashboard/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/server/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/src/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/enums.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/src/schemas/enums.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/forms.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/types/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/types/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/bot/src/utils/registry.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/utils/registry.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/migrations/0000_shocking_randall_flagg.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/migrations/0001_gigantic_mongoose.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/migrations/meta/0000_snapshot.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/migrations/meta/0001_snapshot.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/migrations/meta/_journal.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/analytics.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/commands.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/economy.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/enums.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/event-logs.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/giveaways.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/guild-config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/src/schemas/guild-config.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/database/src/schemas/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/polls.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/messages.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/moderation.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/reminders.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/roles.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/starboard.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/suggestions.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/tickets.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/user-metrics.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -88,13 +131,14 @@
     "npm.database > db:format.executor": "Run",
     "npm.database > db:generate.executor": "Run",
     "npm.database > db:migrate.executor": "Run",
+    "npm.database > db:push.executor": "Run",
     "npm.database > db:reset.executor": "Run",
     "npm.server > build.executor": "Run",
     "npm.server > test.executor": "Run",
     "npm.web > web:dev.executor": "Run",
     "rearrange.code.on.save": "true",
     "settings.editor.selected.configurable": "Settings.Biome",
-    "ts.external.directory.path": "C:\\Users\\minec\\WebstormProjects\\pure\\apps\\server\\node_modules\\typescript\\lib",
+    "ts.external.directory.path": "C:\\Users\\minec\\WebstormProjects\\pure\\packages\\database\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -106,7 +150,7 @@
       <recent name="C:\Users\minec\WebstormProjects\pure\apps\bot\src\events\channel" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.biome:check">
+  <component name="RunManager" selected="npm.bot &gt; bot:dev">
     <configuration name="biome:check" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -117,11 +161,11 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="bot &gt; check-types" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+    <configuration name="bot &gt; bot:dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/apps/bot/package.json" />
       <command value="run" />
       <scripts>
-        <script value="check-types" />
+        <script value="bot:dev" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
@@ -137,21 +181,21 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="database &gt; db:generate" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+    <configuration name="database &gt; db:push" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/packages/database/package.json" />
       <command value="run" />
       <scripts>
-        <script value="db:generate" />
+        <script value="db:push" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="server &gt; build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/apps/server/package.json" />
+    <configuration name="database &gt; db:reset" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/packages/database/package.json" />
       <command value="run" />
       <scripts>
-        <script value="build" />
+        <script value="db:reset" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
@@ -159,11 +203,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.bot &gt; bot:dev" />
         <item itemvalue="npm.biome:check" />
-        <item itemvalue="npm.bot &gt; check-types" />
-        <item itemvalue="npm.database &gt; db:generate" />
+        <item itemvalue="npm.database &gt; db:push" />
         <item itemvalue="npm.database &gt; build" />
-        <item itemvalue="npm.server &gt; build" />
+        <item itemvalue="npm.database &gt; db:reset" />
       </list>
     </recent_temporary>
   </component>
@@ -188,7 +232,10 @@
       <workItem from="1755252345519" duration="2720000" />
       <workItem from="1755261409961" duration="5469000" />
       <workItem from="1755269568108" duration="96000" />
-      <workItem from="1755281444425" duration="2271000" />
+      <workItem from="1755281444425" duration="2338000" />
+      <workItem from="1755332481299" duration="5931000" />
+      <workItem from="1755338501353" duration="304000" />
+      <workItem from="1755338830293" duration="1525000" />
     </task>
     <task id="LOCAL-00001" summary="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling">
       <option name="closed" value="true" />
@@ -222,7 +269,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755266950979</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="refactor(database): migrate from Prisma to Drizzle ORM for improved database handling">
+      <option name="closed" value="true" />
+      <created>1755283788690</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1755283788690</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -244,6 +299,7 @@
     <MESSAGE value="Update dependencies for Discord.js, bufferutil, and zlib-sync; bump @types/react version" />
     <MESSAGE value="refactor(auth): update cookie handling for session management and improve error logging" />
     <MESSAGE value="refactor: update import paths to use absolute paths and enhance authentication handling" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: update import paths to use absolute paths and enhance authentication handling" />
+    <MESSAGE value="refactor(database): migrate from Prisma to Drizzle ORM for improved database handling" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor(database): migrate from Prisma to Drizzle ORM for improved database handling" />
   </component>
 </project>

@@ -13,13 +13,15 @@ export type CommandCategory =
   | "tickets"
   | "leveling"
   | "economy"
-  | "admin";
+  | "admin"
+  | "music";
 
 // Define the types for slash commands in a Discord bot
 export interface SlashCommand {
-  readonly data: ChatInputApplicationCommandData;
-  readonly category: CommandCategory;
-  readonly execute: (
+  data: ChatInputApplicationCommandData;
+  category: CommandCategory;
+  subcommand?: boolean; // Optional: If the command is a subcommand
+  execute: (
     client: Client<true>,
     interaction: ChatInputCommandInteraction,
   ) => Promise<void>;
@@ -32,12 +34,9 @@ export function defineSlashCommand(command: SlashCommand): SlashCommand {
 
 // Define the type for event entities in a Discord bot
 export interface EventHandler<K extends keyof ClientEvents> {
-  readonly name: K;
-  readonly once?: boolean;
-  readonly execute: (
-    client: Client<true>,
-    ...args: ClientEvents[K]
-  ) => Promise<void>;
+  name: K;
+  once?: boolean;
+  execute: (client: Client<true>, ...args: ClientEvents[K]) => Promise<void>;
 }
 
 // Helper function to define an event entity

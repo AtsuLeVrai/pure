@@ -1,722 +1,9 @@
 {
-  "id": "66507b48-f9c3-45ba-b9b4-1b72592cf660",
+  "id": "2bb52d9f-a73b-4031-82ac-91d731a632a1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.analytics": {
-      "name": "analytics",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date": {
-          "name": "date",
-          "type": "date",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "hour": {
-          "name": "hour",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "member_count": {
-          "name": "member_count",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "joins": {
-          "name": "joins",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "leaves": {
-          "name": "leaves",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "message_count": {
-          "name": "message_count",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "voice_minutes": {
-          "name": "voice_minutes",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "commands_used": {
-          "name": "commands_used",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "reactions_count": {
-          "name": "reactions_count",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "threads_created": {
-          "name": "threads_created",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "tickets_created": {
-          "name": "tickets_created",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "error_count": {
-          "name": "error_count",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "warning_count": {
-          "name": "warning_count",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "analytics_guild_idx": {
-          "name": "analytics_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "analytics_date_idx": {
-          "name": "analytics_date_idx",
-          "columns": [
-            {
-              "expression": "date",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "analytics_guild_id_date_hour_unique": {
-          "name": "analytics_guild_id_date_hour_unique",
-          "nullsNotDistinct": false,
-          "columns": ["guild_id", "date", "hour"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.custom_commands": {
-      "name": "custom_commands",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "response": {
-          "name": "response",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "uses": {
-          "name": "uses",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "enabled": {
-          "name": "enabled",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": true
-        },
-        "created_by": {
-          "name": "created_by",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "deleted_by": {
-          "name": "deleted_by",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "custom_commands_guild_idx": {
-          "name": "custom_commands_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "custom_commands_guild_id_name_unique": {
-          "name": "custom_commands_guild_id_name_unique",
-          "nullsNotDistinct": false,
-          "columns": ["guild_id", "name"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.economy_transactions": {
-      "name": "economy_transactions",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "type": {
-          "name": "type",
-          "type": "EconomyTransactionType",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "amount": {
-          "name": "amount",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "economy_transactions_user_guild_idx": {
-          "name": "economy_transactions_user_guild_idx",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "economy_transactions_guild_idx": {
-          "name": "economy_transactions_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "economy_transactions_type_idx": {
-          "name": "economy_transactions_type_idx",
-          "columns": [
-            {
-              "expression": "type",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "economy_transactions_created_at_idx": {
-          "name": "economy_transactions_created_at_idx",
-          "columns": [
-            {
-              "expression": "created_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.shop_items": {
-      "name": "shop_items",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "price": {
-          "name": "price",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "role_id": {
-          "name": "role_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "stock": {
-          "name": "stock",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "enabled": {
-          "name": "enabled",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "deleted_by": {
-          "name": "deleted_by",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "shop_items_guild_idx": {
-          "name": "shop_items_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "shop_items_enabled_idx": {
-          "name": "shop_items_enabled_idx",
-          "columns": [
-            {
-              "expression": "enabled",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.shop_purchases": {
-      "name": "shop_purchases",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "item_id": {
-          "name": "item_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "price_paid": {
-          "name": "price_paid",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "quantity": {
-          "name": "quantity",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 1
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "shop_purchases_user_guild_idx": {
-          "name": "shop_purchases_user_guild_idx",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "shop_purchases_item_idx": {
-          "name": "shop_purchases_item_idx",
-          "columns": [
-            {
-              "expression": "item_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "shop_purchases_created_at_idx": {
-          "name": "shop_purchases_created_at_idx",
-          "columns": [
-            {
-              "expression": "created_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.user_economy": {
-      "name": "user_economy",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "balance": {
-          "name": "balance",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "bank": {
-          "name": "bank",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "last_daily": {
-          "name": "last_daily",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "last_weekly": {
-          "name": "last_weekly",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "last_work": {
-          "name": "last_work",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "daily_streak": {
-          "name": "daily_streak",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "user_economy_guild_idx": {
-          "name": "user_economy_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "user_economy_user_id_guild_id_unique": {
-          "name": "user_economy_user_id_guild_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["user_id", "guild_id"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.event_log_configs": {
       "name": "event_log_configs",
       "schema": "",
@@ -735,7 +22,7 @@
         },
         "category": {
           "name": "category",
-          "type": "EventLogCategory",
+          "type": "event_log_category",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
@@ -759,12 +46,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "color": {
-          "name": "color",
-          "type": "varchar(7)",
-          "primaryKey": false,
-          "notNull": false
-        },
         "include_bots": {
           "name": "include_bots",
           "type": "boolean",
@@ -772,14 +53,74 @@
           "notNull": false,
           "default": false
         },
-        "template": {
-          "name": "template",
+        "include_webhooks": {
+          "name": "include_webhooks",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "ignore_channels": {
+          "name": "ignore_channels",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ignore_roles": {
+          "name": "ignore_roles",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "embed_color": {
+          "name": "embed_color",
+          "type": "varchar(7)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'#5865F2'"
+        },
+        "custom_template": {
+          "name": "custom_template",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "created_by_id": {
-          "name": "created_by_id",
+        "include_timestamp": {
+          "name": "include_timestamp",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "include_user_avatar": {
+          "name": "include_user_avatar",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "enable_audit_trail": {
+          "name": "enable_audit_trail",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "enable_alerts": {
+          "name": "enable_alerts",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "alert_thresholds": {
+          "name": "alert_thresholds",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
           "type": "varchar(20)",
           "primaryKey": false,
           "notNull": true
@@ -830,6 +171,21 @@
           "method": "btree",
           "with": {}
         },
+        "event_log_configs_category_idx": {
+          "name": "event_log_configs_category_idx",
+          "columns": [
+            {
+              "expression": "category",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "event_log_configs_guild_category_idx": {
           "name": "event_log_configs_guild_category_idx",
           "columns": [
@@ -859,457 +215,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.form_submissions": {
-      "name": "form_submissions",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "form_id": {
-          "name": "form_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "responses": {
-          "name": "responses",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "submitted_at": {
-          "name": "submitted_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "form_submissions_form_idx": {
-          "name": "form_submissions_form_idx",
-          "columns": [
-            {
-              "expression": "form_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "form_submissions_user_idx": {
-          "name": "form_submissions_user_idx",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.forms": {
-      "name": "forms",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "fields_data": {
-          "name": "fields_data",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "enabled": {
-          "name": "enabled",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": true
-        },
-        "created_by": {
-          "name": "created_by",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "deleted_by": {
-          "name": "deleted_by",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "forms_guild_idx": {
-          "name": "forms_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.giveaway_entries": {
-      "name": "giveaway_entries",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "giveaway_id": {
-          "name": "giveaway_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "entries": {
-          "name": "entries",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 1
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "giveaway_entries_giveaway_idx": {
-          "name": "giveaway_entries_giveaway_idx",
-          "columns": [
-            {
-              "expression": "giveaway_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "giveaway_entries_giveaway_id_user_id_unique": {
-          "name": "giveaway_entries_giveaway_id_user_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["giveaway_id", "user_id"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.giveaway_winners": {
-      "name": "giveaway_winners",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "giveaway_id": {
-          "name": "giveaway_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "won_at": {
-          "name": "won_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "giveaway_winners_user_idx": {
-          "name": "giveaway_winners_user_idx",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "giveaway_winners_giveaway_id_user_id_unique": {
-          "name": "giveaway_winners_giveaway_id_user_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["giveaway_id", "user_id"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.giveaways": {
-      "name": "giveaways",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "channel_id": {
-          "name": "channel_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "message_id": {
-          "name": "message_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "host_id": {
-          "name": "host_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "prize": {
-          "name": "prize",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "requirements": {
-          "name": "requirements",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "status": {
-          "name": "status",
-          "type": "GiveawayStatus",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'ACTIVE'"
-        },
-        "ends_at": {
-          "name": "ends_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "ended_at": {
-          "name": "ended_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "giveaways_guild_idx": {
-          "name": "giveaways_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "giveaways_status_idx": {
-          "name": "giveaways_status_idx",
-          "columns": [
-            {
-              "expression": "status",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "giveaways_ends_at_idx": {
-          "name": "giveaways_ends_at_idx",
-          "columns": [
-            {
-              "expression": "ends_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "giveaways_message_id_unique": {
-          "name": "giveaways_message_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["message_id"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.guild_configs": {
       "name": "guild_configs",
       "schema": "",
@@ -1326,128 +231,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "moderation_log_channel_id": {
-          "name": "moderation_log_channel_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "auto_role_id": {
-          "name": "auto_role_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "mute_role_id": {
-          "name": "mute_role_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "level_system_enabled": {
-          "name": "level_system_enabled",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "level_up_channel_id": {
-          "name": "level_up_channel_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "level_up_message": {
-          "name": "level_up_message",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "xp_rate": {
-          "name": "xp_rate",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 1
-        },
-        "economy_enabled": {
-          "name": "economy_enabled",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "daily_reward": {
-          "name": "daily_reward",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 100
-        },
-        "work_reward_min": {
-          "name": "work_reward_min",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 50
-        },
-        "work_reward_max": {
-          "name": "work_reward_max",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 200
-        },
-        "ticket_category_id": {
-          "name": "ticket_category_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "ticket_support_role_id": {
-          "name": "ticket_support_role_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "welcome_enabled": {
-          "name": "welcome_enabled",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "welcome_channel_id": {
-          "name": "welcome_channel_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "welcome_message": {
-          "name": "welcome_message",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "leave_enabled": {
-          "name": "leave_enabled",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "leave_channel_id": {
-          "name": "leave_channel_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "leave_message": {
-          "name": "leave_message",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "language": {
           "name": "language",
           "type": "text",
@@ -1455,16 +238,16 @@
           "notNull": false,
           "default": "'en'"
         },
-        "timezone": {
-          "name": "timezone",
-          "type": "text",
+        "event_logging_enabled": {
+          "name": "event_logging_enabled",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": false,
-          "default": "'UTC'"
+          "default": false
         },
-        "voice_channel_templates": {
-          "name": "voice_channel_templates",
-          "type": "jsonb",
+        "default_log_channel_id": {
+          "name": "default_log_channel_id",
+          "type": "varchar(20)",
           "primaryKey": false,
           "notNull": false
         },
@@ -1498,6 +281,21 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "guild_configs_event_logging_idx": {
+          "name": "guild_configs_event_logging_idx",
+          "columns": [
+            {
+              "expression": "event_logging_enabled",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {},
@@ -1513,8 +311,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.scheduled_messages": {
-      "name": "scheduled_messages",
+    "public.user_playlists": {
+      "name": "user_playlists",
       "schema": "",
       "columns": {
         "id": {
@@ -1523,113 +321,10 @@
           "primaryKey": true,
           "notNull": true
         },
-        "guild_id": {
-          "name": "guild_id",
+        "user_id": {
+          "name": "user_id",
           "type": "varchar(20)",
           "primaryKey": false,
-          "notNull": true
-        },
-        "channel_id": {
-          "name": "channel_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "content": {
-          "name": "content",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "send_at": {
-          "name": "send_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "sent": {
-          "name": "sent",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "created_by": {
-          "name": "created_by",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "scheduled_messages_guild_idx": {
-          "name": "scheduled_messages_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "scheduled_messages_send_at_idx": {
-          "name": "scheduled_messages_send_at_idx",
-          "columns": [
-            {
-              "expression": "send_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "scheduled_messages_sent_idx": {
-          "name": "scheduled_messages_sent_idx",
-          "columns": [
-            {
-              "expression": "sent",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.auto_moderation_rules": {
-      "name": "auto_moderation_rules",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
           "notNull": true
         },
         "guild_id": {
@@ -1640,7 +335,7 @@
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true
         },
@@ -1650,1233 +345,45 @@
           "primaryKey": false,
           "notNull": false
         },
-        "enabled": {
-          "name": "enabled",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": true
-        },
-        "trigger": {
-          "name": "trigger",
-          "type": "AutoModerationTrigger",
-          "typeSchema": "public",
+        "tracks": {
+          "name": "tracks",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "action": {
-          "name": "action",
-          "type": "AutoModerationAction",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "threshold": {
-          "name": "threshold",
+        "track_count": {
+          "name": "track_count",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": 0
         },
-        "duration": {
-          "name": "duration",
+        "total_duration": {
+          "name": "total_duration",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
-        },
-        "channels": {
-          "name": "channels",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "roles": {
-          "name": "roles",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "keywords": {
-          "name": "keywords",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "whitelist": {
-          "name": "whitelist",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "auto_moderation_rules_guild_idx": {
-          "name": "auto_moderation_rules_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "auto_moderation_rules_enabled_idx": {
-          "name": "auto_moderation_rules_enabled_idx",
-          "columns": [
-            {
-              "expression": "enabled",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.warnings": {
-      "name": "warnings",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "moderator_id": {
-          "name": "moderator_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "reason": {
-          "name": "reason",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "active": {
-          "name": "active",
-          "type": "boolean",
-          "primaryKey": false,
           "notNull": false,
-          "default": true
+          "default": 0
         },
-        "expires_at": {
-          "name": "expires_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "warnings_user_guild_idx": {
-          "name": "warnings_user_guild_idx",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "warnings_guild_idx": {
-          "name": "warnings_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.poll_options": {
-      "name": "poll_options",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "poll_id": {
-          "name": "poll_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "text": {
-          "name": "text",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "position": {
-          "name": "position",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {
-        "poll_options_poll_idx": {
-          "name": "poll_options_poll_idx",
-          "columns": [
-            {
-              "expression": "poll_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.poll_votes": {
-      "name": "poll_votes",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "poll_id": {
-          "name": "poll_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "option_id": {
-          "name": "option_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "poll_votes_poll_idx": {
-          "name": "poll_votes_poll_idx",
-          "columns": [
-            {
-              "expression": "poll_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "poll_votes_poll_id_user_id_unique": {
-          "name": "poll_votes_poll_id_user_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["poll_id", "user_id"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.polls": {
-      "name": "polls",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "channel_id": {
-          "name": "channel_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "message_id": {
-          "name": "message_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "creator_id": {
-          "name": "creator_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "type": {
-          "name": "type",
-          "type": "PollType",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'SINGLE_CHOICE'"
-        },
-        "ends_at": {
-          "name": "ends_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "ended": {
-          "name": "ended",
+        "allow_collaboration": {
+          "name": "allow_collaboration",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
           "default": false
         },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "deleted_by": {
-          "name": "deleted_by",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "polls_guild_idx": {
-          "name": "polls_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "polls_ended_idx": {
-          "name": "polls_ended_idx",
-          "columns": [
-            {
-              "expression": "ended",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "polls_message_id_unique": {
-          "name": "polls_message_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["message_id"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.reminders": {
-      "name": "reminders",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "channel_id": {
-          "name": "channel_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "message": {
-          "name": "message",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "remind_at": {
-          "name": "remind_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "completed": {
-          "name": "completed",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        }
-      },
-      "indexes": {
-        "reminders_user_idx": {
-          "name": "reminders_user_idx",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "reminders_remind_at_idx": {
-          "name": "reminders_remind_at_idx",
-          "columns": [
-            {
-              "expression": "remind_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "reminders_completed_idx": {
-          "name": "reminders_completed_idx",
-          "columns": [
-            {
-              "expression": "completed",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.reaction_roles": {
-      "name": "reaction_roles",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "channel_id": {
-          "name": "channel_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "message_id": {
-          "name": "message_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "emoji": {
-          "name": "emoji",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "role_id": {
-          "name": "role_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "type": {
-          "name": "type",
-          "type": "ReactionRoleType",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'NORMAL'"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "reaction_roles_guild_idx": {
-          "name": "reaction_roles_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "reaction_roles_message_id_emoji_unique": {
-          "name": "reaction_roles_message_id_emoji_unique",
-          "nullsNotDistinct": false,
-          "columns": ["message_id", "emoji"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.starboard_messages": {
-      "name": "starboard_messages",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "original_message_id": {
-          "name": "original_message_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "starboard_message_id": {
-          "name": "starboard_message_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "channel_id": {
-          "name": "channel_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "author_id": {
-          "name": "author_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "star_count": {
-          "name": "star_count",
+        "play_count": {
+          "name": "play_count",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "default": 0
         },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "starboard_messages_guild_idx": {
-          "name": "starboard_messages_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "starboard_messages_star_count_idx": {
-          "name": "starboard_messages_star_count_idx",
-          "columns": [
-            {
-              "expression": "star_count",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "starboard_messages_original_message_id_unique": {
-          "name": "starboard_messages_original_message_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["original_message_id"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.suggestions": {
-      "name": "suggestions",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "channel_id": {
-          "name": "channel_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "message_id": {
-          "name": "message_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "content": {
-          "name": "content",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "status": {
-          "name": "status",
-          "type": "SuggestionStatus",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'PENDING'"
-        },
-        "upvotes": {
-          "name": "upvotes",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "downvotes": {
-          "name": "downvotes",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "reason": {
-          "name": "reason",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "deleted_at": {
-          "name": "deleted_at",
+        "last_played": {
+          "name": "last_played",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
-        },
-        "deleted_by": {
-          "name": "deleted_by",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "suggestions_guild_idx": {
-          "name": "suggestions_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "suggestions_status_idx": {
-          "name": "suggestions_status_idx",
-          "columns": [
-            {
-              "expression": "status",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "suggestions_message_id_unique": {
-          "name": "suggestions_message_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["message_id"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.tickets": {
-      "name": "tickets",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "channel_id": {
-          "name": "channel_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "assigned_to": {
-          "name": "assigned_to",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "category": {
-          "name": "category",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "status": {
-          "name": "status",
-          "type": "TicketStatus",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'OPEN'"
-        },
-        "priority": {
-          "name": "priority",
-          "type": "TicketPriority",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'LOW'"
-        },
-        "subject": {
-          "name": "subject",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "closed_reason": {
-          "name": "closed_reason",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "closed_by": {
-          "name": "closed_by",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "closed_at": {
-          "name": "closed_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "deleted_by": {
-          "name": "deleted_by",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "tickets_guild_idx": {
-          "name": "tickets_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "tickets_user_idx": {
-          "name": "tickets_user_idx",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "tickets_status_idx": {
-          "name": "tickets_status_idx",
-          "columns": [
-            {
-              "expression": "status",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "tickets_channel_id_unique": {
-          "name": "tickets_channel_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["channel_id"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.level_roles": {
-      "name": "level_roles",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "role_id": {
-          "name": "role_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "level": {
-          "name": "level",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "level_roles_guild_idx": {
-          "name": "level_roles_guild_idx",
-          "columns": [
-            {
-              "expression": "guild_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "level_roles_guild_id_level_unique": {
-          "name": "level_roles_guild_id_level_unique",
-          "nullsNotDistinct": false,
-          "columns": ["guild_id", "level"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.user_metrics": {
-      "name": "user_metrics",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "guild_id": {
-          "name": "guild_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "xp": {
-          "name": "xp",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "level": {
-          "name": "level",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "messages_sent": {
-          "name": "messages_sent",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "voice_time": {
-          "name": "voice_time",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "last_xp_at": {
-          "name": "last_xp_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "commands_used": {
-          "name": "commands_used",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "reactions_given": {
-          "name": "reactions_given",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "reactions_received": {
-          "name": "reactions_received",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "casino_wins": {
-          "name": "casino_wins",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "casino_losses": {
-          "name": "casino_losses",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "money_won": {
-          "name": "money_won",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "money_lost": {
-          "name": "money_lost",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
         },
         "created_at": {
           "name": "created_at",
@@ -2894,41 +401,50 @@
         }
       },
       "indexes": {
-        "user_metrics_guild_level_idx": {
-          "name": "user_metrics_guild_level_idx",
+        "user_playlists_user_idx": {
+          "name": "user_playlists_user_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_playlists_guild_idx": {
+          "name": "user_playlists_guild_idx",
           "columns": [
             {
               "expression": "guild_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_playlists_user_guild_idx": {
+          "name": "user_playlists_user_guild_idx",
+          "columns": [
+            {
+              "expression": "user_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
             },
             {
-              "expression": "level",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "user_metrics_guild_xp_idx": {
-          "name": "user_metrics_guild_xp_idx",
-          "columns": [
-            {
               "expression": "guild_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
-            },
-            {
-              "expression": "xp",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
             }
           ],
           "isUnique": false,
@@ -2936,11 +452,11 @@
           "method": "btree",
           "with": {}
         },
-        "user_metrics_user_idx": {
-          "name": "user_metrics_user_idx",
+        "user_playlists_name_idx": {
+          "name": "user_playlists_name_idx",
           "columns": [
             {
-              "expression": "user_id",
+              "expression": "name",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -2952,163 +468,6 @@
           "with": {}
         }
       },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "user_metrics_user_id_guild_id_unique": {
-          "name": "user_metrics_user_id_guild_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["user_id", "guild_id"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.user_sessions": {
-      "name": "user_sessions",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "discord_access_token": {
-          "name": "discord_access_token",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "discord_refresh_token": {
-          "name": "discord_refresh_token",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "discord_token_expires_at": {
-          "name": "discord_token_expires_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "session_expires_at": {
-          "name": "session_expires_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "last_used_at": {
-          "name": "last_used_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "user_sessions_user_idx": {
-          "name": "user_sessions_user_idx",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "user_sessions_expires_idx": {
-          "name": "user_sessions_expires_idx",
-          "columns": [
-            {
-              "expression": "session_expires_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "user_sessions_user_id_unique": {
-          "name": "user_sessions_user_id_unique",
-          "nullsNotDistinct": false,
-          "columns": ["user_id"]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.users": {
-      "name": "users",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "varchar(20)",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "username": {
-          "name": "username",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "global_name": {
-          "name": "global_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "avatar": {
-          "name": "avatar",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -3118,88 +477,25 @@
     }
   },
   "enums": {
-    "public.AutoModerationAction": {
-      "name": "AutoModerationAction",
-      "schema": "public",
-      "values": ["DELETE", "WARN", "TIMEOUT", "KICK", "BAN"]
-    },
-    "public.AutoModerationTrigger": {
-      "name": "AutoModerationTrigger",
+    "public.event_log_category": {
+      "name": "event_log_category",
       "schema": "public",
       "values": [
-        "SPAM",
-        "CAPS",
-        "LINKS",
-        "INVITES",
-        "PROFANITY",
-        "MENTIONS",
-        "REPEATED_TEXT",
-        "ZALGO",
-        "MASS_MENTIONS"
+        "channels",
+        "members",
+        "messages",
+        "moderation",
+        "roles",
+        "voice",
+        "guild_settings",
+        "emojis_stickers",
+        "invites",
+        "threads",
+        "scheduled_events",
+        "interactions",
+        "security",
+        "automod"
       ]
-    },
-    "public.EconomyTransactionType": {
-      "name": "EconomyTransactionType",
-      "schema": "public",
-      "values": [
-        "EARN",
-        "SPEND",
-        "TRANSFER",
-        "DAILY_REWARD",
-        "WEEKLY_REWARD",
-        "GAME_WIN",
-        "GAME_LOSS",
-        "SHOP_PURCHASE",
-        "ADMIN_ADJUSTMENT"
-      ]
-    },
-    "public.EventLogCategory": {
-      "name": "EventLogCategory",
-      "schema": "public",
-      "values": [
-        "CHANNELS",
-        "MEMBERS",
-        "MESSAGES",
-        "MODERATION",
-        "ROLES",
-        "VOICE",
-        "GUILD_SETTINGS",
-        "EMOJIS_STICKERS",
-        "INVITES",
-        "THREADS",
-        "SCHEDULED_EVENTS",
-        "INTERACTIONS"
-      ]
-    },
-    "public.GiveawayStatus": {
-      "name": "GiveawayStatus",
-      "schema": "public",
-      "values": ["ACTIVE", "ENDED", "CANCELLED"]
-    },
-    "public.PollType": {
-      "name": "PollType",
-      "schema": "public",
-      "values": ["SINGLE_CHOICE", "MULTIPLE_CHOICE", "YES_NO"]
-    },
-    "public.ReactionRoleType": {
-      "name": "ReactionRoleType",
-      "schema": "public",
-      "values": ["NORMAL", "UNIQUE", "VERIFY", "TOGGLE"]
-    },
-    "public.SuggestionStatus": {
-      "name": "SuggestionStatus",
-      "schema": "public",
-      "values": ["PENDING", "APPROVED", "DENIED", "IMPLEMENTED"]
-    },
-    "public.TicketPriority": {
-      "name": "TicketPriority",
-      "schema": "public",
-      "values": ["LOW", "MEDIUM", "HIGH", "URGENT"]
-    },
-    "public.TicketStatus": {
-      "name": "TicketStatus",
-      "schema": "public",
-      "values": ["OPEN", "PENDING", "RESOLVED", "CLOSED"]
     }
   },
   "schemas": {},

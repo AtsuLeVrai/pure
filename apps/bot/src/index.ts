@@ -1,5 +1,6 @@
 import { neon, neonConfig } from "@neondatabase/serverless";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
+import { Player } from "discord-player";
 import { config as dotenv } from "dotenv";
 import { drizzle } from "drizzle-orm/neon-http";
 import ws from "ws";
@@ -78,6 +79,10 @@ const client = new Client<true>({
     repliedUser: false,
   },
 });
+
+// Import the Player class for music functionality
+// @ts-expect-error - The `client` type is not compatible with the Player constructor (it expects a Client<boolean> type)
+export const player = new Player(client);
 
 // Neon database configuration
 neonConfig.webSocketConstructor = ws;

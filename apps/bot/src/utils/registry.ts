@@ -1,21 +1,27 @@
-import { type Client, Routes } from "discord.js";
-import banCommand from "@/commands/moderation/ban.js";
-import kickCommand from "@/commands/moderation/kick.js";
-import lockCommand from "@/commands/moderation/lock.js";
-import massbanCommand from "@/commands/moderation/massban.js";
-import muteCommand from "@/commands/moderation/mute.js";
-import nicknameCommand from "@/commands/moderation/nickname.js";
-import purgeCommand from "@/commands/moderation/purge.js";
-import slowmodeCommand from "@/commands/moderation/slowmode.js";
-import timeoutCommand from "@/commands/moderation/timeout.js";
-import unbanCommand from "@/commands/moderation/unban.js";
-import unlockCommand from "@/commands/moderation/unlock.js";
-import unmuteCommand from "@/commands/moderation/unmute.js";
-import userinfoCommand from "@/commands/moderation/userinfo.js";
-import warnCommand from "@/commands/moderation/warn.js";
-import helpCommand from "@/commands/utility/help.js";
-import pingCommand from "@/commands/utility/ping.js";
-import channelCreateEvent from "@/events/channel/channelCreate.js";
+import {
+  ApplicationCommandOptionType,
+  type ApplicationCommandSubCommandData,
+  type ChatInputApplicationCommandData,
+  type Client,
+  Routes,
+} from "discord.js";
+import autoplayCommand from "@/commands/music/autoplay.js";
+import controlsCommand from "@/commands/music/controls.js";
+import filtersCommand from "@/commands/music/filters.js";
+import gameCommand from "@/commands/music/game.js";
+import karaokeCommand from "@/commands/music/karaoke.js";
+import loopCommand from "@/commands/music/loop.js";
+import lyricsCommand from "@/commands/music/lyrics.js";
+import playCommand from "@/commands/music/play.js";
+import playlistCommand from "@/commands/music/playlist.js";
+import queueCommand from "@/commands/music/queue.js";
+import radioCommand from "@/commands/music/radio.js";
+import saveCommand from "@/commands/music/save.js";
+import searchCommand from "@/commands/music/search.js";
+import musicSettingsCommand from "@/commands/music/settings.js";
+import musicStatsCommand from "@/commands/music/stats.js";
+import voiceCommand from "@/commands/music/voice.js";
+import volumeCommand from "@/commands/music/volume.js";
 import applicationCommandPermissionsUpdateEvent from "@/events/client/applicationCommandPermissionsUpdate.js";
 import cacheSweepEvent from "@/events/client/cacheSweep.js";
 import debugEvent from "@/events/client/debug.js";
@@ -23,11 +29,7 @@ import errorEvent from "@/events/client/error.js";
 import interactionCreateEvent from "@/events/client/interactionCreate.js";
 import invalidatedEvent from "@/events/client/invalidated.js";
 import readyEvent from "@/events/client/ready.js";
-import userUpdateEvent from "@/events/client/userUpdate.js";
 import warnEvent from "@/events/client/warn.js";
-import guildAvailableEvent from "@/events/guild/guildAvailable.js";
-import guildCreateEvent from "@/events/guild/guildCreate.js";
-import guildDeleteEvent from "@/events/guild/guildDelete.js";
 import shardDisconnectEvent from "@/events/shard/shardDisconnect.js";
 import shardErrorEvent from "@/events/shard/shardError.js";
 import shardReadyEvent from "@/events/shard/shardReady.js";
@@ -42,28 +44,111 @@ export const isDev = process.env.NODE_ENV === "development";
 export const isProd = process.env.NODE_ENV === "production";
 
 // Command registry for the bot
-export const commandRegistry: readonly SlashCommand[] = [
-  banCommand,
-  kickCommand,
-  lockCommand,
-  massbanCommand,
-  muteCommand,
-  nicknameCommand,
-  purgeCommand,
-  slowmodeCommand,
-  timeoutCommand,
-  unbanCommand,
-  unlockCommand,
-  unmuteCommand,
-  userinfoCommand,
-  warnCommand,
-  helpCommand,
-  pingCommand,
+export const commandRegistry: SlashCommand[] = [
+  playCommand,
+  queueCommand,
+  controlsCommand,
+  loopCommand,
+  volumeCommand,
+  filtersCommand,
+  playlistCommand,
+  searchCommand,
+  lyricsCommand,
+  voiceCommand,
+  musicSettingsCommand,
+  musicStatsCommand,
+  karaokeCommand,
+  gameCommand,
+  radioCommand,
+  autoplayCommand,
+  saveCommand,
 ] as const;
+
+/**
+ * Groups commands into subcommand groups based on category and subcommand properties
+ */
+function processCommandsIntoGroups(
+  commands: SlashCommand[],
+): ChatInputApplicationCommandData[] {
+  const standaloneCommands: ChatInputApplicationCommandData[] = [];
+  const subcommandGroups = new Map<string, SlashCommand[]>();
+
+  for (const command of commands) {
+    if (command.subcommand === true) {
+      // This command should be grouped as a subcommand under its category
+      const groupKey = command.category;
+
+      if (!subcommandGroups.has(groupKey)) {
+        subcommandGroups.set(groupKey, []);
+      }
+
+      subcommandGroups.get(groupKey)?.push(command);
+    } else {
+      // Standalone command
+      standaloneCommands.push(command.data);
+    }
+  }
+
+  // Create grouped commands
+  const groupedCommands: ChatInputApplicationCommandData[] = [];
+
+  for (const [groupName, groupCommands] of subcommandGroups) {
+    // Filter options to only include valid subcommand option types
+    const subcommands: ApplicationCommandSubCommandData[] = groupCommands.map(
+      (cmd) => ({
+        type: ApplicationCommandOptionType.Subcommand,
+        name: cmd.data.name,
+        description: cmd.data.description,
+        // Only include options that are valid for subcommands (no nested subcommands/groups)
+        options:
+          cmd.data.options?.filter(
+            (option) =>
+              option.type !== ApplicationCommandOptionType.Subcommand &&
+              option.type !== ApplicationCommandOptionType.SubcommandGroup,
+          ) || [],
+      }),
+    );
+
+    const groupCommand: ChatInputApplicationCommandData = {
+      name: groupName,
+      description: `${groupName.charAt(0).toUpperCase() + groupName.slice(1)} commands`,
+      options: subcommands,
+    };
+
+    groupedCommands.push(groupCommand);
+  }
+
+  return [...standaloneCommands, ...groupedCommands];
+}
+
+/**
+ * Creates a map for command execution routing
+ */
+export function createCommandExecutionMap(
+  commands: SlashCommand[],
+): Map<string, SlashCommand["execute"]> {
+  const executionMap = new Map<string, SlashCommand["execute"]>();
+
+  for (const command of commands) {
+    if (command.subcommand === true) {
+      // Key format: "category:subcommandName" for grouped commands
+      const key = `${command.category}:${command.data.name}`;
+      executionMap.set(key, command.execute);
+    } else {
+      // Key format: "commandName" for standalone commands
+      executionMap.set(command.data.name, command.execute);
+    }
+  }
+
+  return executionMap;
+}
+
+// Global execution map for command routing
+export const commandExecutionMap = createCommandExecutionMap(commandRegistry);
 
 // Register commands with the Discord API
 export async function registerCommands(client: Client<true>): Promise<void> {
-  const commandsData = commandRegistry.map((cmd) => cmd.data);
+  const commandsData = processCommandsIntoGroups(commandRegistry);
   const commandCount = commandsData.length;
   if (commandCount === 0) {
     Logger.warn("No commands to register");
@@ -113,8 +198,7 @@ export async function registerCommands(client: Client<true>): Promise<void> {
 }
 
 // Event registry for the bot
-export const eventRegistry: readonly EventHandler<any>[] = [
-  channelCreateEvent,
+export const eventRegistry: EventHandler<any>[] = [
   applicationCommandPermissionsUpdateEvent,
   cacheSweepEvent,
   debugEvent,
@@ -122,11 +206,7 @@ export const eventRegistry: readonly EventHandler<any>[] = [
   interactionCreateEvent,
   invalidatedEvent,
   readyEvent,
-  userUpdateEvent,
   warnEvent,
-  guildAvailableEvent,
-  guildCreateEvent,
-  guildDeleteEvent,
   shardDisconnectEvent,
   shardErrorEvent,
   shardReadyEvent,
