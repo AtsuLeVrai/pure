@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="refactor(music): consolidate command imports and update command structure for subcommands">
+    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="feat(music): enhance play command with improved validation, error handling, and user feedback">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/play.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/music/play.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/utility/help.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/commands/utility/help.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/interactionCreate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/events/client/interactionCreate.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/types/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/types/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/utils/registry.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/bot/src/utils/registry.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,45 +48,45 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Node.js.bot > test.ts.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Vitest.All Tests in server.executor": "Run",
-    "code.cleanup.on.save": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/minec/WebstormProjects/pure/apps/bot",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "pnpm",
-    "npm.biome:check.executor": "Run",
-    "npm.bot > bot:build.executor": "Run",
-    "npm.bot > bot:dev.executor": "Run",
-    "npm.bot > bot:start.executor": "Run",
-    "npm.bot > check-types.executor": "Run",
-    "npm.bot > install.executor": "Run",
-    "npm.bot > type-check.executor": "Run",
-    "npm.database > build.executor": "Run",
-    "npm.database > db:format.executor": "Run",
-    "npm.database > db:generate.executor": "Run",
-    "npm.database > db:migrate.executor": "Run",
-    "npm.database > db:push.executor": "Run",
-    "npm.database > db:reset.executor": "Run",
-    "npm.server > build.executor": "Run",
-    "npm.server > test.executor": "Run",
-    "npm.web > web:dev.executor": "Run",
-    "rearrange.code.on.save": "true",
-    "settings.editor.selected.configurable": "Settings.Biome",
-    "ts.external.directory.path": "C:\\Users\\minec\\WebstormProjects\\pure\\apps\\bot\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Node.js.bot &gt; test.ts.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Vitest.All Tests in server.executor&quot;: &quot;Run&quot;,
+    &quot;code.cleanup.on.save&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/minec/WebstormProjects/pure/apps/bot&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;pnpm&quot;,
+    &quot;npm.biome:check.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; bot:build.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; bot:dev.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; bot:start.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; check-types.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; install.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; type-check.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; build.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:format.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:generate.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:migrate.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:push.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:reset.executor&quot;: &quot;Run&quot;,
+    &quot;npm.server &gt; build.executor&quot;: &quot;Run&quot;,
+    &quot;npm.server &gt; test.executor&quot;: &quot;Run&quot;,
+    &quot;npm.web &gt; web:dev.executor&quot;: &quot;Run&quot;,
+    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;Settings.Biome&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\minec\\WebstormProjects\\pure\\apps\\bot\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\minec\WebstormProjects\pure\apps\bot" />
@@ -186,7 +183,9 @@
       <workItem from="1755338830293" duration="1778000" />
       <workItem from="1755358003944" duration="702000" />
       <workItem from="1755361819220" duration="4515000" />
-      <workItem from="1755366435453" duration="3212000" />
+      <workItem from="1755366435453" duration="3290000" />
+      <workItem from="1755519264244" duration="56000" />
+      <workItem from="1755520104128" duration="607000" />
     </task>
     <task id="LOCAL-00001" summary="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling">
       <option name="closed" value="true" />
@@ -252,7 +251,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755367965683</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="feat(music): enhance play command with improved validation, error handling, and user feedback">
+      <option name="closed" value="true" />
+      <created>1755369772783</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1755369772783</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -278,6 +285,7 @@
     <MESSAGE value="feat(music): implement music command structure and database integration for user playlists and event logging" />
     <MESSAGE value="feat(music): enhance play command with validation, error handling, and multi-source support" />
     <MESSAGE value="refactor(music): consolidate command imports and update command structure for subcommands" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor(music): consolidate command imports and update command structure for subcommands" />
+    <MESSAGE value="feat(music): enhance play command with improved validation, error handling, and user feedback" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(music): enhance play command with improved validation, error handling, and user feedback" />
   </component>
 </project>

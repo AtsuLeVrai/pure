@@ -10,7 +10,7 @@ import {
   PermissionFlagsBits,
   type VoiceChannel,
 } from "discord.js";
-import { QueryType, QueueRepeatMode } from "discord-player";
+import { QueueRepeatMode } from "discord-player";
 import { player } from "@/index.js";
 import type { SlashSubCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
@@ -28,19 +28,6 @@ export const play: SlashSubCommand = {
         type: ApplicationCommandOptionType.String,
         required: true,
         autocomplete: true,
-      },
-      {
-        name: "source",
-        description: "Preferred source for searching",
-        type: ApplicationCommandOptionType.String,
-        required: false,
-        choices: [
-          { name: "🎵 YouTube", value: "youtube" },
-          { name: "🎧 Spotify", value: "spotify" },
-          { name: "🔊 SoundCloud", value: "soundcloud" },
-          { name: "🍎 Apple Music", value: "apple" },
-          { name: "🎪 Bandcamp", value: "bandcamp" },
-        ],
       },
       {
         name: "position",
@@ -68,7 +55,6 @@ export const play: SlashSubCommand = {
     const botMember = interaction.guild?.members.me;
 
     const query = interaction.options.getString("query", true);
-    const source = interaction.options.getString("source") || "youtube";
     const position = interaction.options.getString("position") || "queue";
     const playlistName = interaction.options.getString("playlist");
 
@@ -271,38 +257,6 @@ export const play: SlashSubCommand = {
       }
     }
 
-    // Rate limiting check
-    const userId = interaction.user.id;
-    const rateLimitKey = `music_play_${userId}`;
-    const currentTime = Date.now();
-
-    // Simple in-memory rate limiting (you might want to use Redis in production)
-    if (!global.musicRateLimit) global.musicRateLimit = new Map();
-    const lastUsed = global.musicRateLimit.get(rateLimitKey) || 0;
-
-    if (currentTime - lastUsed < 3000) {
-      // 3 second cooldown
-      const errorEmbed = new EmbedBuilder()
-        .setColor(Colors.Red)
-        .setTitle("❌ Rate Limited")
-        .setDescription("Please wait a moment before using this command again.")
-        .addFields({
-          name: "⏳ Cooldown",
-          value: "3 seconds between commands",
-          inline: false,
-        })
-        .setTimestamp()
-        .setFooter({ text: "Pure Music System • Rate Limit" });
-
-      await interaction.reply({
-        embeds: [errorEmbed],
-        flags: MessageFlags.Ephemeral,
-      });
-      return;
-    }
-
-    global.musicRateLimit.set(rateLimitKey, currentTime);
-
     await interaction.deferReply();
 
     try {
@@ -310,47 +264,8 @@ export const play: SlashSubCommand = {
         userId: interaction.user.id,
         guildId: interaction.guildId,
         query: query.substring(0, 100),
-        source,
         position,
       });
-
-      // Determine search engine based on source
-      let searchEngine: QueryType;
-      switch (source) {
-        case "spotify":
-          searchEngine = QueryType.SPOTIFY_SEARCH;
-          break;
-        case "soundcloud":
-          searchEngine = QueryType.SOUNDCLOUD;
-          break;
-        case "apple":
-          searchEngine = QueryType.APPLE_MUSIC_SEARCH;
-          break;
-        case "bandcamp":
-          searchEngine = QueryType.AUTO;
-          break;
-        default:
-          searchEngine = QueryType.AUTO;
-      }
-
-      // Configure play options
-      const playOptions = {
-        nodeOptions: {
-          metadata: {
-            channel: interaction.channel,
-            requestedBy: interaction.user,
-            interaction,
-          },
-          volume: 80,
-          repeatMode: QueueRepeatMode.OFF,
-          leaveOnEmpty: true,
-          leaveOnEmptyCooldown: 300000, // 5 minutes
-          leaveOnEnd: true,
-          leaveOnEndCooldown: 300000, // 5 minutes
-        },
-        searchEngine,
-        requestedBy: interaction.user,
-      };
 
       // Handle position parameter
       let insertMode: "queue" | "next" | "now" = "queue";
@@ -362,8 +277,19 @@ export const play: SlashSubCommand = {
         voiceChannel,
         query,
         {
-          ...playOptions,
-          searchEngine,
+          nodeOptions: {
+            metadata: {
+              channel: interaction.channel,
+              requestedBy: interaction.user,
+              interaction,
+            },
+            volume: 80,
+            repeatMode: QueueRepeatMode.OFF,
+            leaveOnEmpty: true,
+            leaveOnEmptyCooldown: 300000, // 5 minutes
+            leaveOnEnd: true,
+            leaveOnEndCooldown: 300000, // 5 minutes
+          },
           requestedBy: interaction.user,
           metadata: {
             channel: interaction.channel,
@@ -541,7 +467,6 @@ export const play: SlashSubCommand = {
         userId: interaction.user.id,
         guildId: interaction.guildId,
         query: sanitizedQuery.substring(0, 100),
-        source,
         position,
         timestamp: new Date().toISOString(),
       });
@@ -657,9 +582,4 @@ function getSourceDisplay(source: string): string {
     sourceMap[source.toLowerCase()] ||
     `🎵 ${source.charAt(0).toUpperCase() + source.slice(1)}`
   );
-}
-
-// Declare global type for rate limiting
-declare global {
-  var musicRateLimit: Map<string, number> | undefined;
 }
