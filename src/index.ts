@@ -2,13 +2,11 @@ import { DefaultExtractors } from "@discord-player/extractor";
 import { neon, neonConfig } from "@neondatabase/serverless";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import { Player } from "discord-player";
-import { config as dotenv } from "dotenv";
 import { drizzle } from "drizzle-orm/neon-http";
 import ws from "ws";
 import { z } from "zod";
 import {
   initializeI18n,
-  isDev,
   Logger,
   loadModules,
   registerEvents,
@@ -38,8 +36,7 @@ function loadConfig(config: unknown): DotenvConfig {
 }
 
 // Load environment variables from .env file
-const config = dotenv({ debug: isDev });
-export const env = loadConfig(config.parsed);
+export const env = loadConfig(process.env);
 
 // Initialize the Discord client
 const client = new Client<true>({

@@ -223,11 +223,6 @@ export async function loadModules(): Promise<void> {
   await import("@/commands/music/index.js");
   await import("@/commands/utility/help.js");
 
-  // Load button handlers
-  await import("@/buttons/music/playback-controls.js");
-  await import("@/buttons/music/queue-controls.js");
-  await import("@/buttons/music/volume-controls.js");
-
   // Load events
   await import("@/events/client/applicationCommandPermissionsUpdate.js");
   await import("@/events/client/cacheSweep.js");

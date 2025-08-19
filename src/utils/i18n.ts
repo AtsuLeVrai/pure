@@ -1,8 +1,8 @@
-import { guildConfigs } from "@pure/database";
 import type { Interaction, Locale } from "discord.js";
 import { eq } from "drizzle-orm";
 import i18next, { type TFunction } from "i18next";
 import { db } from "@/index.js";
+import { guildConfigs } from "@/schemas/index.js";
 import { Logger } from "./logger.js";
 import { isDev } from "./registry.js";
 
