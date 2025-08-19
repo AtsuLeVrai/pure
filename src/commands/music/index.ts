@@ -1,5 +1,5 @@
 import type { SlashSubCommand } from "@/types/index.js";
-import { defineSlashCommand } from "@/utils/index.js";
+import { defineSlashCommand } from "@/utils/registry.js";
 import { autoplay } from "./autoplay.js";
 import { controls } from "./controls.js";
 import { filters } from "./filters.js";

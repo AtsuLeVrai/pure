@@ -1,16 +1,16 @@
-import { DefaultExtractors } from "@discord-player/extractor";
 import { neon, neonConfig } from "@neondatabase/serverless";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import { Player } from "discord-player";
 import { drizzle } from "drizzle-orm/neon-http";
 import ws from "ws";
 import { z } from "zod";
+import { initializeI18n } from "@/utils/i18n.js";
+import { Logger } from "@/utils/logger.js";
 import {
-  initializeI18n,
-  Logger,
   loadModules,
   registerEvents,
-} from "@/utils/index.js";
+  registerPlayerEvents,
+} from "@/utils/registry.js";
 
 // Define the schema for environment variables using zod
 const dotenvConfig = z.object({
@@ -82,7 +82,19 @@ const client = new Client<true>({
 
 // Import the Player class for music functionality
 // @ts-expect-error - The `client` type is not compatible with the Player constructor (it expects a Client<boolean> type)
-export const player = new Player(client);
+export const player = new Player(client, {
+  ytdlOptions: {
+    quality: "highestaudio",
+    highWaterMark: 1 << 25, // 32MB buffer
+    requestOptions: {
+      timeout: 10000, // 10 second timeout
+    },
+  },
+  skipFFmpeg: false,
+  connectionTimeout: 20000, // 20 second connection timeout
+  useLegacyFFmpeg: false,
+  smoothVolume: true, // Smooth volume transitions
+});
 
 // Neon database configuration
 neonConfig.webSocketConstructor = ws;
@@ -146,9 +158,7 @@ async function main(): Promise<void> {
 
     // Register events
     registerEvents(client);
-
-    // Initialize the Player instance
-    await player.extractors.loadMulti(DefaultExtractors);
+    registerPlayerEvents(client);
 
     // Login to Discord
     await client.login(env.DISCORD_TOKEN);

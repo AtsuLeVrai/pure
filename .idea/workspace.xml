@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="feat(logging): implement comprehensive event logging and error handling structure">
+    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="feat(logging): enhance error logging with additional context and improve debug messages">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bun.lock" beforeDir="false" afterPath="$PROJECT_DIR$/bun.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/commands/music/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/music/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/commands/music/play.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/music/play.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/commands/utility/help.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/utility/help.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/events/client/applicationCommandPermissionsUpdate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/applicationCommandPermissionsUpdate.ts" afterDir="false" />
@@ -15,18 +16,14 @@
       <change beforePath="$PROJECT_DIR$/src/events/client/debug.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/debug.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/events/client/error.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/error.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/events/client/interactionCreate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/interactionCreate.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/events/client/invalidated.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/invalidated.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/events/client/ready.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/ready.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/events/client/warn.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/warn.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/events/shard/shardDisconnect.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/events/shard/shardError.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/events/shard/shardReady.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/events/shard/shardReconnecting.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/events/shard/shardResume.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/schemas/index.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/types/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/formatters.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/formatters.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils/i18n.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/i18n.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/logger.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/logger.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/index.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils/registry.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/registry.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -68,52 +65,54 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Node.js.bot > test.ts.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Vitest.All Tests in server.executor": "Run",
-    "code.cleanup.on.save": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "javascript.nodejs.core.library.configured.version": "24.3.0",
-    "javascript.nodejs.core.library.typings.version": "24.3.0",
-    "last_opened_file_path": "C:/Users/minec/WebstormProjects/pure/src",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_interpreter_path": "node",
-    "nodejs_package_manager_path": "bun",
-    "npm.biome:check.executor": "Run",
-    "npm.bot > bot:build.executor": "Run",
-    "npm.bot > bot:dev.executor": "Run",
-    "npm.bot > bot:start.executor": "Run",
-    "npm.bot > check-types.executor": "Run",
-    "npm.bot > install.executor": "Run",
-    "npm.bot > type-check.executor": "Run",
-    "npm.bot:build.executor": "Run",
-    "npm.bot:dev.executor": "Run",
-    "npm.bot:start.executor": "Run",
-    "npm.check-types.executor": "Run",
-    "npm.database > build.executor": "Run",
-    "npm.database > db:format.executor": "Run",
-    "npm.database > db:generate.executor": "Run",
-    "npm.database > db:migrate.executor": "Run",
-    "npm.database > db:push.executor": "Run",
-    "npm.database > db:reset.executor": "Run",
-    "npm.server > build.executor": "Run",
-    "npm.server > test.executor": "Run",
-    "npm.web > web:dev.executor": "Run",
-    "rearrange.code.on.save": "true",
-    "settings.editor.selected.configurable": "actions.on.save",
-    "ts.external.directory.path": "C:\\Users\\minec\\WebstormProjects\\pure\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Node.js.bot &gt; test.ts.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Vitest.All Tests in server.executor&quot;: &quot;Run&quot;,
+    &quot;code.cleanup.on.save&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;24.3.0&quot;,
+    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;24.3.0&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/minec/WebstormProjects/pure/src&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_interpreter_path&quot;: &quot;node&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;bun&quot;,
+    &quot;npm.biome:check.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; bot:build.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; bot:dev.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; bot:start.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; check-types.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; install.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; type-check.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot:build.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot:dev.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot:start.executor&quot;: &quot;Run&quot;,
+    &quot;npm.check-types.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; build.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:format.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:generate.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:migrate.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:push.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:reset.executor&quot;: &quot;Run&quot;,
+    &quot;npm.install (1).executor&quot;: &quot;Run&quot;,
+    &quot;npm.install.executor&quot;: &quot;Run&quot;,
+    &quot;npm.server &gt; build.executor&quot;: &quot;Run&quot;,
+    &quot;npm.server &gt; test.executor&quot;: &quot;Run&quot;,
+    &quot;npm.web &gt; web:dev.executor&quot;: &quot;Run&quot;,
+    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;actions.on.save&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\minec\\WebstormProjects\\pure\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\minec\WebstormProjects\pure\src" />
@@ -121,6 +120,7 @@
       <recent name="C:\Users\minec\WebstormProjects\pure\apps\bot" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\minec\WebstormProjects\pure\src\controllers" />
       <recent name="C:\Users\minec\WebstormProjects\pure" />
       <recent name="C:\Users\minec\WebstormProjects\pure\src" />
       <recent name="C:\Users\minec\WebstormProjects\pure\apps\bot\src\events\channel" />
@@ -157,21 +157,21 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="bot:start" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="bot:start" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
-    </configuration>
     <configuration name="check-types" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
       <scripts>
         <script value="check-types" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="install" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/node_modules/@discordjs/opus/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="install" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
@@ -183,7 +183,7 @@
         <item itemvalue="npm.bot:build" />
         <item itemvalue="npm.biome:check" />
         <item itemvalue="npm.check-types" />
-        <item itemvalue="npm.bot:start" />
+        <item itemvalue="npm.install" />
       </list>
     </recent_temporary>
   </component>
@@ -218,7 +218,8 @@
       <workItem from="1755519264244" duration="56000" />
       <workItem from="1755520104128" duration="829000" />
       <workItem from="1755584970585" duration="107000" />
-      <workItem from="1755585105352" duration="2400000" />
+      <workItem from="1755585105352" duration="5343000" />
+      <workItem from="1755622048209" duration="4818000" />
     </task>
     <task id="LOCAL-00001" summary="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling">
       <option name="closed" value="true" />
@@ -308,7 +309,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755586099058</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="feat(logging): enhance error logging with additional context and improve debug messages">
+      <option name="closed" value="true" />
+      <created>1755587645847</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1755587645847</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -337,6 +346,7 @@
     <MESSAGE value="feat(music): enhance play command with improved validation, error handling, and user feedback" />
     <MESSAGE value="feat(music): enhance interaction handling with improved logging, error management, and performance monitoring" />
     <MESSAGE value="feat(logging): implement comprehensive event logging and error handling structure" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(logging): implement comprehensive event logging and error handling structure" />
+    <MESSAGE value="feat(logging): enhance error logging with additional context and improve debug messages" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(logging): enhance error logging with additional context and improve debug messages" />
   </component>
 </project>

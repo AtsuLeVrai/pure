@@ -1,4 +1,5 @@
-import { defineEvent, Logger } from "@/utils/index.js";
+import { Logger } from "@/utils/logger.js";
+import { defineEvent } from "@/utils/registry.js";
 
 export default defineEvent({
   name: "error",

@@ -2,7 +2,7 @@ import type { Interaction, Locale } from "discord.js";
 import { eq } from "drizzle-orm";
 import i18next, { type TFunction } from "i18next";
 import { db, env } from "@/index.js";
-import { guildConfigs } from "@/schemas/index.js";
+import { guildConfigs } from "@/schemas/guild-config.js";
 import { Logger } from "./logger.js";
 
 // Supported languages configuration - Complete Discord.js Locale mapping

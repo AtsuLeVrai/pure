@@ -3,18 +3,42 @@ import {
   inlineCode,
   MessageFlags,
 } from "discord.js";
+import { styledMessage } from "@/utils/formatters.js";
+import { Logger } from "@/utils/logger.js";
 import {
   buttonRegistry,
   commandIds,
   commandRegistry,
   defineEvent,
-  Logger,
-  styledMessage,
-} from "@/utils/index.js";
+} from "@/utils/registry.js";
 
 export default defineEvent({
   name: "interactionCreate",
   execute: async (client, interaction) => {
+    if (interaction.isAutocomplete()) {
+      const command = commandRegistry.get(interaction.commandName);
+
+      if (command && "autocomplete" in command && command.autocomplete) {
+        try {
+          await command.autocomplete(client, interaction);
+        } catch (error) {
+          Logger.error(
+            `Error in autocomplete for '${interaction.commandName}'`,
+            {
+              error:
+                error instanceof Error
+                  ? { message: error.message, stack: error.stack }
+                  : String(error),
+              commandName: interaction.commandName,
+              userId: interaction.user.id,
+              guildId: interaction.guildId,
+            },
+          );
+        }
+      }
+      return;
+    }
+
     if (interaction.isChatInputCommand()) {
       const command = commandRegistry.get(interaction.commandName);
 

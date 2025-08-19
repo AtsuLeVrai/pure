@@ -5,9 +5,15 @@ import {
   Events,
   Routes,
 } from "discord.js";
-import { env } from "@/index.js";
-import type { Button, EventHandler, SlashCommand } from "@/types/index.js";
-import { Logger } from "@/utils/index.js";
+import type { GuildQueueEvents } from "discord-player";
+import { env, player } from "@/index.js";
+import type {
+  Button,
+  EventHandler,
+  PlayerEventHandler,
+  SlashCommand,
+} from "@/types/index.js";
+import { Logger } from "@/utils/logger.js";
 
 // Command registry for the bot
 export const commandRegistry = new Map<string, SlashCommand>();
@@ -186,6 +192,60 @@ export function registerEvents(client: Client<true>): void {
   }
 }
 
+// Player event registry for the bot
+export const playerEventRegistry = new Set<PlayerEventHandler<any>>();
+
+// Helper function to define a player event handler
+export function definePlayerEvent<K extends keyof GuildQueueEvents>(
+  event: PlayerEventHandler<K>,
+): PlayerEventHandler<K> {
+  // Auto-registration
+  playerEventRegistry.add(event);
+
+  // Return the event
+  return event;
+}
+
+// Register player events with the Discord Player
+export function registerPlayerEvents(client: Client<true>): void {
+  let registeredCount = 0;
+
+  try {
+    for (const event of playerEventRegistry) {
+      // Register player events
+      player.events.on(event.name, (...args: any) => {
+        event.execute(client, ...args).catch((error) => {
+          Logger.error(`Error in player event '${event.name}'`, {
+            error:
+              error instanceof Error
+                ? {
+                    message: error.message,
+                    stack: error.stack,
+                  }
+                : String(error),
+            eventName: event.name,
+          });
+        });
+      });
+
+      registeredCount++;
+    }
+  } catch (error) {
+    Logger.error("Failed to register player event handlers", {
+      error:
+        error instanceof Error
+          ? {
+              message: error.message,
+              stack: error.stack,
+            }
+          : String(error),
+      registeredCount,
+    });
+
+    throw error;
+  }
+}
+
 // Function to load all commands, events, and buttons
 export async function loadModules(): Promise<void> {
   // Load commands
@@ -201,4 +261,16 @@ export async function loadModules(): Promise<void> {
   await import("@/events/client/invalidated.js");
   await import("@/events/client/ready.js");
   await import("@/events/client/warn.js");
+
+  // Load player events
+  await import("@/events/player/audioTrackAdd.js");
+  await import("@/events/player/debug.js");
+  await import("@/events/player/disconnect.js");
+  await import("@/events/player/emptyQueue.js");
+  await import("@/events/player/playerError.js");
+  await import("@/events/player/playerPause.js");
+  await import("@/events/player/playerResume.js");
+  await import("@/events/player/playerSkip.js");
+  await import("@/events/player/playerStart.js");
+  await import("@/events/player/queueDelete.js");
 }

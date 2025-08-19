@@ -1,4 +1,5 @@
-import { defineSlashCommand, styledMessage } from "@/utils/index.js";
+import { styledMessage } from "@/utils/formatters.js";
+import { defineSlashCommand } from "@/utils/registry.js";
 
 export default defineSlashCommand({
   data: {
