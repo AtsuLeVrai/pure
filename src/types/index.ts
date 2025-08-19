@@ -1,5 +1,4 @@
 import type {
-  APIButtonComponent,
   ApplicationCommandSubCommandData,
   ButtonInteraction,
   ChatInputApplicationCommandData,
@@ -37,7 +36,7 @@ export interface SlashSubCommand {
 
 // Define the type for button components in a Discord bot
 export interface Button {
-  data: APIButtonComponent;
+  customId: string;
   execute: (
     client: Client<true>,
     interaction: ButtonInteraction,

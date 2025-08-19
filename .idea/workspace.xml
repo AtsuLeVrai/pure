@@ -4,108 +4,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="feat(music): enhance interaction handling with improved logging, error management, and performance monitoring">
+    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="feat(logging): implement comprehensive event logging and error handling structure">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/.env.example" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/pnpm-lock.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/autoplay.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/controls.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/filters.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/game.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/karaoke.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/loop.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/lyrics.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/play.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/playlist.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/queue.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/radio.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/save.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/search.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/settings.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/stats.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/voice.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/music/volume.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/commands/utility/help.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/applicationCommandPermissionsUpdate.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/cacheSweep.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/debug.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/error.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/interactionCreate.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/invalidated.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/ready.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/client/warn.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardDisconnect.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardError.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardReady.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardReconnecting.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/events/shard/shardResume.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/types/index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/utils/formatters.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/utils/i18n.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/utils/index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/utils/logger.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/src/utils/registry.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/bot/tsconfig.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/.env.example" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/next-env.d.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/next.config.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/postcss.config.mjs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/public/logo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/app/api/auth/callback/route.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/app/favicon.ico" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/app/layout.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/app/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/components/AnimatedBackground.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/components/Header.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/components/Providers.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/components/ThemeProvider.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/components/ui/Toaster.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/lib/utils.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/styles/globals.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/utils/constants.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/src/utils/orpc.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/dashboard/tsconfig.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/.env.example" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/lib/context.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/lib/orpc.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/middleware/jwt.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/routers/auth.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/routers/discord.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/routers/index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/types/auth.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/utils/discord.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/utils/encryption.test.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/utils/encryption.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/utils/jwt.test.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/src/utils/jwt.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/tsconfig.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/server/vite.config.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bun.lock" beforeDir="false" afterPath="$PROJECT_DIR$/bun.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/.env.example" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/drizzle.config.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/src/index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/src/migrations/0000_broken_spectrum.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/src/migrations/meta/0000_snapshot.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/src/migrations/meta/_journal.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/event-logs.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/guild-config.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/src/schemas/user-playlists.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/database/tsconfig.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-workspace.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/turbo.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/commands/music/play.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/music/play.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/commands/utility/help.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/utility/help.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/events/client/applicationCommandPermissionsUpdate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/applicationCommandPermissionsUpdate.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/events/client/cacheSweep.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/cacheSweep.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/events/client/debug.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/debug.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/events/client/error.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/error.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/events/client/interactionCreate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/interactionCreate.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/events/client/ready.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/ready.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/events/client/warn.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/warn.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/events/shard/shardDisconnect.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/events/shard/shardError.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/events/shard/shardReady.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/events/shard/shardReconnecting.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/events/shard/shardResume.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/formatters.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/formatters.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/i18n.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/i18n.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/logger.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/logger.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/registry.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/registry.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -175,6 +97,7 @@
     "npm.bot > type-check.executor": "Run",
     "npm.bot:build.executor": "Run",
     "npm.bot:dev.executor": "Run",
+    "npm.bot:start.executor": "Run",
     "npm.check-types.executor": "Run",
     "npm.database > build.executor": "Run",
     "npm.database > db:format.executor": "Run",
@@ -203,7 +126,7 @@
       <recent name="C:\Users\minec\WebstormProjects\pure\apps\bot\src\events\channel" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.bot:start">
+  <component name="RunManager" selected="npm.bot:dev">
     <configuration name="biome:check" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -256,11 +179,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="npm.bot:start" />
-        <item itemvalue="npm.bot:build" />
         <item itemvalue="npm.bot:dev" />
-        <item itemvalue="npm.check-types" />
+        <item itemvalue="npm.bot:build" />
         <item itemvalue="npm.biome:check" />
+        <item itemvalue="npm.check-types" />
+        <item itemvalue="npm.bot:start" />
       </list>
     </recent_temporary>
   </component>
@@ -295,7 +218,7 @@
       <workItem from="1755519264244" duration="56000" />
       <workItem from="1755520104128" duration="829000" />
       <workItem from="1755584970585" duration="107000" />
-      <workItem from="1755585105352" duration="837000" />
+      <workItem from="1755585105352" duration="2400000" />
     </task>
     <task id="LOCAL-00001" summary="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling">
       <option name="closed" value="true" />
@@ -377,7 +300,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755520933660</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="feat(logging): implement comprehensive event logging and error handling structure">
+      <option name="closed" value="true" />
+      <created>1755586099058</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1755586099058</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -405,6 +336,7 @@
     <MESSAGE value="refactor(music): consolidate command imports and update command structure for subcommands" />
     <MESSAGE value="feat(music): enhance play command with improved validation, error handling, and user feedback" />
     <MESSAGE value="feat(music): enhance interaction handling with improved logging, error management, and performance monitoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(music): enhance interaction handling with improved logging, error management, and performance monitoring" />
+    <MESSAGE value="feat(logging): implement comprehensive event logging and error handling structure" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(logging): implement comprehensive event logging and error handling structure" />
   </component>
 </project>

@@ -6,6 +6,8 @@ export default defineEvent({
     Logger.error("Discord.js error occurred", {
       error: error.message,
       stack: error.stack,
+      name: error.name,
+      cause: error.cause,
     });
   },
 });

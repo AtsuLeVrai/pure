@@ -12,13 +12,6 @@ import {
   styledMessage,
 } from "@/utils/index.js";
 
-const PERFORMANCE_THRESHOLD = 2000;
-
-function createTimer(): () => number {
-  const start = Date.now();
-  return () => Date.now() - start;
-}
-
 export default defineEvent({
   name: "interactionCreate",
   execute: async (client, interaction) => {
@@ -26,11 +19,6 @@ export default defineEvent({
       const command = commandRegistry.get(interaction.commandName);
 
       if (!command) {
-        Logger.warn(`Unknown command attempted: ${interaction.commandName}`, {
-          userId: interaction.user.id,
-          guildId: interaction.guildId,
-        });
-
         const helpCommand = commandIds.get("help");
         const helpMention = helpCommand
           ? chatInputApplicationCommandMention(helpCommand.name, helpCommand.id)
@@ -45,19 +33,8 @@ export default defineEvent({
         return;
       }
 
-      const timer = createTimer();
-
       try {
         await command.execute(client, interaction);
-
-        const executionTime = timer();
-        if (executionTime > PERFORMANCE_THRESHOLD) {
-          Logger.warn(`Slow command execution: ${interaction.commandName}`, {
-            executionTime: `${executionTime}ms`,
-            userId: interaction.user.id,
-            threshold: `${PERFORMANCE_THRESHOLD}ms`,
-          });
-        }
       } catch (error) {
         Logger.error(`Error executing command '${interaction.commandName}'`, {
           error:
@@ -72,7 +49,6 @@ export default defineEvent({
           interactionId: interaction.id,
           userId: interaction.user.id,
           guildId: interaction.guildId,
-          executionTime: `${timer()}ms`,
         });
 
         const errorMessage = styledMessage(
@@ -109,12 +85,6 @@ export default defineEvent({
       const button = buttonRegistry.get(interaction.customId);
 
       if (!button) {
-        Logger.warn(`Unknown button interaction: ${interaction.customId}`, {
-          customId: interaction.customId,
-          userId: interaction.user.id,
-          messageId: interaction.message.id,
-        });
-
         await interaction.reply({
           content: styledMessage(
             "This button is no longer available or has expired.",
@@ -124,18 +94,8 @@ export default defineEvent({
         return;
       }
 
-      const timer = createTimer();
-
       try {
         await button.execute(client, interaction);
-
-        const executionTime = timer();
-        if (executionTime > PERFORMANCE_THRESHOLD) {
-          Logger.warn(`Slow button execution: ${interaction.customId}`, {
-            executionTime: `${executionTime}ms`,
-            userId: interaction.user.id,
-          });
-        }
       } catch (error) {
         Logger.error(`Error executing button '${interaction.customId}'`, {
           error:
@@ -150,7 +110,6 @@ export default defineEvent({
           interactionId: interaction.id,
           userId: interaction.user.id,
           guildId: interaction.guildId,
-          executionTime: `${timer()}ms`,
         });
 
         const errorMessage = styledMessage(

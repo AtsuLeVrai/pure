@@ -1,5 +1,4 @@
-import { MessageFlags } from "discord.js";
-import { defineSlashCommand, styledEmbed } from "@/utils/index.js";
+import { defineSlashCommand, styledMessage } from "@/utils/index.js";
 
 export default defineSlashCommand({
   data: {
@@ -7,10 +6,11 @@ export default defineSlashCommand({
     description: "Get help with available commands",
   },
   category: "utility",
-  execute: async (client, interaction) => {
-    await interaction.reply({
-      embeds: [styledEmbed(client)],
-      flags: MessageFlags.Ephemeral,
-    });
+  execute: async (_client, interaction) => {
+    await interaction.reply(
+      styledMessage(
+        ":wave: Here is a list of available commands. Use `/help <command>` for more details on a specific command.",
+      ),
+    );
   },
 });

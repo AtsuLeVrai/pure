@@ -9,10 +9,6 @@ import { env } from "@/index.js";
 import type { Button, EventHandler, SlashCommand } from "@/types/index.js";
 import { Logger } from "@/utils/index.js";
 
-// Environment configuration
-export const isDev = process.env.NODE_ENV === "development";
-export const isProd = process.env.NODE_ENV === "production";
-
 // Command registry for the bot
 export const commandRegistry = new Map<string, SlashCommand>();
 
@@ -21,13 +17,6 @@ export function defineSlashCommand(command: SlashCommand): SlashCommand {
   // Normalization
   command.data.name = command.data.name.toLowerCase().trim();
   command.data.description = command.data.description.trim();
-
-  // Validate name format (Discord requirements)
-  if (!/^[\w-]{1,32}$/.test(command.data.name)) {
-    throw new Error(
-      `Command name "${command.data.name}" contains invalid characters. Only letters, numbers, hyphens and underscores are allowed`,
-    );
-  }
 
   // Check for duplicates
   if (commandRegistry.has(command.data.name)) {
@@ -41,7 +30,8 @@ export function defineSlashCommand(command: SlashCommand): SlashCommand {
   return command;
 }
 
-// Map to store command IDs for quick access
+// Map to store command names to their API IDs
+// This is useful for later use, such as permissions management
 export const commandIds = new Map<string, APIApplicationCommand>();
 
 // Register commands with the Discord API
@@ -51,17 +41,14 @@ export async function registerCommands(client: Client<true>): Promise<void> {
   );
   const commandCount = commandsData.length;
   if (commandCount === 0) {
-    Logger.warn("No commands to register");
     return;
   }
 
   try {
-    Logger.info(`Registering ${commandCount} slash commands...`);
-
     const guildId = env?.DISCORD_GUILD_ID;
     let registeredCommands: APIApplicationCommand[];
 
-    if (isDev && guildId) {
+    if (env.NODE_ENV === "development" && guildId) {
       registeredCommands = (await client.rest.put(
         Routes.applicationGuildCommands(client.user.id, guildId),
         { body: commandsData },
@@ -77,13 +64,6 @@ export async function registerCommands(client: Client<true>): Promise<void> {
     for (const cmd of registeredCommands) {
       commandIds.set(cmd.name, cmd);
     }
-
-    Logger.info(`Successfully registered ${commandCount} commands`, {
-      commands: registeredCommands.map((cmd) => ({
-        name: cmd.name,
-        id: cmd.id,
-      })),
-    });
   } catch (error) {
     Logger.error("Failed to register slash commands", {
       error:
@@ -106,24 +86,16 @@ export const buttonRegistry = new Map<string, Button>();
 
 // Helper function to define a button interaction handler
 export function defineButton(button: Button): Button {
-  // Use a more precise type guard
-  const hasCustomId = (btn: any): btn is { custom_id: string } =>
-    "custom_id" in btn && typeof btn.custom_id === "string";
+  // Normalize the custom_id
+  button.customId = button.customId.toLowerCase().trim();
 
-  if (hasCustomId(button.data)) {
-    // Normalize the custom_id
-    button.data.custom_id = button.data.custom_id.toLowerCase().trim();
-
-    // Check for duplicates
-    if (buttonRegistry.has(button.data.custom_id)) {
-      throw new Error(
-        `Button "${button.data.custom_id}" is already registered`,
-      );
-    }
-
-    // Registration
-    buttonRegistry.set(button.data.custom_id, button);
+  // Check for duplicates
+  if (buttonRegistry.has(button.customId)) {
+    throw new Error(`Button "${button.customId}" is already registered`);
   }
+
+  // Registration
+  buttonRegistry.set(button.customId, button);
 
   return button;
 }
@@ -197,10 +169,7 @@ export function registerEvents(client: Client<true>): void {
       }
 
       registeredCount++;
-      Logger.debug(`Registered event handler: ${event.name}`);
     }
-
-    Logger.info(`Successfully registered ${registeredCount} event handlers`);
   } catch (error) {
     Logger.error("Failed to register event handlers", {
       error:
@@ -232,9 +201,4 @@ export async function loadModules(): Promise<void> {
   await import("@/events/client/invalidated.js");
   await import("@/events/client/ready.js");
   await import("@/events/client/warn.js");
-  await import("@/events/shard/shardDisconnect.js");
-  await import("@/events/shard/shardError.js");
-  await import("@/events/shard/shardReady.js");
-  await import("@/events/shard/shardReconnecting.js");
-  await import("@/events/shard/shardResume.js");
 }

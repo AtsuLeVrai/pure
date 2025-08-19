@@ -17,6 +17,7 @@ const dotenvConfig = z.object({
   DISCORD_TOKEN: z.string().min(1),
   DISCORD_GUILD_ID: z.string().min(1),
   DATABASE_URL: z.url(),
+  NODE_ENV: z.enum(["development", "production"]).default("development"),
 });
 
 // Export the type for the environment variables
@@ -94,12 +95,9 @@ const sql = neon(env.DATABASE_URL);
 export const db = drizzle(sql);
 
 // Graceful shutdown
-async function gracefulShutdown(signal: string) {
-  Logger.info(`Received ${signal}, shutting down gracefully...`);
-
+async function gracefulShutdown() {
   try {
     await client.destroy();
-    Logger.info("Discord client destroyed successfully");
   } catch (error) {
     Logger.error("Error during client shutdown", { error });
   }
@@ -107,9 +105,9 @@ async function gracefulShutdown(signal: string) {
   process.exit(0);
 }
 
-process.on("SIGINT", () => gracefulShutdown("SIGINT"));
-process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
-process.on("beforeExit", () => gracefulShutdown("beforeExit"));
+process.on("SIGINT", () => gracefulShutdown());
+process.on("SIGTERM", () => gracefulShutdown());
+process.on("beforeExit", () => gracefulShutdown());
 
 // Global error handling
 process.on("unhandledRejection", (reason, promise) => {
@@ -140,14 +138,10 @@ process.on("uncaughtException", (error) => {
 // Main function to start the bot
 async function main(): Promise<void> {
   try {
-    Logger.info("Starting Discord Bot...");
-
     // Load modules dynamically
-    Logger.info("Loading modules...");
     await loadModules();
 
     // Initialize i18n system
-    Logger.info("Initializing i18n system...");
     await initializeI18n();
 
     // Register events
@@ -157,11 +151,7 @@ async function main(): Promise<void> {
     await player.extractors.loadMulti(DefaultExtractors);
 
     // Login to Discord
-    Logger.info("Logging in to Discord...");
     await client.login(env.DISCORD_TOKEN);
-
-    // Finish client setup
-    Logger.info("Setting up Discord client...");
   } catch (error) {
     Logger.error("Failed to start bot", {
       error:

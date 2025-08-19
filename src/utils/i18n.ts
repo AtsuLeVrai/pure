@@ -1,10 +1,9 @@
 import type { Interaction, Locale } from "discord.js";
 import { eq } from "drizzle-orm";
 import i18next, { type TFunction } from "i18next";
-import { db } from "@/index.js";
+import { db, env } from "@/index.js";
 import { guildConfigs } from "@/schemas/index.js";
 import { Logger } from "./logger.js";
-import { isDev } from "./registry.js";
 
 // Supported languages configuration - Complete Discord.js Locale mapping
 export const SUPPORTED_LANGUAGES = {
@@ -192,7 +191,7 @@ export async function initializeI18n(): Promise<void> {
     await i18next.init({
       // Language detection configuration
       fallbackLng: "en-US",
-      debug: isDev,
+      debug: env.NODE_ENV === "development",
 
       // Namespace configuration
       defaultNS: "common",
@@ -213,18 +212,6 @@ export async function initializeI18n(): Promise<void> {
       cleanCode: true,
 
       // Error handling
-      missingKeyHandler: (lng, ns, key) => {
-        Logger.warn("Missing translation key", {
-          language: lng,
-          namespace: ns,
-          key,
-        });
-      },
-    });
-
-    Logger.info("i18next initialized successfully", {
-      supportedLanguages: Object.keys(SUPPORTED_LANGUAGES),
-      defaultLanguage: "en-US",
     });
   } catch (error) {
     Logger.error("Failed to initialize i18next", { error });
@@ -296,11 +283,6 @@ export async function setGuildLanguage(
     const cacheKey = `guild:${guildId}`;
     languageCache.set(cacheKey, language);
     cacheTimestamps.set(cacheKey, Date.now());
-
-    Logger.info("Guild language updated", {
-      guildId,
-      language,
-    });
   } catch (error) {
     Logger.error("Failed to set guild language", {
       guildId,
