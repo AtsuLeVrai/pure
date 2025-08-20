@@ -1,8 +1,8 @@
-import { neon, neonConfig } from "@neondatabase/serverless";
+import Database from "better-sqlite3";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import { Player } from "discord-player";
-import { drizzle } from "drizzle-orm/neon-http";
-import ws from "ws";
+import { config as dotenv } from "dotenv";
+import { drizzle } from "drizzle-orm/better-sqlite3";
 import { z } from "zod";
 import { initializeI18n } from "@/utils/i18n.js";
 import { Logger } from "@/utils/logger.js";
@@ -16,7 +16,6 @@ import {
 const dotenvConfig = z.object({
   DISCORD_TOKEN: z.string().min(1),
   DISCORD_GUILD_ID: z.string().min(1),
-  DATABASE_URL: z.url(),
   NODE_ENV: z.enum(["development", "production"]).default("development"),
 });
 
@@ -27,7 +26,7 @@ export type DotenvConfig = z.infer<typeof dotenvConfig>;
 function loadConfig(config: unknown): DotenvConfig {
   const parsed = dotenvConfig.safeParse(config);
   if (!parsed.success) {
-    Logger.error("Invalid environment variables", {
+    console.error("Invalid environment variables", {
       error: z.treeifyError(parsed.error),
     });
     process.exit(1);
@@ -37,7 +36,8 @@ function loadConfig(config: unknown): DotenvConfig {
 }
 
 // Load environment variables from .env file
-export const env = loadConfig(process.env);
+const config = dotenv();
+export const env = loadConfig(config.parsed);
 
 // Initialize the Discord client
 const client = new Client<true>({
@@ -85,31 +85,31 @@ const client = new Client<true>({
 export const player = new Player(client, {
   ytdlOptions: {
     quality: "highestaudio",
-    highWaterMark: 1 << 25, // 32MB buffer
+    highWaterMark: 1 << 26,
     requestOptions: {
-      timeout: 10000, // 10 second timeout
+      timeout: 20000,
     },
   },
   skipFFmpeg: false,
-  connectionTimeout: 20000, // 20 second connection timeout
+  connectionTimeout: 30000,
   useLegacyFFmpeg: false,
-  smoothVolume: true, // Smooth volume transitions
+  smoothVolume: true,
+  bufferingTimeout: 5000,
+  connectionPoolSize: 10,
+  pauseOnEmpty: false,
+  leaveOnEmpty: true,
+  leaveOnEmptyCooldown: 300000,
 });
 
-// Neon database configuration
-neonConfig.webSocketConstructor = ws;
-
-// To work in edge environments (Cloudflare Workers, Vercel Edge, etc.), enable querying over fetch
-neonConfig.poolQueryViaFetch = true;
-
 // Initialize the database connection using Drizzle ORM
-const sql = neon(env.DATABASE_URL);
-export const db = drizzle(sql);
+const sqlite = new Database("pure.sqlite");
+export const db = drizzle(sqlite);
 
 // Graceful shutdown
 async function gracefulShutdown() {
   try {
     await client.destroy();
+    sqlite.close();
   } catch (error) {
     Logger.error("Error during client shutdown", { error });
   }

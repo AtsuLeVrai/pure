@@ -1,6 +1,6 @@
 import {
   ApplicationCommandOptionType,
-  blockQuote,
+  bold,
   Colors,
   EmbedBuilder,
   type GuildMember,
@@ -11,7 +11,7 @@ import {
 import { v7 } from "uuid";
 import { player } from "@/index.js";
 import type { SlashSubCommand } from "@/types/index.js";
-import { styledEmbed } from "@/utils/formatters.js";
+import { styledEmbed, styledMessage } from "@/utils/formatters.js";
 import { Logger } from "@/utils/logger.js";
 
 export const play: SlashSubCommand = {
@@ -133,7 +133,7 @@ export const play: SlashSubCommand = {
       return;
     }
 
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     try {
       const { track } = await player.play(voiceChannel.id, query, {
@@ -149,13 +149,11 @@ export const play: SlashSubCommand = {
           leaveOnEnd: true,
           leaveOnEndCooldown: 300000, // 5 minutes
           selfDeaf: true,
-          // Enhanced buffering and streaming options
           bufferingTimeout: 3000, // 3 second buffering timeout
           connectionTimeout: 20000, // 20 second connection timeout
           pauseOnEmpty: false, // Don't auto-pause when queue is empty
         },
         requestedBy: interaction.user.id,
-        searchEngine: "youtube", // Default to YouTube for better stability
       });
 
       // Handle position after track is added
@@ -171,49 +169,12 @@ export const play: SlashSubCommand = {
         }
       }
 
-      // 🎨 Create confirmation embed for the user
-      const confirmationEmbed = styledEmbed(client)
-        .setTitle(
-          `${getPositionEmoji(position)} ${position === "now" ? "Playing Now" : "Track Added"}`,
-        )
-        .setDescription(
-          `### 🎵 [${track.cleanTitle || track.title}](${track.url})\n` +
-            `**Artist:** ${track.author || "Unknown Artist"}\n` +
-            `**Duration:** ${track.duration || "Unknown"} • **Source:** ${getSourceDisplay(track.source)}`,
-        )
-        .setThumbnail(track.thumbnail)
-        .addFields(
-          {
-            name: "📍 Position",
-            value: blockQuote(getPositionDisplay(position)),
-            inline: false,
-          },
-          {
-            name: "👤 Requested By",
-            value: blockQuote(interaction.user.toString()),
-            inline: false,
-          },
-          {
-            name: "🔊 Voice Channel",
-            value: blockQuote(voiceChannel.toString()),
-            inline: false,
-          },
-        );
-
-      // Add queue info if there are tracks
-      if (queue && queue.tracks.size > 0) {
-        confirmationEmbed.addFields({
-          name: "📊 Queue Info",
-          value: `**${queue.tracks.size}** track(s) in queue\n⏱️ **${queue.estimatedDuration}** remaining`,
-          inline: false,
-        });
-      }
-
       // Send confirmation message (ephemeral)
-      await interaction.followUp({
-        embeds: [confirmationEmbed],
-        flags: MessageFlags.Ephemeral,
-      });
+      await interaction.followUp(
+        styledMessage(
+          `${getPositionEmoji(position)} ${bold(track.cleanTitle)} by ${bold(track.author)} ${position === "now" ? "is now playing" : "added to queue"}`,
+        ),
+      );
     } catch (error) {
       Logger.error("Music play command failed", {
         error:
@@ -273,31 +234,4 @@ function getPositionEmoji(position: string | null): string {
     default:
       return "📋";
   }
-}
-
-function getPositionDisplay(position: string | null): string {
-  switch (position) {
-    case "next":
-      return "🎯 **Next Up** - Will play after current track";
-    case "now":
-      return "🎵 **Playing Now** - Skipped to current";
-    default:
-      return "📋 **Queued** - Added to end of queue";
-  }
-}
-
-function getSourceDisplay(source: string): string {
-  const sourceMap: Record<string, string> = {
-    youtube: "🎵 YouTube",
-    spotify: "🎧 Spotify",
-    soundcloud: "🔊 SoundCloud",
-    apple: "🍎 Apple Music",
-    bandcamp: "🎪 Bandcamp",
-    deezer: "🎶 Deezer",
-    tidal: "🌊 Tidal",
-  };
-  return (
-    sourceMap[source.toLowerCase()] ||
-    `🎵 ${source.charAt(0).toUpperCase() + source.slice(1)}`
-  );
 }

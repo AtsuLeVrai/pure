@@ -5,7 +5,7 @@ import {
   Events,
   Routes,
 } from "discord.js";
-import type { GuildQueueEvents } from "discord-player";
+import { GuildQueueEvent, type GuildQueueEvents } from "discord-player";
 import { env, player } from "@/index.js";
 import type {
   Button,
@@ -199,6 +199,13 @@ export const playerEventRegistry = new Set<PlayerEventHandler<any>>();
 export function definePlayerEvent<K extends keyof GuildQueueEvents>(
   event: PlayerEventHandler<K>,
 ): PlayerEventHandler<K> {
+  // Validate event name exists in Discord.js
+  if (!Object.values(GuildQueueEvent).includes(event.name)) {
+    console.warn(
+      `Event "${event.name}" might not be a valid discord-player event`,
+    );
+  }
+
   // Auto-registration
   playerEventRegistry.add(event);
 
@@ -261,6 +268,9 @@ export async function loadModules(): Promise<void> {
   await import("@/events/client/invalidated.js");
   await import("@/events/client/ready.js");
   await import("@/events/client/warn.js");
+  await import("@/events/guild/guildAvailable.js");
+  await import("@/events/guild/guildCreate.js");
+  await import("@/events/guild/guildDelete.js");
 
   // Load player events
   await import("@/events/player/audioTrackAdd.js");

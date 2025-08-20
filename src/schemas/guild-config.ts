@@ -1,39 +1,30 @@
-import {
-  boolean,
-  index,
-  pgTable,
-  text,
-  timestamp,
-  varchar,
-} from "drizzle-orm/pg-core";
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { v7 } from "uuid";
 
-/**
- * Minimal guild configuration for Music + Event Logging focus
- * Enterprise-grade but streamlined for core functionality
- */
-export const guildConfigs = pgTable(
+export const guildConfigs = sqliteTable(
   "guild_configs",
   {
     id: text("id")
       .primaryKey()
       .$defaultFn(() => v7()),
-    guildId: varchar("guild_id", { length: 20 }).notNull().unique(),
-    language: text("language").default("en"),
+    guildId: text("guild_id").notNull().unique(),
+    language: text("language").notNull(),
 
-    // Event Logging Settings
-    eventLoggingEnabled: boolean("event_logging_enabled").default(false),
-    defaultLogChannelId: varchar("default_log_channel_id", { length: 20 }),
+    timezone: text("timezone").default("UTC"),
 
-    // Metadata
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    eventLoggingEnabled: integer("event_logging_enabled", {
+      mode: "boolean",
+    }).default(false),
+
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .$defaultFn(() => new Date()),
   },
   (table) => [
     index("guild_configs_guild_id_idx").on(table.guildId),
     index("guild_configs_event_logging_idx").on(table.eventLoggingEnabled),
   ],
 );
-
-export type GuildConfig = typeof guildConfigs.$inferSelect;
-export type NewGuildConfig = typeof guildConfigs.$inferInsert;

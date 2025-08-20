@@ -2,10 +2,10 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  blockQuote,
   type Client,
-  ComponentType,
   type EmbedBuilder,
-  type Interaction,
+  inlineCode,
   type Message,
   type TextChannel,
   type User,
@@ -16,14 +16,12 @@ import { Logger } from "@/utils/logger.js";
 
 interface MusicEmbedManager {
   message: Message | null;
-  collector: any;
   lastMessageId: string | null;
   channel: TextChannel;
   guildId: string;
   progressInterval: NodeJS.Timeout | null;
 }
 
-// Global storage for music embed managers
 const musicEmbedManagers = new Map<string, MusicEmbedManager>();
 
 export class MusicEmbedController {
@@ -35,11 +33,9 @@ export class MusicEmbedController {
     this.#guildId = guildId;
     this.#channel = channel;
 
-    // Initialize or get existing manager
     if (!musicEmbedManagers.has(guildId)) {
       musicEmbedManagers.set(guildId, {
         message: null,
-        collector: null,
         lastMessageId: null,
         channel,
         guildId,
@@ -48,15 +44,12 @@ export class MusicEmbedController {
     }
 
     this.#manager = musicEmbedManagers.get(guildId) as MusicEmbedManager;
-    this.#manager.channel = channel; // Update channel in case it changed
+    this.#manager.channel = channel;
   }
 
   static cleanup(guildId: string): void {
     const manager = musicEmbedManagers.get(guildId);
     if (manager) {
-      if (manager.collector) {
-        manager.collector.stop();
-      }
       if (manager.progressInterval) {
         clearInterval(manager.progressInterval);
       }
@@ -86,21 +79,17 @@ export class MusicEmbedController {
     const components = this.#buildControlComponents();
 
     try {
-      // Check if we need to reposition the embed
       if (this.#manager.message && (await this.#shouldRepositionEmbed())) {
         await this.#deleteCurrentEmbed();
       }
 
       if (this.#manager.message) {
-        // Update existing message
         await this.#manager.message.edit({
           embeds: [embed],
           components,
         });
-        // Restart progress updater for existing message
         this.#startProgressUpdater(queue, currentTrack, user, client);
       } else {
-        // Create new message
         const message = await this.#channel.send({
           embeds: [embed],
           components,
@@ -108,7 +97,6 @@ export class MusicEmbedController {
 
         this.#manager.message = message;
         this.#manager.lastMessageId = message.id;
-        this.#setupCollector();
         this.#startProgressUpdater(queue, currentTrack, user, client);
       }
     } catch (error) {
@@ -149,11 +137,10 @@ export class MusicEmbedController {
       const messages = await this.#channel.messages.fetch({ limit: 5 });
       const embedMessage = messages.get(this.#manager.lastMessageId);
 
-      // If embed is not in the last 3 messages, reposition it
       const recentMessages = Array.from(messages.values()).slice(0, 3);
       return !recentMessages.includes(embedMessage as Message<true>);
     } catch (_error) {
-      return true; // If we can't check, assume we need to reposition
+      return true;
     }
   }
 
@@ -176,32 +163,46 @@ export class MusicEmbedController {
     user: User,
   ): EmbedBuilder {
     const embed = styledEmbed(client)
-      .setTitle("🎵 Now Playing")
-      .setDescription(
-        `### 🎵 [${track.cleanTitle || track.title}](${track.url})\n` +
-          `**Artist:** ${track.author || "Unknown Artist"}\n` +
-          `**Duration:** ${track.duration || "Unknown"} • **Source:** ${this.#getSourceDisplay(track.source)}`,
-      )
+      .setTitle(`🎵 Now Playing • ${track.cleanTitle}`)
+      .setURL(track.url)
       .setThumbnail(track.thumbnail)
       .addFields(
         {
-          name: "👤 Requested By",
-          value: `<@${user.id}>`,
+          name: "🔗 Source",
+          value: blockQuote(inlineCode(track.source)),
+          inline: true,
+        },
+        {
+          name: "⏱️ Duration",
+          value: blockQuote(inlineCode(track.duration)),
+          inline: true,
+        },
+        {
+          name: "🎤 Artist",
+          value: blockQuote(inlineCode(track.author)),
           inline: true,
         },
         {
           name: "🔊 Volume",
-          value: `${queue.node.volume}%`,
+          value: blockQuote(inlineCode(`${queue.node.volume}%`)),
           inline: true,
         },
         {
           name: "🔁 Loop Mode",
-          value: this.#getLoopModeDisplay(queue),
+          value: blockQuote(inlineCode(this.#getLoopModeDisplay(queue))),
           inline: true,
+        },
+        {
+          name: "\u2800",
+          value: "\u2800",
+          inline: true,
+        },
+        {
+          name: "👤 Requested By",
+          value: blockQuote(user.toString()),
         },
       );
 
-    // Add queue info if there are tracks
     if (queue.tracks.size > 0) {
       const nextTrack = queue.tracks.at(0);
       embed.addFields(
@@ -220,7 +221,6 @@ export class MusicEmbedController {
       );
     }
 
-    // Add progress bar
     if (queue.node.isPlaying() && track.durationMS) {
       try {
         const progress = queue.node.getTimestamp();
@@ -228,12 +228,13 @@ export class MusicEmbedController {
           const currentMs = progress.current.value || 0;
           const totalMs = track.durationMS;
 
-          // Ensure we have valid values
           if (totalMs > 0 && currentMs >= 0) {
             const progressBar = this.#createProgressBar(currentMs, totalMs);
             embed.addFields({
               name: "⏱️ Progress",
-              value: `${progress.current.label || "0:00"} ${progressBar} ${progress.total.label || track.duration}`,
+              value: blockQuote(
+                `${progress.current.label} ${progressBar} ${progress.total.label}`,
+              ),
               inline: false,
             });
           }
@@ -318,75 +319,6 @@ export class MusicEmbedController {
     return [controlRow1, controlRow2, volumeRow];
   }
 
-  #setupCollector(): void {
-    if (!this.#manager.message) return;
-
-    // Clean up existing collector
-    if (this.#manager.collector) {
-      this.#manager.collector.stop();
-    }
-
-    this.#manager.collector =
-      this.#manager.message.createMessageComponentCollector({
-        componentType: ComponentType.Button,
-        time: 2147483647, // 68.05 years in milliseconds
-        dispose: true,
-      });
-
-    this.#manager.collector.on("collect", async (interaction: Interaction) => {
-      if (!interaction.isButton() || !interaction.guildId) return;
-
-      try {
-        await this.#handleButtonInteraction(interaction);
-      } catch (error) {
-        Logger.error("Error handling music embed button interaction", {
-          error:
-            error instanceof Error
-              ? {
-                  message: error.message,
-                  stack: error.stack,
-                }
-              : String(error),
-          customId: interaction.customId,
-          guildId: interaction.guildId,
-        });
-      }
-    });
-
-    this.#manager.collector.on("end", async () => {
-      await this.#disableComponents();
-    });
-  }
-
-  async #handleButtonInteraction(interaction: any): Promise<void> {
-    // This will be handled by the button handlers in the registry
-    // The interaction will be processed by the existing button system
-    await interaction.deferUpdate();
-  }
-
-  async #disableComponents(): Promise<void> {
-    if (!this.#manager.message) return;
-
-    try {
-      const disabledComponents = this.#buildControlComponents().map((row) => {
-        const newRow = ActionRowBuilder.from(row);
-        for (const component of newRow.components) {
-          if (component instanceof ButtonBuilder) {
-            component.setDisabled(true);
-          }
-        }
-
-        return newRow.toJSON();
-      });
-
-      await this.#manager.message.edit({
-        components: disabledComponents,
-      });
-    } catch (_error) {
-      // Message might be deleted
-    }
-  }
-
   #createProgressBar(current: number, total: number): string {
     const percentage = Math.min(current / total, 1);
     const progressChars = Math.round(percentage * 20);
@@ -395,31 +327,17 @@ export class MusicEmbedController {
     return `${"█".repeat(progressChars)}${"░".repeat(emptyChars)}`;
   }
 
-  #getSourceDisplay(source: string): string {
-    const sourceMap: Record<string, string> = {
-      youtube: "🎵 YouTube",
-      spotify: "🎧 Spotify",
-      soundcloud: "🔊 SoundCloud",
-      apple: "🍎 Apple Music",
-      bandcamp: "🎪 Bandcamp",
-      deezer: "🎶 Deezer",
-      tidal: "🌊 Tidal",
-    };
-    return (
-      sourceMap[source.toLowerCase()] ||
-      `🎵 ${source.charAt(0).toUpperCase() + source.slice(1)}`
-    );
-  }
-
   #getLoopModeDisplay(queue: GuildQueue): string {
     const repeatMode = queue.repeatMode;
     switch (repeatMode) {
       case 1:
-        return "🔂 Track";
+        return "Track";
       case 2:
-        return "🔁 Queue";
+        return "Queue";
+      case 3:
+        return "Autoplay";
       default:
-        return "➡️ Off";
+        return "Off";
     }
   }
 
@@ -429,12 +347,10 @@ export class MusicEmbedController {
     user: User,
     client: Client<true>,
   ): void {
-    // Clear existing interval
     if (this.#manager.progressInterval) {
       clearInterval(this.#manager.progressInterval);
     }
 
-    // Update progress every 15 seconds
     this.#manager.progressInterval = setInterval(async () => {
       try {
         if (!this.#manager.message || !queue.node.isPlaying()) {
@@ -456,7 +372,7 @@ export class MusicEmbedController {
         });
         this.#stopProgressUpdater();
       }
-    }, 5000); // Update every 5 seconds to reduce conflicts with streaming
+    }, 1000);
   }
 
   #stopProgressUpdater(): void {
@@ -467,10 +383,6 @@ export class MusicEmbedController {
   }
 
   #cleanup(): void {
-    if (this.#manager.collector) {
-      this.#manager.collector.stop();
-      this.#manager.collector = null;
-    }
     this.#stopProgressUpdater();
     this.#manager.message = null;
     this.#manager.lastMessageId = null;

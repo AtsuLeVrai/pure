@@ -1,9 +1,9 @@
-import { blockQuote, bold, type Client, EmbedBuilder } from "discord.js";
+import { blockQuote, type Client, EmbedBuilder } from "discord.js";
 import { emojify } from "node-emoji";
 
 // Utility function to format a message with bold text and block quote
 export const styledMessage = (text: string): string =>
-  blockQuote(bold(emojify(text)));
+  blockQuote(emojify(text));
 
 // Embed for styled messages, using a specific color
 export const styledEmbed = (client: Client<true>) =>

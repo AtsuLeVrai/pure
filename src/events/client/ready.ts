@@ -1,6 +1,5 @@
 import { DefaultExtractors } from "@discord-player/extractor";
 import { ActivityType, PresenceUpdateStatus } from "discord.js";
-import { YoutubeiExtractor } from "discord-player-youtubei";
 import { player } from "@/index.js";
 import { Logger } from "@/utils/logger.js";
 import { defineEvent, registerCommands } from "@/utils/registry.js";
@@ -12,7 +11,8 @@ export default defineEvent({
     try {
       // Initialize the Player instance
       await player.extractors.loadMulti(DefaultExtractors);
-      await player.extractors.register(YoutubeiExtractor, {});
+
+      console.log(player.scanDeps());
 
       // Register commands
       await registerCommands(client);
