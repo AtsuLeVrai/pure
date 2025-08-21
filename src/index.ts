@@ -86,19 +86,8 @@ export const player = new Player(client, {
   ytdlOptions: {
     quality: "highestaudio",
     highWaterMark: 1 << 26,
-    requestOptions: {
-      timeout: 20000,
-    },
   },
   skipFFmpeg: false,
-  connectionTimeout: 30000,
-  useLegacyFFmpeg: false,
-  smoothVolume: true,
-  bufferingTimeout: 5000,
-  connectionPoolSize: 10,
-  pauseOnEmpty: false,
-  leaveOnEmpty: true,
-  leaveOnEmptyCooldown: 300000,
 });
 
 // Initialize the database connection using Drizzle ORM

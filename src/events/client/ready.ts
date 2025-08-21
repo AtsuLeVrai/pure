@@ -12,6 +12,8 @@ export default defineEvent({
       // Initialize the Player instance
       await player.extractors.loadMulti(DefaultExtractors);
 
+      console.log(player.scanDeps());
+
       // Register commands
       await registerCommands(client);
 

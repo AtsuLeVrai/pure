@@ -4,15 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="refactor(logging): update import structure and enhance player event handling">
+    <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="feat(music): enhance music embed functionality with improved logging, update handling, and UI components">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/commands/music/play.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/music/play.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controllers/musicEmbed.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/musicEmbed.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/events/client/ready.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/ready.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/formatters.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/formatters.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -216,7 +214,9 @@
       <workItem from="1755672162290" duration="1369000" />
       <workItem from="1755690269448" duration="848000" />
       <workItem from="1755705017684" duration="6423000" />
-      <workItem from="1755761097576" duration="1566000" />
+      <workItem from="1755761097576" duration="1655000" />
+      <workItem from="1755770410208" duration="306000" />
+      <workItem from="1755775596723" duration="642000" />
     </task>
     <task id="LOCAL-00001" summary="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling">
       <option name="closed" value="true" />
@@ -330,7 +330,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755711924506</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="feat(music): enhance music embed functionality with improved logging, update handling, and UI components">
+      <option name="closed" value="true" />
+      <created>1755762759851</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1755762759851</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -361,6 +369,7 @@
     <MESSAGE value="feat(logging): implement comprehensive event logging and error handling structure" />
     <MESSAGE value="feat(logging): enhance error logging with additional context and improve debug messages" />
     <MESSAGE value="refactor(logging): update import structure and enhance player event handling" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor(logging): update import structure and enhance player event handling" />
+    <MESSAGE value="feat(music): enhance music embed functionality with improved logging, update handling, and UI components" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(music): enhance music embed functionality with improved logging, update handling, and UI components" />
   </component>
 </project>

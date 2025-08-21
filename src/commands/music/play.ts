@@ -172,20 +172,12 @@ export const play: SlashSubCommand = {
 
     const { track } = await player.play(voiceChannel.id, query, {
       nodeOptions: {
+        volume: 100,
         metadata: {
           channel: interaction.channel,
           requestedBy: interaction.user,
           interaction,
         },
-        volume: 80,
-        leaveOnEmpty: true,
-        leaveOnEmptyCooldown: 300000,
-        leaveOnEnd: true,
-        leaveOnEndCooldown: 300000,
-        selfDeaf: true,
-        bufferingTimeout: 3000,
-        connectionTimeout: 20000,
-        pauseOnEmpty: false,
       },
       requestedBy: interaction.user.id,
     });

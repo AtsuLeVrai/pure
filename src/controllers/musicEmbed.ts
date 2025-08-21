@@ -378,8 +378,8 @@ export class MusicEmbedController {
 
   #createAdvancedProgressBar(current: number, total: number): string {
     const percentage = Math.min(Math.max(current / total, 0), 1);
-    const progressChars = Math.round(percentage * 25);
-    const emptyChars = 25 - progressChars;
+    const progressChars = Math.round(percentage * 20);
+    const emptyChars = 20 - progressChars;
 
     const filledBar = "▰".repeat(progressChars);
     const emptyBar = "▱".repeat(emptyChars);
