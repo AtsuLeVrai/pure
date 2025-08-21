@@ -3,9 +3,12 @@ import {
   ButtonBuilder,
   ButtonStyle,
   blockQuote,
+  bold,
   type Client,
+  Colors,
   type EmbedBuilder,
   inlineCode,
+  italic,
   type Message,
   type TextChannel,
   type User,
@@ -20,9 +23,11 @@ interface MusicEmbedManager {
   channel: TextChannel;
   guildId: string;
   progressInterval: NodeJS.Timeout | null;
+  lastUpdateTime: number;
 }
 
 const musicEmbedManagers = new Map<string, MusicEmbedManager>();
+const UPDATE_THRESHOLD = 2000;
 
 export class MusicEmbedController {
   #channel: TextChannel;
@@ -40,6 +45,7 @@ export class MusicEmbedController {
         channel,
         guildId,
         progressInterval: null,
+        lastUpdateTime: 0,
       });
     }
 
@@ -62,8 +68,8 @@ export class MusicEmbedController {
     if (manager?.message) {
       try {
         await manager.message.delete();
-      } catch (_error) {
-        // Message might already be deleted
+      } catch (error) {
+        Logger.debug("Failed to delete embed message", { guildId, error });
       }
       MusicEmbedController.cleanup(guildId);
     }
@@ -75,11 +81,15 @@ export class MusicEmbedController {
     currentTrack: Track,
     user: User,
   ): Promise<void> {
+    if (!this.#shouldUpdate()) return;
+
     const embed = this.#buildMusicEmbed(client, queue, currentTrack, user);
-    const components = this.#buildControlComponents();
+    const components = this.#buildControlComponents(queue);
 
     try {
-      if (this.#manager.message && (await this.#shouldRepositionEmbed())) {
+      const shouldReposition = await this.#shouldRepositionEmbed();
+
+      if (this.#manager.message && shouldReposition) {
         await this.#deleteCurrentEmbed();
       }
 
@@ -88,7 +98,6 @@ export class MusicEmbedController {
           embeds: [embed],
           components,
         });
-        this.#startProgressUpdater(queue, currentTrack, user, client);
       } else {
         const message = await this.#channel.send({
           embeds: [embed],
@@ -97,8 +106,10 @@ export class MusicEmbedController {
 
         this.#manager.message = message;
         this.#manager.lastMessageId = message.id;
-        this.#startProgressUpdater(queue, currentTrack, user, client);
       }
+
+      this.#manager.lastUpdateTime = Date.now();
+      this.#startProgressUpdater(queue, currentTrack, user, client);
     } catch (error) {
       Logger.error("Failed to create/update music embed", {
         error:
@@ -117,17 +128,19 @@ export class MusicEmbedController {
     if (this.#manager.message) {
       try {
         await this.#manager.message.delete();
-      } catch (_error) {
-        Logger.debug(
-          "Failed to delete music embed (message may already be deleted)",
-          {
-            guildId: this.#guildId,
-          },
-        );
+      } catch (error) {
+        Logger.debug("Failed to delete music embed", {
+          guildId: this.#guildId,
+          error,
+        });
       }
-
       this.#cleanup();
     }
+  }
+
+  #shouldUpdate(): boolean {
+    const now = Date.now();
+    return now - this.#manager.lastUpdateTime >= UPDATE_THRESHOLD;
   }
 
   async #shouldRepositionEmbed(): Promise<boolean> {
@@ -136,10 +149,14 @@ export class MusicEmbedController {
     try {
       const messages = await this.#channel.messages.fetch({ limit: 5 });
       const embedMessage = messages.get(this.#manager.lastMessageId);
-
       const recentMessages = Array.from(messages.values()).slice(0, 3);
+
       return !recentMessages.includes(embedMessage as Message<true>);
-    } catch (_error) {
+    } catch (error) {
+      Logger.debug("Failed to check embed position", {
+        guildId: this.#guildId,
+        error,
+      });
       return true;
     }
   }
@@ -148,8 +165,11 @@ export class MusicEmbedController {
     if (this.#manager.message) {
       try {
         await this.#manager.message.delete();
-      } catch (_error) {
-        // Message might already be deleted
+      } catch (error) {
+        Logger.debug("Failed to delete current embed", {
+          guildId: this.#guildId,
+          error,
+        });
       }
       this.#manager.message = null;
       this.#manager.lastMessageId = null;
@@ -162,66 +182,79 @@ export class MusicEmbedController {
     track: Track,
     user: User,
   ): EmbedBuilder {
+    const isPlaying = queue.node.isPlaying();
+    const isPaused = queue.node.isPaused();
+
+    const statusEmoji = isPlaying ? "🎵" : isPaused ? "⏸️" : "⏹️";
+    const statusText = isPlaying
+      ? "Now Playing"
+      : isPaused
+        ? "Paused"
+        : "Stopped";
+    const embedColor = isPlaying
+      ? Colors.Green
+      : isPaused
+        ? Colors.Yellow
+        : Colors.Red;
+
     const embed = styledEmbed(client)
-      .setTitle(`🎵 Now Playing • ${track.cleanTitle}`)
-      .setURL(track.url)
-      .setThumbnail(track.thumbnail)
-      .addFields(
-        {
-          name: "🔗 Source",
-          value: blockQuote(inlineCode(track.source)),
-          inline: true,
-        },
-        {
-          name: "⏱️ Duration",
-          value: blockQuote(inlineCode(track.duration)),
-          inline: true,
-        },
-        {
-          name: "🎤 Artist",
-          value: blockQuote(inlineCode(track.author)),
-          inline: true,
-        },
-        {
-          name: "🔊 Volume",
-          value: blockQuote(inlineCode(`${queue.node.volume}%`)),
-          inline: true,
-        },
-        {
-          name: "🔁 Loop Mode",
-          value: blockQuote(inlineCode(this.#getLoopModeDisplay(queue))),
-          inline: true,
-        },
-        {
-          name: "\u2800",
-          value: "\u2800",
-          inline: true,
-        },
-        {
-          name: "👤 Requested By",
-          value: blockQuote(user.toString()),
-        },
-      );
+      .setColor(embedColor)
+      .setTitle(
+        `${statusEmoji} ${statusText} • ${bold(track.cleanTitle || track.title || "Unknown Track")}`,
+      )
+      .setURL(track.url || null)
+      .setDescription(italic(`by ${track.author || "Unknown Artist"}`));
+
+    if (track.thumbnail) {
+      embed.setThumbnail(track.thumbnail);
+    }
+
+    embed.addFields(
+      {
+        name: "🎼 Track Details",
+        value: blockQuote(
+          [
+            `${bold("Duration:")} ${inlineCode(track.duration || "Unknown")}`,
+            `${bold("Source:")} ${inlineCode(track.source || "Unknown")}`,
+            `${bold("Requested by:")} ${user.toString()}`,
+          ].join("\n"),
+        ),
+        inline: false,
+      },
+      {
+        name: "🎚️ Player Settings",
+        value: blockQuote(
+          [
+            `${bold("Volume:")} ${inlineCode(`${queue.node.volume || 0}%`)}`,
+            `${bold("Loop Mode:")} ${inlineCode(this.#getLoopModeDisplay(queue))}`,
+            `${bold("Queue Size:")} ${inlineCode(`${queue.tracks.size} track(s)`)}`,
+          ].join("\n"),
+        ),
+        inline: false,
+      },
+    );
 
     if (queue.tracks.size > 0) {
       const nextTrack = queue.tracks.at(0);
-      embed.addFields(
-        {
-          name: "📊 Queue Info",
-          value: `**${queue.tracks.size}** track(s) • ⏱️ **${queue.estimatedDuration}** remaining`,
-          inline: false,
-        },
-        {
-          name: "⏭️ Up Next",
-          value: nextTrack
-            ? `🎵 [${nextTrack.cleanTitle || nextTrack.title}](${nextTrack.url})`
-            : "No upcoming tracks",
-          inline: false,
-        },
-      );
+      const queueDuration = String(queue.estimatedDuration) || "Unknown";
+
+      embed.addFields({
+        name: "📊 Queue Information",
+        value: blockQuote(
+          [
+            `${bold("Total Duration:")} ${inlineCode(queueDuration)}`,
+            `${bold("Up Next:")} ${
+              nextTrack
+                ? `[${nextTrack.cleanTitle || nextTrack.title || "Unknown"}](${nextTrack.url || "#"})`
+                : italic("No upcoming tracks")
+            }`,
+          ].join("\n"),
+        ),
+        inline: false,
+      });
     }
 
-    if (queue.node.isPlaying() && track.durationMS) {
+    if (isPlaying && track.durationMS) {
       try {
         const progress = queue.node.getTimestamp();
         if (progress?.current && progress.total) {
@@ -229,11 +262,17 @@ export class MusicEmbedController {
           const totalMs = track.durationMS;
 
           if (totalMs > 0 && currentMs >= 0) {
-            const progressBar = this.#createProgressBar(currentMs, totalMs);
+            const progressBar = this.#createAdvancedProgressBar(
+              currentMs,
+              totalMs,
+            );
             embed.addFields({
               name: "⏱️ Progress",
               value: blockQuote(
-                `${progress.current.label} ${progressBar} ${progress.total.label}`,
+                [
+                  `${progress.current.label} ${progressBar} ${progress.total.label}`,
+                  `${this.#getProgressPercentage(currentMs, totalMs)}% complete`,
+                ].join("\n"),
               ),
               inline: false,
             });
@@ -251,93 +290,118 @@ export class MusicEmbedController {
     return embed;
   }
 
-  #buildControlComponents(): ActionRowBuilder<ButtonBuilder>[] {
-    const controlRow1 = new ActionRowBuilder<ButtonBuilder>().addComponents(
+  #buildControlComponents(
+    queue: GuildQueue,
+  ): ActionRowBuilder<ButtonBuilder>[] {
+    const isPlaying = queue.node.isPlaying();
+    const isPaused = queue.node.isPaused();
+    const hasQueue = queue.tracks.size > 0;
+
+    const mainControls = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
-        .setCustomId(`music_pause_${this.#guildId}`)
-        .setLabel("Pause")
-        .setEmoji("⏸️")
-        .setStyle(ButtonStyle.Secondary),
+        .setCustomId(`music_${isPaused ? "resume" : "pause"}`)
+        .setLabel(isPaused ? "Resume" : "Pause")
+        .setEmoji(isPaused ? "▶️" : "⏸️")
+        .setStyle(isPaused ? ButtonStyle.Success : ButtonStyle.Secondary)
+        .setDisabled(!isPlaying && !isPaused),
       new ButtonBuilder()
-        .setCustomId(`music_resume_${this.#guildId}`)
-        .setLabel("Resume")
-        .setEmoji("▶️")
-        .setStyle(ButtonStyle.Success),
-      new ButtonBuilder()
-        .setCustomId(`music_skip_${this.#guildId}`)
+        .setCustomId("music_skip")
         .setLabel("Skip")
         .setEmoji("⏭️")
-        .setStyle(ButtonStyle.Primary),
+        .setStyle(ButtonStyle.Primary)
+        .setDisabled(!hasQueue && !isPlaying),
       new ButtonBuilder()
-        .setCustomId(`music_stop_${this.#guildId}`)
+        .setCustomId("music_stop")
         .setLabel("Stop")
         .setEmoji("⏹️")
-        .setStyle(ButtonStyle.Danger),
-    );
-
-    const controlRow2 = new ActionRowBuilder<ButtonBuilder>().addComponents(
+        .setStyle(ButtonStyle.Danger)
+        .setDisabled(!isPlaying && !isPaused),
       new ButtonBuilder()
-        .setCustomId(`music_shuffle_${this.#guildId}`)
+        .setCustomId("music_shuffle")
         .setLabel("Shuffle")
         .setEmoji("🔀")
-        .setStyle(ButtonStyle.Secondary),
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(queue.tracks.size < 2),
+    );
+
+    const queueControls = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
-        .setCustomId(`music_loop_${this.#guildId}`)
+        .setCustomId("music_loop")
         .setLabel("Loop")
         .setEmoji("🔁")
-        .setStyle(ButtonStyle.Secondary),
+        .setStyle(
+          queue.repeatMode > 0 ? ButtonStyle.Success : ButtonStyle.Secondary,
+        ),
       new ButtonBuilder()
-        .setCustomId(`music_queue_${this.#guildId}`)
-        .setLabel("Queue")
+        .setCustomId("music_queue")
+        .setLabel("View Queue")
         .setEmoji("📋")
-        .setStyle(ButtonStyle.Secondary),
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(queue.tracks.size === 0),
       new ButtonBuilder()
-        .setCustomId(`music_refresh_${this.#guildId}`)
+        .setCustomId("music_clear")
+        .setLabel("Clear Queue")
+        .setEmoji("🗑️")
+        .setStyle(ButtonStyle.Danger)
+        .setDisabled(queue.tracks.size === 0),
+      new ButtonBuilder()
+        .setCustomId("music_refresh")
         .setLabel("Refresh")
         .setEmoji("🔄")
         .setStyle(ButtonStyle.Secondary),
     );
 
-    const volumeRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    const volumeControls = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
-        .setCustomId(`music_volume_down_${this.#guildId}`)
-        .setLabel("Vol -")
+        .setCustomId("music_volume_down")
+        .setLabel("Vol -10")
         .setEmoji("🔉")
-        .setStyle(ButtonStyle.Danger),
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(queue.node.volume <= 0),
       new ButtonBuilder()
-        .setCustomId(`music_volume_mute_${this.#guildId}`)
-        .setLabel("Mute")
-        .setEmoji("🔇")
-        .setStyle(ButtonStyle.Secondary),
+        .setCustomId("music_volume_mute")
+        .setLabel(queue.node.volume === 0 ? "Unmute" : "Mute")
+        .setEmoji(queue.node.volume === 0 ? "🔊" : "🔇")
+        .setStyle(
+          queue.node.volume === 0 ? ButtonStyle.Success : ButtonStyle.Secondary,
+        ),
       new ButtonBuilder()
-        .setCustomId(`music_volume_up_${this.#guildId}`)
-        .setLabel("Vol +")
+        .setCustomId("music_volume_up")
+        .setLabel("Vol +10")
         .setEmoji("🔊")
-        .setStyle(ButtonStyle.Success),
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(queue.node.volume >= 100),
     );
 
-    return [controlRow1, controlRow2, volumeRow];
+    return [mainControls, queueControls, volumeControls];
   }
 
-  #createProgressBar(current: number, total: number): string {
-    const percentage = Math.min(current / total, 1);
-    const progressChars = Math.round(percentage * 20);
-    const emptyChars = 20 - progressChars;
+  #createAdvancedProgressBar(current: number, total: number): string {
+    const percentage = Math.min(Math.max(current / total, 0), 1);
+    const progressChars = Math.round(percentage * 25);
+    const emptyChars = 25 - progressChars;
 
-    return `${"█".repeat(progressChars)}${"░".repeat(emptyChars)}`;
+    const filledBar = "▰".repeat(progressChars);
+    const emptyBar = "▱".repeat(emptyChars);
+
+    return `${filledBar}${emptyBar}`;
+  }
+
+  #getProgressPercentage(current: number, total: number): number {
+    return Math.round((current / total) * 100);
   }
 
   #getLoopModeDisplay(queue: GuildQueue): string {
     const repeatMode = queue.repeatMode;
     switch (repeatMode) {
       case 1:
-        return "Track";
+        return "🔂 Track";
       case 2:
-        return "Queue";
+        return "🔁 Queue";
       case 3:
-        return "Autoplay";
+        return "📻 Autoplay";
       default:
-        return "Off";
+        return "❌ Off";
     }
   }
 
@@ -353,18 +417,25 @@ export class MusicEmbedController {
 
     this.#manager.progressInterval = setInterval(async () => {
       try {
-        if (!this.#manager.message || !queue.node.isPlaying()) {
+        if (
+          !this.#manager.message ||
+          (!queue.node.isPlaying() && !queue.node.isPaused())
+        ) {
           this.#stopProgressUpdater();
           return;
         }
 
+        if (!this.#shouldUpdate()) return;
+
         const embed = this.#buildMusicEmbed(client, queue, currentTrack, user);
-        const components = this.#buildControlComponents();
+        const components = this.#buildControlComponents(queue);
 
         await this.#manager.message.edit({
           embeds: [embed],
           components,
         });
+
+        this.#manager.lastUpdateTime = Date.now();
       } catch (error) {
         Logger.debug("Failed to update progress", {
           guildId: this.#guildId,
@@ -372,7 +443,7 @@ export class MusicEmbedController {
         });
         this.#stopProgressUpdater();
       }
-    }, 1000);
+    }, 3000);
   }
 
   #stopProgressUpdater(): void {
@@ -386,5 +457,6 @@ export class MusicEmbedController {
     this.#stopProgressUpdater();
     this.#manager.message = null;
     this.#manager.lastMessageId = null;
+    this.#manager.lastUpdateTime = 0;
   }
 }

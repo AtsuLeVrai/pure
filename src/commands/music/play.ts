@@ -1,18 +1,19 @@
 import {
   ApplicationCommandOptionType,
+  blockQuote,
   bold,
   Colors,
-  EmbedBuilder,
+  codeBlock,
   type GuildMember,
+  inlineCode,
+  italic,
   MessageFlags,
   PermissionFlagsBits,
   type VoiceChannel,
 } from "discord.js";
-import { v7 } from "uuid";
 import { player } from "@/index.js";
 import type { SlashSubCommand } from "@/types/index.js";
-import { styledEmbed, styledMessage } from "@/utils/formatters.js";
-import { Logger } from "@/utils/logger.js";
+import { styledEmbed } from "@/utils/formatters.js";
 
 export const play: SlashSubCommand = {
   data: {
@@ -41,34 +42,19 @@ export const play: SlashSubCommand = {
     ],
   },
   async execute(client, interaction) {
-    const member = interaction.member as GuildMember;
-    const voiceChannel = member.voice.channel as VoiceChannel;
-
     const query = interaction.options.getString("query", true);
     const position = interaction.options.getString("position") || "queue";
 
-    // ✅ Security and validation checks
     if (!interaction.guild) {
       const errorEmbed = styledEmbed(client)
         .setColor(Colors.Red)
-        .setTitle("❌ Server Required")
-        .setDescription("This command can only be used in a server.");
-
-      await interaction.reply({
-        embeds: [errorEmbed],
-        flags: MessageFlags.Ephemeral,
-      });
-      return;
-    }
-
-    if (!voiceChannel) {
-      const errorEmbed = styledEmbed(client)
-        .setColor(Colors.Red)
-        .setTitle("🔊 Join a Voice Channel")
-        .setDescription("You need to be in a voice channel to play music!")
+        .setTitle("🚫 Server Required")
+        .setDescription("This command can only be used within a server.")
         .addFields({
-          name: "💡 How to Fix",
-          value: "Join any voice channel and try again.",
+          name: "🔧 Solution",
+          value: blockQuote(
+            `Please use this command in a ${bold("server")} where the bot is present.`,
+          ),
           inline: false,
         });
 
@@ -79,13 +65,36 @@ export const play: SlashSubCommand = {
       return;
     }
 
-    // Check bot permissions
+    const member = interaction.member as GuildMember;
+    const voiceChannel = member.voice.channel as VoiceChannel;
+    if (!voiceChannel) {
+      const errorEmbed = styledEmbed(client)
+        .setColor(Colors.Red)
+        .setTitle("🔊 Voice Channel Required")
+        .setDescription(
+          `You must be connected to a ${bold("voice channel")} to use music commands.`,
+        )
+        .addFields({
+          name: "💡 How to fix this",
+          value: blockQuote(
+            `${inlineCode("1.")} Join any voice channel in this server\n${inlineCode("2.")} Run the command again`,
+          ),
+          inline: false,
+        });
+
+      await interaction.reply({
+        embeds: [errorEmbed],
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+
     const botMember = interaction.guild.members.me;
     if (!botMember) {
       const errorEmbed = styledEmbed(client)
         .setColor(Colors.Red)
-        .setTitle("❌ Bot Not Found")
-        .setDescription("Unable to verify bot permissions.");
+        .setTitle("⚠️ Bot Configuration Error")
+        .setDescription("Unable to verify bot permissions in this server.");
 
       await interaction.reply({
         embeds: [errorEmbed],
@@ -105,26 +114,39 @@ export const play: SlashSubCommand = {
     );
 
     if (missingPermissions.length > 0) {
+      const permissionNames: Record<string, string> = {
+        [PermissionFlagsBits.Connect.toString()]: "Connect to Voice Channel",
+        [PermissionFlagsBits.Speak.toString()]: "Speak in Voice Channel",
+        [PermissionFlagsBits.UseVAD.toString()]: "Use Voice Activity Detection",
+      };
+
       const errorEmbed = styledEmbed(client)
         .setColor(Colors.Red)
-        .setTitle("❌ Missing Permissions")
+        .setTitle("🔒 Insufficient Permissions")
         .setDescription(
-          "I don't have the required permissions for your voice channel.",
+          `I'm missing essential permissions for ${bold(voiceChannel.name)}`,
         )
-        .addFields({
-          name: "🚫 Missing Permissions",
-          value: missingPermissions
-            .map((perm) => {
-              const names: Record<string, string> = {
-                [PermissionFlagsBits.Connect.toString()]: "Connect",
-                [PermissionFlagsBits.Speak.toString()]: "Speak",
-                [PermissionFlagsBits.UseVAD.toString()]: "Use Voice Activity",
-              };
-              return `• ${names[perm.toString()] || "Unknown"}`;
-            })
-            .join("\n"),
-          inline: false,
-        });
+        .addFields(
+          {
+            name: "🚫 Missing Permissions",
+            value: codeBlock(
+              missingPermissions
+                .map(
+                  (perm) =>
+                    `• ${permissionNames[perm.toString()] || "Unknown Permission"}`,
+                )
+                .join("\n"),
+            ),
+            inline: false,
+          },
+          {
+            name: "🛠️ Administrator Action Required",
+            value: blockQuote(
+              `Please ${bold("grant the missing permissions")} and try again.`,
+            ),
+            inline: false,
+          },
+        );
 
       await interaction.reply({
         embeds: [errorEmbed],
@@ -133,99 +155,86 @@ export const play: SlashSubCommand = {
       return;
     }
 
-    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+    const loadingEmbed = styledEmbed(client)
+      .setColor(Colors.Yellow)
+      .setTitle("🔍 Searching...")
+      .setDescription(`Looking for: ${inlineCode(query)}`)
+      .addFields({
+        name: "📍 Status",
+        value: blockQuote(italic("Processing your request...")),
+        inline: true,
+      });
 
-    try {
-      const { track } = await player.play(voiceChannel.id, query, {
-        nodeOptions: {
-          metadata: {
-            channel: interaction.channel,
-            requestedBy: interaction.user,
-            interaction,
-          },
-          volume: 80,
-          leaveOnEmpty: true,
-          leaveOnEmptyCooldown: 300000, // 5 minutes
-          leaveOnEnd: true,
-          leaveOnEndCooldown: 300000, // 5 minutes
-          selfDeaf: true,
-          bufferingTimeout: 3000, // 3 second buffering timeout
-          connectionTimeout: 20000, // 20 second connection timeout
-          pauseOnEmpty: false, // Don't auto-pause when queue is empty
+    await interaction.reply({
+      embeds: [loadingEmbed],
+      flags: MessageFlags.Ephemeral,
+    });
+
+    const { track } = await player.play(voiceChannel.id, query, {
+      nodeOptions: {
+        metadata: {
+          channel: interaction.channel,
+          requestedBy: interaction.user,
+          interaction,
         },
-        requestedBy: interaction.user.id,
-      });
+        volume: 80,
+        leaveOnEmpty: true,
+        leaveOnEmptyCooldown: 300000,
+        leaveOnEnd: true,
+        leaveOnEndCooldown: 300000,
+        selfDeaf: true,
+        bufferingTimeout: 3000,
+        connectionTimeout: 20000,
+        pauseOnEmpty: false,
+      },
+      requestedBy: interaction.user.id,
+    });
 
-      // Handle position after track is added
-      const queue = player.nodes.get(interaction.guildId as string);
-      if (queue && position === "now" && queue.tracks.size > 0) {
-        // Skip current track to play this one now
-        queue.node.skip();
-      } else if (queue && position === "next" && queue.tracks.size > 0) {
-        // Move the last added track to position 1 (next)
-        const lastTrack = queue.tracks.at(-1);
-        if (lastTrack) {
-          queue.moveTrack(queue.tracks.size - 1, 0);
-        }
+    const queue = player.nodes.get(interaction.guildId as string);
+    if (queue && position === "now" && queue.tracks.size > 0) {
+      queue.node.skip();
+    } else if (queue && position === "next" && queue.tracks.size > 0) {
+      const lastTrack = queue.tracks.at(-1);
+      if (lastTrack) {
+        queue.moveTrack(queue.tracks.size - 1, 0);
       }
-
-      // Send confirmation message (ephemeral)
-      await interaction.followUp(
-        styledMessage(
-          `${getPositionEmoji(position)} ${bold(track.cleanTitle)} by ${bold(track.author)} ${position === "now" ? "is now playing" : "added to queue"}`,
-        ),
-      );
-    } catch (error) {
-      Logger.error("Music play command failed", {
-        error:
-          error instanceof Error
-            ? {
-                name: error.name,
-                message: error.message,
-              }
-            : String(error),
-        guildId: interaction.guildId,
-        userId: interaction.user.id,
-        queryType: query.startsWith("http") ? "url" : "search",
-      });
-
-      const errorId = v7();
-      const errorEmbed = new EmbedBuilder()
-        .setColor(Colors.Red)
-        .setTitle("❌ Playback Error")
-        .setDescription(
-          "Failed to play the requested track. Our team has been notified.",
-        )
-        .addFields(
-          {
-            name: "🔧 Quick Solutions",
-            value:
-              "• **Check URL** - Ensure the link is accessible\n" +
-              "• **Try different search** - Use more specific keywords\n" +
-              "• **Check permissions** - Ensure I can access your voice channel",
-            inline: false,
-          },
-          {
-            name: "📋 Error ID",
-            value: `\`${errorId}\``,
-            inline: true,
-          },
-        )
-        .setFooter({
-          text: "Pure Music System • Error Handler",
-          iconURL: client.user.displayAvatarURL(),
-        })
-        .setTimestamp();
-
-      await interaction.followUp({
-        embeds: [errorEmbed],
-      });
     }
+
+    const successEmbed = styledEmbed(client)
+      .setColor(Colors.Green)
+      .setTitle(`${getPositionEmoji(position)} ${getPositionTitle(position)}`)
+      .setDescription(
+        `${bold(track.cleanTitle)}\n${italic(`by ${track.author}`)}`,
+      )
+      .addFields(
+        {
+          name: "⏱️ Duration",
+          value: blockQuote(inlineCode(track.duration)),
+          inline: true,
+        },
+        {
+          name: "👤 Requested by",
+          value: blockQuote(interaction.user.toString()),
+          inline: true,
+        },
+        {
+          name: "🎵 Source",
+          value: blockQuote(inlineCode(track.source)),
+          inline: true,
+        },
+      );
+
+    if (track.thumbnail) {
+      successEmbed.setThumbnail(track.thumbnail);
+    }
+
+    await interaction.editReply({
+      embeds: [successEmbed],
+    });
   },
 };
 
-// 🎨 Utility functions for enhanced display
-function getPositionEmoji(position: string | null): string {
+function getPositionEmoji(position: string): string {
   switch (position) {
     case "next":
       return "⏭️";
@@ -233,5 +242,16 @@ function getPositionEmoji(position: string | null): string {
       return "🎵";
     default:
       return "📋";
+  }
+}
+
+function getPositionTitle(position: string): string {
+  switch (position) {
+    case "next":
+      return "Added to Play Next";
+    case "now":
+      return "Now Playing";
+    default:
+      return "Added to Queue";
   }
 }

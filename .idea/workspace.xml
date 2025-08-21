@@ -6,18 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="16615805-e245-41ac-80d0-5078e99c5583" name="Changes" comment="refactor(logging): update import structure and enhance player event handling">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bun.lock" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/drizzle.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/drizzle.config.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/commands/music/play.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/music/play.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controllers/musicEmbed.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/musicEmbed.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/events/client/ready.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/events/client/ready.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/schemas/event-logs.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/schemas/event-logs.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/schemas/guild-config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/schemas/guild-config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/schemas/user-playlists.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils/formatters.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/formatters.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/registry.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/registry.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,58 +53,58 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Node.js.bot > test.ts.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Vitest.All Tests in server.executor": "Run",
-    "code.cleanup.on.save": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "javascript.nodejs.core.library.configured.version": "24.3.0",
-    "javascript.nodejs.core.library.typings.version": "24.3.0",
-    "last_opened_file_path": "C:/Users/minec/WebstormProjects/pure/src",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_interpreter_path": "node",
-    "nodejs_package_manager_path": "pnpm",
-    "npm.biome:check.executor": "Run",
-    "npm.bot > bot:build.executor": "Run",
-    "npm.bot > bot:dev.executor": "Run",
-    "npm.bot > bot:start.executor": "Run",
-    "npm.bot > check-types.executor": "Run",
-    "npm.bot > install.executor": "Run",
-    "npm.bot > type-check.executor": "Run",
-    "npm.bot:build.executor": "Run",
-    "npm.bot:dev.executor": "Run",
-    "npm.bot:start.executor": "Run",
-    "npm.check-types.executor": "Run",
-    "npm.database > build.executor": "Run",
-    "npm.database > db:format.executor": "Run",
-    "npm.database > db:generate.executor": "Run",
-    "npm.database > db:migrate.executor": "Run",
-    "npm.database > db:push.executor": "Run",
-    "npm.database > db:reset.executor": "Run",
-    "npm.db:generate.executor": "Run",
-    "npm.db:migrate.executor": "Run",
-    "npm.db:push.executor": "Run",
-    "npm.db:studio.executor": "Run",
-    "npm.install (1).executor": "Run",
-    "npm.install.executor": "Run",
-    "npm.server > build.executor": "Run",
-    "npm.server > test.executor": "Run",
-    "npm.web > web:dev.executor": "Run",
-    "rearrange.code.on.save": "true",
-    "settings.editor.selected.configurable": "settings.nodejs",
-    "ts.external.directory.path": "C:\\Users\\minec\\WebstormProjects\\pure\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Node.js.bot &gt; test.ts.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Vitest.All Tests in server.executor&quot;: &quot;Run&quot;,
+    &quot;code.cleanup.on.save&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;24.3.0&quot;,
+    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;24.3.0&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/minec/WebstormProjects/pure/src&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_interpreter_path&quot;: &quot;node&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;pnpm&quot;,
+    &quot;npm.biome:check.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; bot:build.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; bot:dev.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; bot:start.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; check-types.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; install.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot &gt; type-check.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot:build.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot:dev.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bot:start.executor&quot;: &quot;Run&quot;,
+    &quot;npm.check-types.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; build.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:format.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:generate.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:migrate.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:push.executor&quot;: &quot;Run&quot;,
+    &quot;npm.database &gt; db:reset.executor&quot;: &quot;Run&quot;,
+    &quot;npm.db:generate.executor&quot;: &quot;Run&quot;,
+    &quot;npm.db:migrate.executor&quot;: &quot;Run&quot;,
+    &quot;npm.db:push.executor&quot;: &quot;Run&quot;,
+    &quot;npm.db:studio.executor&quot;: &quot;Run&quot;,
+    &quot;npm.install (1).executor&quot;: &quot;Run&quot;,
+    &quot;npm.install.executor&quot;: &quot;Run&quot;,
+    &quot;npm.server &gt; build.executor&quot;: &quot;Run&quot;,
+    &quot;npm.server &gt; test.executor&quot;: &quot;Run&quot;,
+    &quot;npm.web &gt; web:dev.executor&quot;: &quot;Run&quot;,
+    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;settings.nodejs&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\minec\\WebstormProjects\\pure\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\minec\WebstormProjects\pure\src" />
@@ -125,6 +120,26 @@
     </key>
   </component>
   <component name="RunManager" selected="npm.bot:dev">
+    <configuration name="biome:check" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="biome:check" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="bot:build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="bot:build" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <configuration name="bot:dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -135,21 +150,11 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="db:generate" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+    <configuration name="check-types" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
       <scripts>
-        <script value="db:generate" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
-    </configuration>
-    <configuration name="db:migrate" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="db:migrate" />
+        <script value="check-types" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
@@ -165,23 +170,13 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="install" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/node_modules/ffmpeg-static/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="install" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="npm.bot:dev" />
+        <item itemvalue="npm.check-types" />
+        <item itemvalue="npm.biome:check" />
+        <item itemvalue="npm.bot:build" />
         <item itemvalue="npm.db:push" />
-        <item itemvalue="npm.db:migrate" />
-        <item itemvalue="npm.db:generate" />
-        <item itemvalue="npm.install" />
       </list>
     </recent_temporary>
   </component>
@@ -220,7 +215,8 @@
       <workItem from="1755622048209" duration="5135000" />
       <workItem from="1755672162290" duration="1369000" />
       <workItem from="1755690269448" duration="848000" />
-      <workItem from="1755705017684" duration="6341000" />
+      <workItem from="1755705017684" duration="6423000" />
+      <workItem from="1755761097576" duration="1566000" />
     </task>
     <task id="LOCAL-00001" summary="Add i18n initialization, enhance logging, and update dependencies; create migration lock file and improve guild configuration handling">
       <option name="closed" value="true" />
@@ -326,7 +322,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755627077892</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="refactor(logging): update import structure and enhance player event handling">
+      <option name="closed" value="true" />
+      <created>1755711924506</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1755711924506</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

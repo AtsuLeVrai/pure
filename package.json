@@ -44,7 +44,6 @@
     "ffmpeg-static": "^5.2.0",
     "i18next": "^25.4.0",
     "mediaplex": "^1.0.0",
-    "node-emoji": "^2.2.0",
     "uuid": "^11.1.0",
     "zlib-sync": "^0.1.10",
     "zod": "^4.0.17"

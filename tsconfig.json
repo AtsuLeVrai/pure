@@ -15,7 +15,6 @@
     "allowSyntheticDefaultImports": true,
     "verbatimModuleSyntax": false,
     "allowImportingTsExtensions": false,
-    "importHelpers": true,
     "baseUrl": "./src",
     "paths": {
       "@/*": ["./*"]
