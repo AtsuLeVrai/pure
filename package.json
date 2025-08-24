@@ -23,7 +23,7 @@
   "scripts": {
     "bot:start": "node dist/index.js",
     "bot:dev": "tsx watch src/index.ts",
-    "bot:build": "tsdown",
+    "bot:build": "esbuild src/index.ts --bundle --platform=node --format=esm --outdir=dist --packages=external",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
@@ -54,9 +54,9 @@
     "@types/node": "^24.3.0",
     "discord-api-types": "^0.38.21",
     "drizzle-kit": "^0.31.4",
+    "esbuild": "^0.25.9",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.5",
-    "tsdown": "^0.14.1",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2"
   },
