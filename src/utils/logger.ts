@@ -1,5 +1,6 @@
 import { env } from "@/index.js";
 
+// Logger for structured logging
 export const Logger = {
   error(message: string | Error | object, meta?: Record<string, any>): void {
     if (env.NODE_ENV === "production") {

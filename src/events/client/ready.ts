@@ -1,6 +1,4 @@
-import { DefaultExtractors } from "@discord-player/extractor";
 import { ActivityType, PresenceUpdateStatus } from "discord.js";
-import { player } from "@/index.js";
 import { Logger } from "@/utils/logger.js";
 import { defineEvent, registerCommands } from "@/utils/registry.js";
 
@@ -9,11 +7,15 @@ export default defineEvent({
   once: true,
   execute: async (client) => {
     try {
-      // Initialize the Player instance
-      await player.extractors.loadMulti(DefaultExtractors);
-
       // Register commands
       await registerCommands(client);
+
+      // await db.insert(eventLogConfigs).values({
+      //   guildId: "936969912600121384",
+      //   category: "channels",
+      //   enabled: true,
+      //   channelId: "1233166498021904404",
+      // });
 
       client.user?.setPresence({
         status: PresenceUpdateStatus.Online,

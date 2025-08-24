@@ -7,7 +7,6 @@ import type {
   Client,
   ClientEvents,
 } from "discord.js";
-import type { GuildQueueEvents } from "discord-player";
 
 // Slash command categories for a Discord bot
 export type CommandCategory =
@@ -54,13 +53,4 @@ export interface EventHandler<K extends keyof ClientEvents> {
   name: K;
   once?: boolean;
   execute: (client: Client<true>, ...args: ClientEvents[K]) => Promise<void>;
-}
-
-// Define the type for player events in a Discord bot
-export interface PlayerEventHandler<K extends keyof GuildQueueEvents> {
-  name: K;
-  execute: (
-    client: Client<true>,
-    ...args: Parameters<GuildQueueEvents[K]>
-  ) => Promise<void>;
 }

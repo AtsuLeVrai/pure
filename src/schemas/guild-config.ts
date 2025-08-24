@@ -9,13 +9,10 @@ export const guildConfigs = sqliteTable(
       .$defaultFn(() => v7()),
     guildId: text("guild_id").notNull().unique(),
     language: text("language").notNull(),
-
     timezone: text("timezone").default("UTC"),
-
     eventLoggingEnabled: integer("event_logging_enabled", {
       mode: "boolean",
     }).default(false),
-
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),

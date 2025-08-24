@@ -109,26 +109,8 @@ export const eventLogConfigs = sqliteTable(
     includeWebhooks: integer("include_webhooks", { mode: "boolean" }).default(
       false,
     ),
-    includeAuditLog: integer("include_audit_log", { mode: "boolean" }).default(
-      true,
-    ),
-
-    rateLimitEnabled: integer("rate_limit_enabled", {
-      mode: "boolean",
-    }).default(true),
-    rateLimitPerMinute: integer("rate_limit_per_minute").default(10),
-    rateLimitBurst: integer("rate_limit_burst").default(5),
 
     embedColor: integer("embed_color").default(0xff8a80),
-    includeTimestamp: integer("include_timestamp", { mode: "boolean" }).default(
-      true,
-    ),
-    includeUserAvatar: integer("include_user_avatar", {
-      mode: "boolean",
-    }).default(true),
-    includeThumbnail: integer("include_thumbnail", { mode: "boolean" }).default(
-      false,
-    ),
 
     webhookUrl: text("webhook_url"),
     webhookEnabled: integer("webhook_enabled", { mode: "boolean" }).default(
@@ -136,35 +118,6 @@ export const eventLogConfigs = sqliteTable(
     ),
     discordWebhookId: text("discord_webhook_id"),
     discordWebhookToken: text("discord_webhook_token"),
-
-    enablePing: integer("enable_ping", { mode: "boolean" }).default(false),
-    pingRoles: text("ping_roles", { mode: "json" })
-      .$type<string[]>()
-      .default([]),
-    enableDM: integer("enable_dm", { mode: "boolean" }).default(false),
-    dmUsers: text("dm_users", { mode: "json" }).$type<string[]>().default([]),
-
-    conditions: text("conditions", { mode: "json" }).$type<{
-      minAccountAge?: number;
-      minServerTime?: number;
-      requiredRoles?: string[];
-      excludeRoles?: string[];
-      channelTypes?: string[];
-      messageLength?: { min?: number; max?: number };
-    }>(),
-
-    enableAnalytics: integer("enable_analytics", { mode: "boolean" }).default(
-      false,
-    ),
-    retentionDays: integer("retention_days").default(30),
-
-    lastModifiedBy: text("last_modified_by").notNull(),
-    modificationReason: text("modification_reason"),
-    version: integer("version").default(1),
-
-    isActive: integer("is_active", { mode: "boolean" }).default(true),
-    lastTriggered: integer("last_triggered", { mode: "timestamp" }),
-    triggerCount: integer("trigger_count").default(0),
 
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
@@ -177,16 +130,10 @@ export const eventLogConfigs = sqliteTable(
     unique("unique_guild_category").on(table.guildId, table.category),
 
     index("event_log_configs_guild_idx").on(table.guildId),
-    index("event_log_configs_enabled_idx").on(table.enabled, table.isActive),
     index("event_log_configs_category_idx").on(table.category),
     index("event_log_configs_channel_idx").on(table.channelId),
-    index("event_log_configs_rate_limit_idx").on(
-      table.rateLimitEnabled,
-      table.guildId,
-    ),
 
     index("event_log_configs_active_enabled_idx").on(
-      table.isActive,
       table.enabled,
       table.guildId,
     ),

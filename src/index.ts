@@ -1,16 +1,11 @@
 import Database from "better-sqlite3";
 import { Client, GatewayIntentBits, Partials } from "discord.js";
-import { Player } from "discord-player";
 import { config as dotenv } from "dotenv";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { z } from "zod";
 import { initializeI18n } from "@/utils/i18n.js";
 import { Logger } from "@/utils/logger.js";
-import {
-  loadModules,
-  registerEvents,
-  registerPlayerEvents,
-} from "@/utils/registry.js";
+import { loadModules, registerEvents } from "@/utils/registry.js";
 
 // Define the schema for environment variables using zod
 const dotenvConfig = z.object({
@@ -80,16 +75,6 @@ const client = new Client<true>({
   },
 });
 
-// Import the Player class for music functionality
-// @ts-expect-error - The `client` type is not compatible with the Player constructor (it expects a Client<boolean> type)
-export const player = new Player(client, {
-  ytdlOptions: {
-    quality: "highestaudio",
-    highWaterMark: 1 << 26,
-  },
-  skipFFmpeg: false,
-});
-
 // Initialize the database connection using Drizzle ORM
 const sqlite = new Database("pure.sqlite");
 export const db = drizzle(sqlite);
@@ -147,7 +132,6 @@ async function main(): Promise<void> {
 
     // Register events
     registerEvents(client);
-    registerPlayerEvents(client);
 
     // Login to Discord
     await client.login(env.DISCORD_TOKEN);
