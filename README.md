@@ -2,6 +2,14 @@
 
 > **The Discord bot as it should be: simple, powerful, and completely free.**
 
+## ⚠️ Project Status: On Hold
+
+**This project is currently paused for development prioritization.** While the concept and documentation represent a solid foundation for a comprehensive Discord bot solution, active development has been temporarily suspended to focus on other initiatives.
+
+The codebase and documentation remain available for community contributions and future development.
+
+---
+
 Pure combines the best features from premium Discord bots like MEE6, Ticket Tool, DraftBot, and RaidProtect into a single, comprehensive solution—**without paywalls, premium tiers, or feature restrictions**.
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
